@@ -91,6 +91,45 @@
   },
   {
     "subject": "論表",
+    "id": "13",
+    "name": "不定詞(3)",
+    "cards": [
+      [
+        "Everyone (seems) (to) (be) (enjoying) the school festival.",
+        "みんな文化祭を楽しんでいるようだ。"
+      ],
+      [
+        "I (want) (to) (be) (left) (alone) today.",
+        "今日は，ひとりにしておいてほしい。"
+      ],
+      [
+        "The flu (seems) (to) (be) (going) around.",
+        "インフルエンザが流行っているようだ。"
+      ],
+      [
+        "This tablet (needs) (to) (be) (charged) before you use it.",
+        "このタブレットは使う前に充電する必要がある。"
+      ],
+      [
+        "Kevin seems (to) (be) sleepy.  He is rubbing his eyes.",
+        "ケヴィンは眠そうだ。目をこすっている。"
+      ],
+      [
+        "It was believed that (Edison) (was) a genius.",
+        "エジソンは天才だと信じられていた。"
+      ],
+      [
+        "This museum is said (to) (have) (been) built in the eighteenth century.",
+        "この美術館は18世紀に建てられたと言われている。"
+      ],
+      [
+        "Daiki seems (to) (have) (been) (learning) the piano for many years.",
+        "ダイキは長年，ピアノを習っているようだ。"
+      ]
+    ]
+  },
+  {
+    "subject": "論表",
     "id": "Extra 1",
     "name": "不定詞の慣用表現",
     "cards": [
