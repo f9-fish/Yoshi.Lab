@@ -230,6 +230,8 @@ let dailyAttemptFinished=false;
 let dailyIsTeacher=false, teacherPractice=false;
 let dailyExitApproved=false, dailyBackGuard=false;
 let dailySavePending=null;
+let dailySaving=false;
+const dailySaveTimeout=ms=>new Promise((_,reject)=>setTimeout(()=>reject(new Error('保存処理がタイムアウトしました。通信状態を確認して再試行してください')),ms));
 const abandonWarning='チャレンジを途中で終了すると、挑戦回数を1回分消費します。XP（ポイント）は加算されません。終了しますか？';
 const hasUnfinishedAttempt=()=>running && activeDailySlot && !dailyAttemptFinished;
 const dailyXP=[0,5,15,30,55,90,140,205,285,385,500];
@@ -446,18 +448,20 @@ async function next(){
  $('dailyResultStatus').textContent='記録を保存中…';
  $('score').textContent=score+' / 10 正解！';
  $('reward').textContent='獲得 '+earned+' XP';
- $('retry').disabled=true;
+ $('retry').disabled=false;
+ $('retry').textContent='保存中…（完了後HOMEへ）';
+ dailySaving=true;
  dailySavePending={score,earned,delta};
  let saved=false;
  try{
   if(!activeDailySlot)throw Error('開始記録が見つかりません');
   if(!teacherPractice){
    // Saving the attempt is critical; refreshing counters and XP display is not.
-   await account().finishDailyAttempt(activeDailySlot,{right:score,dailyScoreXP:earned,dailyDeltaXP:delta});
+   await Promise.race([account().finishDailyAttempt(activeDailySlot,{right:score,dailyScoreXP:earned,dailyDeltaXP:delta}),dailySaveTimeout(12000)]);
   }
-  saved=true;dailySavePending=null;dailyAttemptFinished=true;running=false;
+  saved=true;dailySavePending=null;dailySaving=false;dailyAttemptFinished=true;running=false;
   if(!teacherPractice){
-   try{await refreshDaily();await account().syncXP();}
+   try{await Promise.race([refreshDaily(),dailySaveTimeout(3500)]);await Promise.race([account().syncXP(),dailySaveTimeout(3500)]);}
    catch(syncError){console.warn('Challenge saved, but display refresh failed:',syncError);}
   }
   const attempts=dailyRowsFor(selectedSubject).length;
@@ -467,6 +471,7 @@ async function next(){
   $('retry').disabled=false;
   $('retry').textContent='HOMEへ戻る';
  }catch(e){
+  dailySaving=false;
   const message='記録の保存に失敗しました：'+e.message+'。HOMEへ戻る前に保存を再試行してください。';
   $('dailyResultStatus').textContent=message;
   $('reward').textContent=message;
@@ -539,19 +544,22 @@ window.addEventListener('beforeunload',e=>{
 });
 $('start').onclick=start;
 $('retry').onclick=async()=>{
+ if(dailySaving){$('reward').textContent='記録を保存中です。最大12秒ほどお待ちください。';return;}
  if(dailySavePending){
-  const btn=$('retry');btn.disabled=true;btn.textContent='記録を保存中…';
+  const btn=$('retry');btn.disabled=true;btn.textContent='記録を再保存中…';
   try{
+   dailySaving=true;
    if(!teacherPractice){
-    await account().finishDailyAttempt(activeDailySlot,{
+    await Promise.race([account().finishDailyAttempt(activeDailySlot,{
      right:dailySavePending.score,dailyScoreXP:dailySavePending.earned,dailyDeltaXP:dailySavePending.delta
-    });
+    }),dailySaveTimeout(12000)]);
    }
-   dailySavePending=null;dailyAttemptFinished=true;running=false;
+   dailySavePending=null;dailySaving=false;dailyAttemptFinished=true;running=false;
    // The saved attempt can be read on the HOME page; syncXP is best effort.
-   if(!teacherPractice){try{await account().syncXP();}catch(e){console.warn('XP sync after save:',e);}}
+   if(!teacherPractice){try{await Promise.race([account().syncXP(),dailySaveTimeout(3500)]);}catch(e){console.warn('XP sync after save:',e);}}
    dailyExitApproved=true;window.location.assign('./index.html');
   }catch(e){
+   dailySaving=false;
    $('reward').textContent='保存に失敗しました：'+e.message;
    btn.disabled=false;btn.textContent='記録を保存してHOMEへ戻る';
   }
