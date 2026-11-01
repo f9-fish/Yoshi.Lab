@@ -512,7 +512,7 @@ async function next(){
  dailySavePending={score,earned,delta};
  let saved=false;
  try{
-  if(!activeDailySlot)throw Error('開始記録が見つかりません');
+  if(!teacherPractice&&!activeDailySlot)throw Error('開始記録が見つかりません');
   if(!teacherPractice){
    // Saving the attempt is critical; refreshing counters and XP display is not.
    await Promise.race([account().finishDailyAttempt(activeDailySlot,{right:score,dailyScoreXP:earned,dailyDeltaXP:delta}),dailySaveTimeout(12000)]);

@@ -1,6 +1,6 @@
 import {initializeApp,getApps,getApp} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js';
 import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged,signOut,browserLocalPersistence,setPersistence} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js';
-import {getDatabase,ref,push,set,get,runTransaction,remove} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js';
+import {getDatabase,ref,push,set,get,runTransaction} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js';
 const app=getApps().length?getApp():initializeApp({apiKey:'AIzaSyDhm9zeUsgvF6_lbwcRj57VWXzYPA3LEzM',authDomain:'yoshi-lab-db3eb.firebaseapp.com',databaseURL:'https://yoshi-lab-db3eb-default-rtdb.firebaseio.com',projectId:'yoshi-lab-db3eb',storageBucket:'yoshi-lab-db3eb.firebasestorage.app',messagingSenderId:'543561154900',appId:'1:543561154900:web:b9ba898d1d44a385f848c1'});
 const auth=getAuth(app),db=getDatabase(app),provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:'select_account'});
 let current=null;const listeners=new Set();let lastAccessUid='',lastAccessAt=0;
@@ -41,10 +41,21 @@ const api={get user(){return current},subscribe(fn){listeners.add(fn);fn(current
  const path=ref(db,'learningRecords/'+current.uid+'/'+slot);
  const payload={right:Number(right),dailyScoreXP:Number(dailyScoreXP),dailyDeltaXP:Number(dailyDeltaXP)};
  const alreadySaved=old=>old?.dailyCompleted===true&&Number(old.total)===10;
+ // Read the server record first: without a cached value, the first transaction
+ // callback can receive null and abort even when the record exists on Firebase.
+ const before=(await get(path)).val();
+ if(alreadySaved(before))return {alreadySaved:true};
+ if(!before)throw Error('開始記録がFirebaseに存在しません（'+slot+'）');
+ if(before.dailyAttemptStarted!==true)throw Error('開始フラグが不正です（'+slot+'）');
+ if(before.dailyCompleted!==false)throw Error('完了フラグが不正です（'+slot+'）');
  let result;
  try{
   result=await runTransaction(path,old=>{
-   if(!old||old.dailyAttemptStarted!==true||alreadySaved(old))return;
+   if(old===null||old===undefined){
+    // Do not silently abort when the SDK has not populated local cache yet.
+    return {...before,total:10,...payload,dailyCompleted:true,completedSet:true,finishedAt:Date.now()};
+   }
+   if(old.dailyAttemptStarted!==true||alreadySaved(old))return;
    return {...old,total:10,...payload,dailyCompleted:true,completedSet:true,finishedAt:Date.now()};
   },{applyLocally:false});
  }catch(error){
@@ -59,25 +70,7 @@ const api={get user(){return current},subscribe(fn){listeners.add(fn);fn(current
  const snap=await get(path);
  if(alreadySaved(snap.val()))return {alreadySaved:true};
  if(!snap.exists())throw Error('開始記録がありません。今回の得点は保存されていません');
- throw Error('挑戦記録を完了できませんでした。Firebaseの権限設定を確認してください');
-},async resetDailyAttempts({targetUid,dailyDate,dailySubject}){
- if(!current||!await this.isTeacher())throw Error('教員権限が必要です');
- if(typeof targetUid!=='string'||!/^[a-zA-Z0-9_-]{6,128}$/.test(targetUid))throw Error('対象アカウントを選択してください');
- if(!/^\d{4}-\d{2}-\d{2}$/.test(dailyDate)||!['ec','rp','both'].includes(dailySubject))throw Error('リセット条件が不正です');
- const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
- if(dailyDate!==today)throw Error('今日の挑戦だけリセットできます');
- const subjects=dailySubject==='both'?['ec','rp']:[dailySubject];
- let removed=0;
- for(const sub of subjects){for(const n of [1,2]){
-  const slot='daily_'+dailyDate.replaceAll('-','')+'_'+sub+'_'+n;
-  const target=ref(db,'learningRecords/'+targetUid+'/'+slot);
-  const snap=await get(target);
-  if(snap.exists()){
-   if(snap.val()?.dailyV1!==true)throw Error('対象にデイリー以外の記録があります。中止しました');
-   await remove(target);removed++;
-  }
- }}
- return {removed};
+ throw Error('更新が中断されました（'+slot+'、started='+String(snap.val()?.dailyAttemptStarted)+'、completed='+String(snap.val()?.dailyCompleted)+'、total='+String(snap.val()?.total)+'）。再度保存を試してください');
 },async profile(){if(!current)return null;const snap=await get(ref(db,'studentProfiles/'+current.uid));return snap.val()},
 async saveProfile(p){if(!current)throw Error('ログインしてください');const cls=Number(p.classNumber),num=Number(p.studentNumber),name=String(p.name||'').trim();if(!Number.isInteger(cls)||cls<1||cls>5||!Number.isInteger(num)||num<1||num>45||name.length<1||name.length>60)throw Error('入力内容を確認してください');const path=ref(db,'studentProfiles/'+current.uid);const result=await runTransaction(path,old=>old||{classNumber:cls,studentNumber:num,name,createdAt:Date.now()},{applyLocally:false});if(!result.committed)throw Error('登録できませんでした');return result.snapshot.val()},
 async isTeacher(){if(!current)return false;const snap=await get(ref(db,'teacherUids/'+current.uid));return snap.val()===true},
