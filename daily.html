@@ -232,6 +232,29 @@ let dailyExitApproved=false, dailyBackGuard=false;
 let dailySavePending=null;
 let dailySaving=false;
 const dailySaveTimeout=ms=>new Promise((_,reject)=>setTimeout(()=>reject(new Error('保存処理がタイムアウトしました。通信状態を確認して再試行してください')),ms));
+async function verifyDailySaved(){
+ if(teacherPractice)return true;
+ if(!activeDailySlot)return false;
+ const match=activeDailySlot.match(/^daily_(\d{4})(\d{2})(\d{2})_(ec|rp)_([12])$/);
+ if(!match)return false;
+ const rows=await Promise.race([account().records(),dailySaveTimeout(6000)]);
+ return rows.some(r=>r.dailyV1===true&&r.dailyCompleted===true&&r.dailyDate===`${match[1]}-${match[2]}-${match[3]}`&&r.dailySubject===match[4]&&Number(r.attemptNumber)===Number(match[5]));
+}
+function completeDailySave(){
+ dailySavePending=null;dailySaving=false;dailyAttemptFinished=true;running=false;
+ $('retry').disabled=false;$('retry').textContent='HOMEへ戻る';
+}
+function showDailySaveExit(){
+ let b=$('dailySaveExit');
+ if(!b){b=document.createElement('button');b.id='dailySaveExit';b.type='button';b.style.cssText='width:100%;margin-top:10px;background:#39475b;color:#fff;border:1px solid #9aa8bb';b.textContent='保存せずHOMEへ戻る';$('retry').after(b);}
+ b.classList.remove('hidden');
+ b.onclick=()=>{
+  const yes=window.confirm('記録の保存を確認できていません。HOMEへ戻ると、今回の得点とXPが反映されない可能性があります。戻りますか？');
+  if(yes){dailyExitApproved=true;window.location.assign('./index.html');}
+ };
+}
+function hideDailySaveExit(){$('dailySaveExit')?.classList.add('hidden');}
+
 const abandonWarning='チャレンジを途中で終了すると、挑戦回数を1回分消費します。XP（ポイント）は加算されません。終了しますか？';
 const hasUnfinishedAttempt=()=>running && activeDailySlot && !dailyAttemptFinished;
 const dailyXP=[0,5,15,30,55,90,140,205,285,385,500];
@@ -459,7 +482,7 @@ async function next(){
    // Saving the attempt is critical; refreshing counters and XP display is not.
    await Promise.race([account().finishDailyAttempt(activeDailySlot,{right:score,dailyScoreXP:earned,dailyDeltaXP:delta}),dailySaveTimeout(12000)]);
   }
-  saved=true;dailySavePending=null;dailySaving=false;dailyAttemptFinished=true;running=false;
+  saved=true;completeDailySave();hideDailySaveExit();
   if(!teacherPractice){
    try{await Promise.race([refreshDaily(),dailySaveTimeout(3500)]);await Promise.race([account().syncXP(),dailySaveTimeout(3500)]);}
    catch(syncError){console.warn('Challenge saved, but display refresh failed:',syncError);}
@@ -472,12 +495,21 @@ async function next(){
   $('retry').textContent='HOMEへ戻る';
  }catch(e){
   dailySaving=false;
-  const message='記録の保存に失敗しました：'+e.message+'。HOMEへ戻る前に保存を再試行してください。';
-  $('dailyResultStatus').textContent=message;
-  $('reward').textContent=message;
   console.error(e);
-  $('retry').disabled=false;
-  $('retry').textContent='記録を保存してHOMEへ戻る';
+  let verified=false;
+  try{verified=await verifyDailySaved();}catch(checkError){console.warn('保存確認:',checkError);}
+  if(verified){
+   saved=true;completeDailySave();hideDailySaveExit();
+   $('dailyResultStatus').textContent='記録の保存を確認しました。HOMEへ戻れます。';
+   $('reward').textContent='得点 '+score+' / 10 ／ 今回の追加 +'+delta+' XP';
+  }else{
+   const message='記録の保存を確認できません：'+e.message+'。再保存するか、保存せずHOMEへ戻れます。';
+   $('dailyResultStatus').textContent=message;
+   $('reward').textContent=message;
+   $('retry').disabled=false;
+   $('retry').textContent='記録を確認・保存してHOMEへ戻る';
+   showDailySaveExit();
+  }
  }
  $('dailyShowReview').disabled=false;
  $('review').replaceChildren();
@@ -549,19 +581,29 @@ $('retry').onclick=async()=>{
   const btn=$('retry');btn.disabled=true;btn.textContent='記録を再保存中…';
   try{
    dailySaving=true;
+   if(await verifyDailySaved()){
+    completeDailySave();hideDailySaveExit();dailyExitApproved=true;window.location.assign('./index.html');return;
+   }
    if(!teacherPractice){
     await Promise.race([account().finishDailyAttempt(activeDailySlot,{
      right:dailySavePending.score,dailyScoreXP:dailySavePending.earned,dailyDeltaXP:dailySavePending.delta
     }),dailySaveTimeout(12000)]);
    }
-   dailySavePending=null;dailySaving=false;dailyAttemptFinished=true;running=false;
+   completeDailySave();hideDailySaveExit();
    // The saved attempt can be read on the HOME page; syncXP is best effort.
    if(!teacherPractice){try{await Promise.race([account().syncXP(),dailySaveTimeout(3500)]);}catch(e){console.warn('XP sync after save:',e);}}
    dailyExitApproved=true;window.location.assign('./index.html');
   }catch(e){
    dailySaving=false;
-   $('reward').textContent='保存に失敗しました：'+e.message;
-   btn.disabled=false;btn.textContent='記録を保存してHOMEへ戻る';
+   let verified=false;
+   try{verified=await verifyDailySaved();}catch(checkError){console.warn('保存確認:',checkError);}
+   if(verified){
+    completeDailySave();hideDailySaveExit();
+    dailyExitApproved=true;window.location.assign('./index.html');return;
+   }
+   $('reward').textContent='記録の保存を確認できません：'+e.message;
+   btn.disabled=false;btn.textContent='記録を確認・保存してHOMEへ戻る';
+   showDailySaveExit();
   }
   return;
  }
