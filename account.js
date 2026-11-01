@@ -38,11 +38,28 @@ const api={get user(){return current},subscribe(fn){listeners.add(fn);fn(current
  return slot;
 },async finishDailyAttempt(slot,{right,dailyScoreXP,dailyDeltaXP}){
  if(!current||!/^daily_\d{8}_(ec|rp)_[12]$/.test(slot))throw Error('挑戦情報が不正です');
- const result=await runTransaction(ref(db,'learningRecords/'+current.uid+'/'+slot),old=>{
-  if(!old||old.dailyAttemptStarted!==true||old.dailyCompleted===true)return;
-  return {...old,total:10,right,dailyScoreXP,dailyDeltaXP,dailyCompleted:true,completedSet:true,finishedAt:Date.now()};
- },{applyLocally:false});
- if(!result.committed)throw Error('完了済み、または開始記録がありません');
+ const path=ref(db,'learningRecords/'+current.uid+'/'+slot);
+ const payload={right:Number(right),dailyScoreXP:Number(dailyScoreXP),dailyDeltaXP:Number(dailyDeltaXP)};
+ const alreadySaved=old=>old?.dailyCompleted===true&&Number(old.total)===10;
+ let result;
+ try{
+  result=await runTransaction(path,old=>{
+   if(!old||old.dailyAttemptStarted!==true||alreadySaved(old))return;
+   return {...old,total:10,...payload,dailyCompleted:true,completedSet:true,finishedAt:Date.now()};
+  },{applyLocally:false});
+ }catch(error){
+  // A timeout/disconnect can occur after the server committed the transaction.
+  try{const snap=await get(path);if(alreadySaved(snap.val()))return {alreadySaved:true};}
+  catch(checkError){console.warn('デイリー保存確認:',checkError);}
+  throw error;
+ }
+ if(result.committed)return {saved:true};
+ const existing=result.snapshot?.val();
+ if(alreadySaved(existing))return {alreadySaved:true};
+ const snap=await get(path);
+ if(alreadySaved(snap.val()))return {alreadySaved:true};
+ if(!snap.exists())throw Error('開始記録がありません。今回の得点は保存されていません');
+ throw Error('挑戦記録を完了できませんでした。Firebaseの権限設定を確認してください');
 },async profile(){if(!current)return null;const snap=await get(ref(db,'studentProfiles/'+current.uid));return snap.val()},
 async saveProfile(p){if(!current)throw Error('ログインしてください');const cls=Number(p.classNumber),num=Number(p.studentNumber),name=String(p.name||'').trim();if(!Number.isInteger(cls)||cls<1||cls>5||!Number.isInteger(num)||num<1||num>45||name.length<1||name.length>60)throw Error('入力内容を確認してください');const path=ref(db,'studentProfiles/'+current.uid);const result=await runTransaction(path,old=>old||{classNumber:cls,studentNumber:num,name,createdAt:Date.now()},{applyLocally:false});if(!result.committed)throw Error('登録できませんでした');return result.snapshot.val()},
 async isTeacher(){if(!current)return false;const snap=await get(ref(db,'teacherUids/'+current.uid));return snap.val()===true},
