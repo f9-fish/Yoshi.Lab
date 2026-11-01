@@ -204,13 +204,14 @@ html body:not(.unused-yoshilab-selector) {
 .daily-subjects .subject-btn.daily-completed small{color:#d6e3f4!important;font-weight:900;font-size:13px}
 .daily-subjects .subject-btn.daily-completed.active{border-color:#b5c3d6!important;box-shadow:0 0 0 2px rgba(181,195,214,.2)!important}
 #result #retry{width:100%;margin-top:16px;background:linear-gradient(110deg,#1a8fdd,#1452c3);color:white;font-weight:800}
-</style></head><body><main><div class="top"><a class="brand" href="./index.html">♛ Yoshi<span>.Lab</span><small class="yoshi-brand-sub-v15">LEARN × LEVEL UP</small></a><a href="./ranking.html">🏆 ランキング</a></div><section class="panel daily-intro" id="welcome"><div class="daily-intro-art"><span class="daily-intro-limit">各科目 1日2回</span><span class="daily-intro-kicker">DAILY CHALLENGE</span><h1>デイリーチャレンジ</h1><p class="daily-intro-reward">全10問・全問正解で <strong>500 XP</strong></p></div><div class="daily-intro-content"><div class="daily-modes"><div class="daily-mode"><span class="daily-mode-icon">📖</span><b>3問</b><span>単語4択</span></div><div class="daily-mode"><span class="daily-mode-icon">⌨️</span><b>3問</b><span>単語タイピング</span></div><div class="daily-mode"><span class="daily-mode-icon">📝</span><b>4問</b><span>本文タイピング</span></div></div><div class="daily-rules"><div class="daily-rule"><span class="daily-rule-icon">📅</span><div><strong>各科目1日2回まで挑戦</strong><small>2回終了すると翌日まで挑戦できません</small></div></div><div class="daily-rule"><span class="daily-rule-icon">🏆</span><div><strong>満点で500 XP</strong><small>その日の最高得点のみ反映（2回目は差額を加算）</small></div></div><div class="daily-rule"><span class="daily-rule-icon">🎯</span><div><strong>同じ日の2回は同じ10問</strong><small>問題形式内で順番だけシャッフル</small></div></div></div><div class="daily-subjects"><button id="subjectEC" class="subject-btn" type="button">📖 英C Challenge<br><small id="ecAttempts">挑戦回数を確認中…</small></button><button id="subjectRP" class="subject-btn" type="button">✍️ 論表 Challenge<br><small id="rpAttempts">挑戦回数を確認中…</small></button></div><div id="selectedDaily" class="muted" style="margin:12px 0">科目を選択してください</div><button id="start" class="daily-action" disabled>▶　チャレンジを始める　→</button><p id="status" class="sub">問題データを読み込み中…</p></div></section><section class="panel hidden" id="quiz"><div class="quiz-head"><span class="pill" id="count">QUESTION 1 / 10</span><span class="muted">DAILY CHALLENGE</span></div><div class="progress" style="margin:16px 0"><div id="bar" style="width:0%"></div></div><p class="sub quiz-kind"><span id="questionType">問題形式を読み込み中…</span></p><div class="question" id="word"></div><div id="sentenceAnswers" class="hidden"></div><div id="options"></div><div id="typingArea" class="hidden"><input id="typingInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="英語で入力"><button id="typingSubmit" style="width:100%;margin-top:10px">回答する</button></div><p id="feedback" class="sub" aria-live="polite"></p><button id="next" class="hidden">次の問題へ →</button></section><section class="panel hidden" id="result"><span class="pill">MISSION RESULT</span><h1 id="score"></h1><p id="reward" class="sub"></p><h2>10問の振り返り</h2><div id="review"></div><button id="retry">HOMEへ戻る</button><p class="muted">2回終了すると本日の挑戦は終了です。翌日0時（日本時間）に更新されます。</p></section></main><div id="dailyResultOverlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="dailyResultHeading"><div class="daily-result-card"><div class="daily-result-kicker" id="dailyResultHeading">DAILY CHALLENGE COMPLETE</div><div class="daily-result-score" id="dailyResultScore">0 <small>/ 10 正解</small></div><div class="daily-result-xp" id="dailyResultXP">+0 XP</div><div class="daily-result-status" id="dailyResultStatus" aria-live="polite">記録を保存中…</div><button id="dailyShowReview" type="button" disabled>正答・誤答を確認する →</button></div></div><script type="module" src="./account.js?v=daily-attempt-20261101-2"></script>
+</style></head><body><main><div class="top"><a class="brand" href="./index.html">♛ Yoshi<span>.Lab</span><small class="yoshi-brand-sub-v15">LEARN × LEVEL UP</small></a><a href="./ranking.html">🏆 ランキング</a></div><section class="panel daily-intro" id="welcome"><div class="daily-intro-art"><span class="daily-intro-limit">各科目 1日2回</span><span class="daily-intro-kicker">DAILY CHALLENGE</span><h1>デイリーチャレンジ</h1><p class="daily-intro-reward">全10問・全問正解で <strong>500 XP</strong></p></div><div class="daily-intro-content"><div class="daily-modes"><div class="daily-mode"><span class="daily-mode-icon">📖</span><b>3問</b><span>単語4択</span></div><div class="daily-mode"><span class="daily-mode-icon">⌨️</span><b>3問</b><span>単語タイピング</span></div><div class="daily-mode"><span class="daily-mode-icon">📝</span><b>4問</b><span>本文タイピング</span></div></div><div class="daily-rules"><div class="daily-rule"><span class="daily-rule-icon">📅</span><div><strong>各科目1日2回まで挑戦</strong><small>2回終了すると翌日まで挑戦できません</small></div></div><div class="daily-rule"><span class="daily-rule-icon">🏆</span><div><strong>満点で500 XP</strong><small>その日の最高得点のみ反映（2回目は差額を加算）</small></div></div><div class="daily-rule"><span class="daily-rule-icon">🎯</span><div><strong>同じ日の2回は同じ10問</strong><small>問題形式内で順番だけシャッフル</small></div></div></div><div class="daily-subjects"><button id="subjectEC" class="subject-btn" type="button">📖 英C Challenge<br><small id="ecAttempts">挑戦回数を確認中…</small></button><button id="subjectRP" class="subject-btn" type="button">✍️ 論表 Challenge<br><small id="rpAttempts">挑戦回数を確認中…</small></button></div><div id="selectedDaily" class="muted" style="margin:12px 0">科目を選択してください</div><button id="start" class="daily-action" disabled>▶　チャレンジを始める　→</button><p id="status" class="sub">問題データを読み込み中…</p></div></section><section class="panel hidden" id="quiz"><div class="quiz-head"><span class="pill" id="count">QUESTION 1 / 10</span><span class="muted">DAILY CHALLENGE</span></div><div class="progress" style="margin:16px 0"><div id="bar" style="width:0%"></div></div><p class="sub quiz-kind"><span id="questionType">問題形式を読み込み中…</span></p><div class="question" id="word"></div><div id="sentenceAnswers" class="hidden"></div><div id="options"></div><div id="typingArea" class="hidden"><input id="typingInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="英語で入力"><button id="typingSubmit" style="width:100%;margin-top:10px">回答する</button></div><p id="feedback" class="sub" aria-live="polite"></p><button id="next" class="hidden">次の問題へ →</button></section><section class="panel hidden" id="result"><span class="pill">MISSION RESULT</span><h1 id="score"></h1><p id="reward" class="sub"></p><h2>10問の振り返り</h2><div id="review"></div><button id="retry">HOMEへ戻る</button><p class="muted">2回終了すると本日の挑戦は終了です。翌日0時（日本時間）に更新されます。</p></section></main><div id="dailyResultOverlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="dailyResultHeading"><div class="daily-result-card"><div class="daily-result-kicker" id="dailyResultHeading">DAILY CHALLENGE COMPLETE</div><div class="daily-result-score" id="dailyResultScore">0 <small>/ 10 正解</small></div><div class="daily-result-xp" id="dailyResultXP">+0 XP</div><div class="daily-result-status" id="dailyResultStatus" aria-live="polite">記録を保存中…</div><button id="dailyShowReview" type="button" disabled>正答・誤答を確認する →</button></div></div><script type="module" src="./account.js?v=daily-teacher-20261101-3"></script>
 <script>
 
 const $=id=>document.getElementById(id);
 let words=[],sentences=[],deck=[],index=0,answers=[],chosen=false;
 let selectedSubject='', dailyUser=null, dailyRows=[], loadedData=null, running=false, activeDailySlot=null;
 let dailyAttemptFinished=false;
+let dailyIsTeacher=false, teacherPractice=false;
 const abandonWarning='チャレンジを途中で終了すると、挑戦回数を1回分消費します。XP（ポイント）は加算されません。終了しますか？';
 const hasUnfinishedAttempt=()=>running && activeDailySlot && !dailyAttemptFinished;
 const dailyXP=[0,5,15,30,55,90,140,205,285,385,500];
@@ -221,10 +222,10 @@ function seededShuffle(list,seed){let h=2166136261;for(const c of seed){h=Math.i
 async function refreshDaily(){
  const a=account();dailyUser=a?.user||null;
  if(!dailyUser){dailyRows=[];$('status').textContent='Googleログインが必要です';$('start').disabled=true;return;}
- try{dailyRows=await a.records();for(const [sub,id] of [['ec','ecAttempts'],['rp','rpAttempts']]){const n=dailyRowsFor(sub).length;$(id).textContent=n>=2?'✓ 2回実施済':`${n} / 2回 挑戦済み`;$(sub==='ec'?'subjectEC':'subjectRP').classList.toggle('daily-completed',n>=2);}updateDailyStart();}
+ try{const [rows,teacher]=await Promise.all([a.records(),a.isTeacher()]);dailyRows=rows;dailyIsTeacher=teacher===true;for(const [sub,id] of [['ec','ecAttempts'],['rp','rpAttempts']]){const n=dailyRowsFor(sub).length;$(id).textContent=dailyIsTeacher?(n>=2?'教員：何度でも練習可':`${n} / 2回（以降は練習可）`):(n>=2?'✓ 2回実施済':`${n} / 2回 挑戦済み`);$(sub==='ec'?'subjectEC':'subjectRP').classList.toggle('daily-completed',n>=2&&!dailyIsTeacher);}updateDailyStart();}
  catch(e){$('status').textContent='挑戦記録を取得できません：'+e.message;$('start').disabled=true;}
 }
-function updateDailyStart(){const n=selectedSubject?dailyRowsFor(selectedSubject).length:0;const available=selectedSubject&&dailyUser&&words.length>=6&&sentences.length>=4&&n<2;$('start').disabled=!available;$('start').textContent=n>=2?'✓ 本日の挑戦終了（2 / 2回）':`▶ ${n+1}回目のチャレンジを始める →`;$('selectedDaily').textContent=selectedSubject?`${selectedSubject==='ec'?'英C':'論表'} Challenge · ${n} / 2回挑戦済み`:'科目を選択してください';}
+function updateDailyStart(){const n=selectedSubject?dailyRowsFor(selectedSubject).length:0;const available=selectedSubject&&dailyUser&&words.length>=6&&sentences.length>=4&&(n<2||dailyIsTeacher);$('start').disabled=!available;$('start').textContent=n>=2?(dailyIsTeacher?'▶ 教員用練習を始める（XPなし）':'✓ 本日の挑戦終了（2 / 2回）'):`▶ ${n+1}回目のチャレンジを始める →`;$('selectedDaily').textContent=selectedSubject?`${selectedSubject==='ec'?'英C':'論表'} Challenge · ${n} / 2回挑戦済み${dailyIsTeacher?'（教員は無制限・3回目以降XPなし）':''}`:'科目を選択してください';}
 function chooseSubject(sub){selectedSubject=sub;for(const [s,id] of [['ec','subjectEC'],['rp','subjectRP']])$(id).classList.toggle('active',s===sub);if(loadedData)applySubjectData();updateDailyStart();}
 $('subjectEC').onclick=()=>chooseSubject('ec');$('subjectRP').onclick=()=>chooseSubject('rp');
 
@@ -294,7 +295,8 @@ function makeQuestion(type, item, seed){
  return {type,prompt:item.english,translation:item.japanese,correct:gaps,blankCount:gaps.length};
 }
 async function start(){
- if(running||!dailyUser||!selectedSubject||dailyRowsFor(selectedSubject).length>=2)return;
+ if(running||!dailyUser||!selectedSubject||(dailyRowsFor(selectedSubject).length>=2&&!dailyIsTeacher))return;
+ teacherPractice=dailyIsTeacher&&dailyRowsFor(selectedSubject).length>=2;
  running=true;
  // Fixed sequence: 3 vocabulary choices, 3 vocabulary typing, 4 sentence typing.
  // Each question is drawn without replacement, including across word formats.
@@ -312,15 +314,18 @@ async function start(){
   ...chosenWords.slice(3,6).map((w,i)=>makeQuestion('word',w,seed+"|word|"+i)),
   ...chosenSentences.map((s,i)=>makeQuestion('sentence',s,seed+"|sentence|"+i))
  ];
- if(dailyRowsFor(selectedSubject).length===1){deck=[...seededShuffle(deck.slice(0,3),seed+'|choice|2'),...seededShuffle(deck.slice(3,6),seed+'|word|2'),...seededShuffle(deck.slice(6,10),seed+'|sentence|2')];}
+ if(dailyRowsFor(selectedSubject).length>=1){deck=[...seededShuffle(deck.slice(0,3),seed+'|choice|2'),...seededShuffle(deck.slice(3,6),seed+'|word|2'),...seededShuffle(deck.slice(6,10),seed+'|sentence|2')];}
  // Reserve this attempt on Firebase before showing any question. Abandoned attempts remain spent.
  const attemptNumber=dailyRowsFor(selectedSubject).length+1;
  $('start').disabled=true;
  $('status').textContent='挑戦回数を記録中…';
  try{
+  if(teacherPractice){activeDailySlot='teacher_practice';await refreshDaily();}
+  else {
   if(typeof account()?.startDailyAttempt!=='function')throw Error('ログイン機能が旧バージョンです。account.jsを更新して再読み込みしてください');
   activeDailySlot=await account().startDailyAttempt({dailyDate:jstDay(),dailySubject:selectedSubject,attemptNumber});
   await refreshDaily();
+  }
  }catch(e){
   running=false;activeDailySlot=null;
   $('status').textContent='挑戦を開始できません：'+e.message;
@@ -415,7 +420,7 @@ async function next(){
  const score=answers.filter(a=>a.ok).length;
  const prev=dailyRowsFor(selectedSubject).filter(r=>r.dailyCompleted===true||(!r.dailyAttemptStarted&&r.completedSet===true));
  const best=Math.max(0,...prev.map(r=>Number(r.dailyScoreXP)||0));
- const earned=dailyXP[score];const delta=Math.max(0,earned-best);
+ const earned=teacherPractice?0:dailyXP[score];const delta=teacherPractice?0:Math.max(0,earned-best);
  $('dailyResultScore').innerHTML=score+' <small>/ 10 正解</small>';
  $('dailyResultXP').textContent='+'+earned+' XP';
  $('dailyResultStatus').textContent='記録を保存中…';
@@ -425,13 +430,12 @@ async function next(){
  let saved=false;
  try{
   if(!activeDailySlot)throw Error('開始記録が見つかりません');
-  await account().finishDailyAttempt(activeDailySlot,{right:score,dailyScoreXP:earned,dailyDeltaXP:delta});
-  await refreshDaily();await account().syncXP();
+  if(!teacherPractice){await account().finishDailyAttempt(activeDailySlot,{right:score,dailyScoreXP:earned,dailyDeltaXP:delta});await refreshDaily();await account().syncXP();}
   saved=true;dailyAttemptFinished=true;running=false;
   const attempts=dailyRowsFor(selectedSubject).length;
-  $('dailyResultStatus').textContent='今回の追加 +'+delta+' XP ／ '+attempts+' / 2回 挑戦済み';
-  $('reward').textContent='獲得 '+earned+' XP（今回の追加 +'+delta+' XP）／'+attempts+' / 2回';
-  if(attempts>=2){$('dailyResultStatus').textContent+=' · 本日の挑戦終了';}
+  $('dailyResultStatus').textContent=teacherPractice?'教員用練習：記録・XPの加算なし':'今回の追加 +'+delta+' XP ／ '+attempts+' / 2回 挑戦済み';
+  $('reward').textContent=teacherPractice?'教員用練習（XP加算なし）':'獲得 '+earned+' XP（今回の追加 +'+delta+' XP）／'+attempts+' / 2回';
+  if(attempts>=2&&!dailyIsTeacher){$('dailyResultStatus').textContent+=' · 本日の挑戦終了';}
   $('retry').disabled=false;
  }catch(e){
   const message='保存できませんでした：'+e.message+'。再読み込みせず管理者に連絡してください。';
@@ -452,9 +456,9 @@ async function next(){
   $('dailyResultOverlay').classList.add('hidden');
   $('result').classList.remove('hidden');
   let notice=$('dailyReviewRetryNotice');if(notice)notice.remove();
-  if(saved&&dailyRowsFor(selectedSubject).length<2){
+  if(saved&&(dailyRowsFor(selectedSubject).length<2||dailyIsTeacher)){
    notice=document.createElement('div');notice.id='dailyReviewRetryNotice';notice.className='daily-review-notice';
-   notice.textContent='✨ もう一度挑戦できます（全く同じ問題）';
+   notice.textContent=teacherPractice?'✨ 教員用練習は何度でも挑戦できます（XP加算なし）':'✨ もう一度挑戦できます（全く同じ問題）';
    $('retry').before(notice);
   }
   $('result').scrollIntoView({block:'start',behavior:'smooth'});
@@ -462,7 +466,7 @@ async function next(){
 }
 // In-page navigation gets a fully worded confirmation. Browser reload/close/back
 // uses the browser's native unsaved-changes prompt (custom text is not supported).
-function confirmDailyExit(){return !hasUnfinishedAttempt() || window.confirm(abandonWarning);}
+function confirmDailyExit(){return !hasUnfinishedAttempt() || window.confirm(teacherPractice?'教員用練習を終了しますか？（挑戦回数・XPには影響しません）':abandonWarning);}
 document.querySelectorAll('a[href]').forEach(link=>{
  link.addEventListener('click',e=>{
   if(!hasUnfinishedAttempt() || e.defaultPrevented || e.button!==0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey)return;
