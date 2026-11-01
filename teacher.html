@@ -229,7 +229,7 @@ async function renderTeacherOwnDaily(a){
  }
 }
 function populateDailyResetAccounts(){
- const el=$('dailyResetUid'),old=el.value;el.replaceChildren(option('','選択してください'));
+ const el=$('dailyResetUid'),old=el.value;el.replaceChildren(option('','選択してください'),option('__all__','👥 全員（生徒＋教員）'));
  const a=window.YoshiAccount;
  if(a?.user)el.add(option(a.user.uid,'👩‍🏫 自分（教員アカウント）'));
  for(const [uid,p] of Object.entries(profiles).sort((a,b)=>Number(a[1].classNumber)-Number(b[1].classNumber)||Number(a[1].studentNumber)-Number(b[1].studentNumber))){
@@ -240,17 +240,28 @@ function populateDailyResetAccounts(){
 $('dailyResetButton').onclick=async()=>{
  const uid=$('dailyResetUid').value,subject=$('dailyResetSubject').value;
  if(!uid){$('dailyResetStatus').textContent='対象アカウントを選択してください';return;}
- const label=$('dailyResetUid').selectedOptions[0]?.textContent||uid;
+ const all=uid==='__all__';
+ const targets=all?[...new Set([window.YoshiAccount?.user?.uid,...Object.keys(profiles)].filter(Boolean))]:[uid];
+ const label=all?`全員（${targets.length}アカウント）`:($('dailyResetUid').selectedOptions[0]?.textContent||uid);
  const subLabel=subject==='both'?'英C・論表の両方':subject==='ec'?'英C':'論表';
- if(!confirm(`${label} の今日の${subLabel}の挑戦記録（最大4件）を削除します。\n完了した得点・XPも失われます。実行しますか？`))return;
- const typed=prompt('誤操作防止のため「リセット」と入力してください');
- if(typed!=='リセット')return;
- const btn=$('dailyResetButton');btn.disabled=true;$('dailyResetStatus').textContent='削除中…';
+ if(!confirm(`${label} の今日の${subLabel}の挑戦記録（最大${targets.length*(subject==='both'?4:2)}件）を削除します。\\n完了した得点・XPも失われます。実行しますか？`))return;
+ const typed=prompt(all?'全員リセットの確認のため「全員リセット」と入力してください':'誤操作防止のため「リセット」と入力してください');
+ if(typed!==(all?'全員リセット':'リセット'))return;
+ const btn=$('dailyResetButton');btn.disabled=true;
+ let removed=0,done=0;const errors=[];
  try{
-  const date=jstToday();const result=await window.YoshiAccount.resetDailyAttempts({targetUid:uid,dailyDate:date,dailySubject:subject});
+  const date=jstToday();
+  for(const targetUid of targets){
+   $('dailyResetStatus').textContent=`リセット中… ${done+1}/${targets.length}アカウント`;
+   try{
+    const result=await window.YoshiAccount.resetDailyAttempts({targetUid,dailyDate:date,dailySubject:subject});
+    removed+=result.removed;
+   }catch(e){errors.push(`${targetUid}: ${e.message}`);}
+   done++;
+  }
   await load();
-  $('dailyResetStatus').textContent=`${result.removed}件の挑戦記録を削除しました。今日・累計の挑戦回数を更新しました。対象アカウントはページを再読み込みすると再挑戦できます。XP表示は対象者の次回同期で更新されます。`;
- }catch(e){$('dailyResetStatus').textContent='リセットできませんでした：'+e.message+(String(e.code||'').includes('PERMISSION_DENIED')?'（Firebaseルールの教員用削除権限を確認してください）':'');}
+  $('dailyResetStatus').textContent=`${done-errors.length}/${done}アカウントを処理し、${removed}件の挑戦記録を削除しました。今日・累計の挑戦回数を再集計しました。${errors.length?`失敗${errors.length}件：${errors.slice(0,3).join(' / ')}${errors.length>3?' ほか':''}`:'対象アカウントは再読み込みすると再挑戦できます。'} XP表示は対象者の次回同期で更新されます。`;
+ }catch(e){$('dailyResetStatus').textContent=`リセット処理中にエラーが発生しました（削除済み${removed}件）：${e.message}`;}
  finally{btn.disabled=false;}
 };
 async function load(){const a=window.YoshiAccount;if(!a?.user)return;$('status').textContent='教員権限を確認中…';try{teacher=await a.isTeacher();if(!teacher){$('status').textContent='このアカウントには教員権限がありません。Firebaseの teacherUids にUIDを登録してください。';$('dashboard').classList.add('hidden');return}$('status').textContent='学習記録を読み込み中…';const data=await a.teacherData();profiles=data.profiles;allRecords=data.records;lastAccess=data.lastAccess;refreshFilters();populateDailyResetAccounts();render();$('dashboard').classList.remove('hidden');await renderTeacherOwnDaily(a);$('status').textContent='読み込み完了（再読み込みボタンで最新データを取得）'}catch(err){$('status').textContent='読み込みに失敗しました：'+err.message;$('dashboard').classList.add('hidden')}}
