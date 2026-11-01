@@ -204,7 +204,23 @@ html body:not(.unused-yoshilab-selector) {
 .daily-subjects .subject-btn.daily-completed small{color:#d6e3f4!important;font-weight:900;font-size:13px}
 .daily-subjects .subject-btn.daily-completed.active{border-color:#b5c3d6!important;box-shadow:0 0 0 2px rgba(181,195,214,.2)!important}
 #result #retry{width:100%;margin-top:16px;background:linear-gradient(110deg,#1a8fdd,#1452c3);color:white;font-weight:800}
-</style></head><body><main><div class="top"><a class="brand" href="./index.html">♛ Yoshi<span>.Lab</span><small class="yoshi-brand-sub-v15">LEARN × LEVEL UP</small></a><a href="./ranking.html">🏆 ランキング</a></div><section class="panel daily-intro" id="welcome"><div class="daily-intro-art"><span class="daily-intro-limit">各科目 1日2回</span><span class="daily-intro-kicker">DAILY CHALLENGE</span><h1>デイリーチャレンジ</h1><p class="daily-intro-reward">全10問・全問正解で <strong>500 XP</strong></p></div><div class="daily-intro-content"><div class="daily-modes"><div class="daily-mode"><span class="daily-mode-icon">📖</span><b>3問</b><span>単語4択</span></div><div class="daily-mode"><span class="daily-mode-icon">⌨️</span><b>3問</b><span>単語タイピング</span></div><div class="daily-mode"><span class="daily-mode-icon">📝</span><b>4問</b><span>本文タイピング</span></div></div><div class="daily-rules"><div class="daily-rule"><span class="daily-rule-icon">📅</span><div><strong>各科目1日2回まで挑戦</strong><small>2回終了すると翌日まで挑戦できません</small></div></div><div class="daily-rule"><span class="daily-rule-icon">🏆</span><div><strong>満点で500 XP</strong><small>その日の最高得点のみ反映（2回目は差額を加算）</small></div></div><div class="daily-rule"><span class="daily-rule-icon">🎯</span><div><strong>同じ日の2回は同じ10問</strong><small>問題形式内で順番だけシャッフル</small></div></div></div><div class="daily-subjects"><button id="subjectEC" class="subject-btn" type="button">📖 英C Challenge<br><small id="ecAttempts">挑戦回数を確認中…</small></button><button id="subjectRP" class="subject-btn" type="button">✍️ 論表 Challenge<br><small id="rpAttempts">挑戦回数を確認中…</small></button></div><div id="selectedDaily" class="muted" style="margin:12px 0">科目を選択してください</div><button id="start" class="daily-action" disabled>▶　チャレンジを始める　→</button><p id="status" class="sub">問題データを読み込み中…</p></div></section><section class="panel hidden" id="quiz"><div class="quiz-head"><span class="pill" id="count">QUESTION 1 / 10</span><span class="muted">DAILY CHALLENGE</span></div><div class="progress" style="margin:16px 0"><div id="bar" style="width:0%"></div></div><p class="sub quiz-kind"><span id="questionType">問題形式を読み込み中…</span></p><div class="question" id="word"></div><div id="sentenceAnswers" class="hidden"></div><div id="options"></div><div id="typingArea" class="hidden"><input id="typingInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="英語で入力"><button id="typingSubmit" style="width:100%;margin-top:10px">回答する</button></div><p id="feedback" class="sub" aria-live="polite"></p><button id="next" class="hidden">次の問題へ →</button></section><section class="panel hidden" id="result"><span class="pill">MISSION RESULT</span><h1 id="score"></h1><p id="reward" class="sub"></p><h2>10問の振り返り</h2><div id="review"></div><button id="retry">HOMEへ戻る</button><p class="muted">2回終了すると本日の挑戦は終了です。翌日0時（日本時間）に更新されます。</p></section></main><div id="dailyResultOverlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="dailyResultHeading"><div class="daily-result-card"><div class="daily-result-kicker" id="dailyResultHeading">DAILY CHALLENGE COMPLETE</div><div class="daily-result-score" id="dailyResultScore">0 <small>/ 10 正解</small></div><div class="daily-result-xp" id="dailyResultXP">+0 XP</div><div class="daily-result-status" id="dailyResultStatus" aria-live="polite">記録を保存中…</div><button id="dailyShowReview" type="button" disabled>正答・誤答を確認する →</button></div></div><script type="module" src="./account.js?v=daily-teacher-20261101-3"></script>
+</style><style id="daily-exit-dialog-style">
+#dailyExitOverlay{position:fixed;inset:0;z-index:10001;display:grid;place-items:center;padding:20px;background:rgba(1,8,23,.86);backdrop-filter:blur(9px)}
+#dailyExitOverlay.hidden{display:none!important}
+.daily-exit-card{width:min(100%,440px);padding:28px 22px;border-radius:24px;background:linear-gradient(150deg,#173454,#08182e);border:1px solid #db995f;box-shadow:0 20px 70px #000a;text-align:center}
+.daily-exit-icon{font-size:38px}.daily-exit-card h2{font-size:23px;margin:10px 0}.daily-exit-card p{color:#c3d5e9;line-height:1.7;font-size:14px}
+.daily-exit-alert{margin:20px 0;padding:15px;text-align:left;background:#6a352a55;border:1px solid #d98c67;border-radius:14px;color:#ffe4d2;line-height:2;font-weight:850}
+.daily-exit-card button{width:100%;margin-top:9px}.daily-exit-stay{background:linear-gradient(110deg,#33b6f8,#1262ed);color:white}.daily-exit-leave{background:#24344b;color:#f3d3c5;border:1px solid #9a6a60}
+</style></head><body><main><div class="top"><a class="brand" href="./index.html">♛ Yoshi<span>.Lab</span><small class="yoshi-brand-sub-v15">LEARN × LEVEL UP</small></a><a href="./ranking.html">🏆 ランキング</a></div><section class="panel daily-intro" id="welcome"><div class="daily-intro-art"><span class="daily-intro-limit">各科目 1日2回</span><span class="daily-intro-kicker">DAILY CHALLENGE</span><h1>デイリーチャレンジ</h1><p class="daily-intro-reward">全10問・全問正解で <strong>500 XP</strong></p></div><div class="daily-intro-content"><div class="daily-modes"><div class="daily-mode"><span class="daily-mode-icon">📖</span><b>3問</b><span>単語4択</span></div><div class="daily-mode"><span class="daily-mode-icon">⌨️</span><b>3問</b><span>単語タイピング</span></div><div class="daily-mode"><span class="daily-mode-icon">📝</span><b>4問</b><span>本文タイピング</span></div></div><div class="daily-rules"><div class="daily-rule"><span class="daily-rule-icon">📅</span><div><strong>各科目1日2回まで挑戦</strong><small>2回終了すると翌日まで挑戦できません</small></div></div><div class="daily-rule"><span class="daily-rule-icon">🏆</span><div><strong>満点で500 XP</strong><small>その日の最高得点のみ反映（2回目は差額を加算）</small></div></div><div class="daily-rule"><span class="daily-rule-icon">🎯</span><div><strong>同じ日の2回は同じ10問</strong><small>問題形式内で順番だけシャッフル</small></div></div></div><div class="daily-subjects"><button id="subjectEC" class="subject-btn" type="button">📖 英C Challenge<br><small id="ecAttempts">挑戦回数を確認中…</small></button><button id="subjectRP" class="subject-btn" type="button">✍️ 論表 Challenge<br><small id="rpAttempts">挑戦回数を確認中…</small></button></div><div id="selectedDaily" class="muted" style="margin:12px 0">科目を選択してください</div><button id="start" class="daily-action" disabled>▶　チャレンジを始める　→</button><p id="status" class="sub">問題データを読み込み中…</p></div></section><section class="panel hidden" id="quiz"><div class="quiz-head"><span class="pill" id="count">QUESTION 1 / 10</span><span class="muted">DAILY CHALLENGE</span></div><div class="progress" style="margin:16px 0"><div id="bar" style="width:0%"></div></div><p class="sub quiz-kind"><span id="questionType">問題形式を読み込み中…</span></p><div class="question" id="word"></div><div id="sentenceAnswers" class="hidden"></div><div id="options"></div><div id="typingArea" class="hidden"><input id="typingInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="英語で入力"><button id="typingSubmit" style="width:100%;margin-top:10px">回答する</button></div><p id="feedback" class="sub" aria-live="polite"></p><button id="next" class="hidden">次の問題へ →</button></section><section class="panel hidden" id="result"><span class="pill">MISSION RESULT</span><h1 id="score"></h1><p id="reward" class="sub"></p><h2>10問の振り返り</h2><div id="review"></div><button id="retry">HOMEへ戻る</button><p class="muted">2回終了すると本日の挑戦は終了です。翌日0時（日本時間）に更新されます。</p></section></main><div id="dailyResultOverlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="dailyResultHeading"><div class="daily-result-card"><div class="daily-result-kicker" id="dailyResultHeading">DAILY CHALLENGE COMPLETE</div><div class="daily-result-score" id="dailyResultScore">0 <small>/ 10 正解</small></div><div class="daily-result-xp" id="dailyResultXP">+0 XP</div><div class="daily-result-status" id="dailyResultStatus" aria-live="polite">記録を保存中…</div><button id="dailyShowReview" type="button" disabled>正答・誤答を確認する →</button></div></div><div id="dailyExitOverlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="dailyExitTitle">
+ <div class="daily-exit-card">
+  <div class="daily-exit-icon" aria-hidden="true">⚠️</div>
+  <h2 id="dailyExitTitle">チャレンジを終了しますか？</h2>
+  <p>まだ10問すべての回答が完了していません。</p>
+  <div id="dailyExitAlert" class="daily-exit-alert">⚠️ 挑戦回数を1回分消費します<br>✕ XPは加算されません</div>
+  <button type="button" id="dailyExitStay" class="daily-exit-stay">チャレンジを続ける</button>
+  <button type="button" id="dailyExitLeave" class="daily-exit-leave">終了して移動する</button>
+ </div>
+</div><script type="module" src="./account.js?v=daily-teacher-20261101-3"></script>
 <script>
 
 const $=id=>document.getElementById(id);
@@ -212,6 +228,7 @@ let words=[],sentences=[],deck=[],index=0,answers=[],chosen=false;
 let selectedSubject='', dailyUser=null, dailyRows=[], loadedData=null, running=false, activeDailySlot=null;
 let dailyAttemptFinished=false;
 let dailyIsTeacher=false, teacherPractice=false;
+let dailyExitApproved=false, dailyBackGuard=false;
 const abandonWarning='チャレンジを途中で終了すると、挑戦回数を1回分消費します。XP（ポイント）は加算されません。終了しますか？';
 const hasUnfinishedAttempt=()=>running && activeDailySlot && !dailyAttemptFinished;
 const dailyXP=[0,5,15,30,55,90,140,205,285,385,500];
@@ -333,6 +350,8 @@ async function start(){
   return;
  }
  dailyAttemptFinished=false;
+ // A same-document history entry allows us to intercept the browser Back button.
+ if(!dailyBackGuard){history.pushState({yoshiDailyBackGuard:true},'');dailyBackGuard=true;}
  $('dailyResultOverlay').classList.add('hidden');
  index=0;answers=[];$('welcome').classList.add('hidden');$('result').classList.add('hidden');$('quiz').classList.remove('hidden');render();
 }
@@ -464,20 +483,51 @@ async function next(){
   $('result').scrollIntoView({block:'start',behavior:'smooth'});
  };
 }
-// In-page navigation gets a fully worded confirmation. Browser reload/close/back
-// uses the browser's native unsaved-changes prompt (custom text is not supported).
-function confirmDailyExit(){return !hasUnfinishedAttempt() || window.confirm(teacherPractice?'教員用練習を終了しますか？（挑戦回数・XPには影響しません）':abandonWarning);}
+// Custom warning for app navigation and browser Back. Browser reload/close
+// must retain the browser-native beforeunload confirmation.
+let dailyExitAction=null;
+function showDailyExit(action){
+ if(!hasUnfinishedAttempt()){action();return;}
+ dailyExitAction=action;
+ $('dailyExitAlert').innerHTML=teacherPractice
+  ? '✓ 教員用練習のため、挑戦回数は消費しません<br>✕ XPは加算されません'
+  : '⚠️ <strong>挑戦回数を1回分消費します</strong><br>✕ <strong>XPは加算されません</strong>';
+ $('dailyExitOverlay').classList.remove('hidden');
+ $('dailyExitStay').focus();
+}
+function closeDailyExit(){
+ $('dailyExitOverlay').classList.add('hidden');
+ dailyExitAction=null;
+}
+$('dailyExitStay').onclick=closeDailyExit;
+$('dailyExitLeave').onclick=()=>{
+ const action=dailyExitAction;
+ closeDailyExit();
+ if(action){dailyExitApproved=true;action();}
+};
 document.querySelectorAll('a[href]').forEach(link=>{
  link.addEventListener('click',e=>{
   if(!hasUnfinishedAttempt() || e.defaultPrevented || e.button!==0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey)return;
-  if(!confirmDailyExit())e.preventDefault();
+  e.preventDefault();
+  showDailyExit(()=>window.location.assign(link.href));
+ });
+});
+window.addEventListener('popstate',()=>{
+ if(!dailyBackGuard || !hasUnfinishedAttempt() || dailyExitApproved)return;
+ // Restore the guard entry while the user decides whether to leave.
+ history.pushState({yoshiDailyBackGuard:true},'');
+ showDailyExit(()=>{
+  if(history.length>2)history.go(-2);
+  else window.location.assign('./index.html');
  });
 });
 window.addEventListener('beforeunload',e=>{
- if(!hasUnfinishedAttempt())return;
+ if(!hasUnfinishedAttempt() || dailyExitApproved)return;
  e.preventDefault();e.returnValue='';
 });
-$('start').onclick=start;$('retry').onclick=()=>{if(confirmDailyExit())window.location.href='./index.html'};$('next').onclick=next;
+$('start').onclick=start;
+$('retry').onclick=()=>showDailyExit(()=>window.location.assign('./index.html'));
+$('next').onclick=next;
 $('typingSubmit').onclick=submitTyping;
 $('typingInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!chosen)select($('typingInput').value)});
 load();
