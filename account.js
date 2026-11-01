@@ -26,7 +26,24 @@ const seasonWindows=[
 ];
 function activeSeason(ts=Date.now()){return seasonWindows.find(s=>ts>=Date.parse(s.start)&&ts<=Date.parse(s.end))||null}
 
-const api={get user(){return current},subscribe(fn){listeners.add(fn);fn(current);return()=>listeners.delete(fn)},async login(){await setPersistence(auth,browserLocalPersistence);try{return await signInWithPopup(auth,provider)}catch(e){if(['auth/popup-blocked','auth/operation-not-supported-in-this-environment'].includes(e.code))return signInWithRedirect(auth,provider);throw e}},async logout(){return signOut(auth)},async save(entry){if(!current)throw Error('Googleログインが必要です');const u=current;const token=await u.getIdTokenResult();if(token.signInProvider!=='google.com'||!u.emailVerified)throw Error('確認済みのGoogleアカウントでログインしてください');const row={...entry,createdAt:Date.now(),source:'solo'};await set(push(ref(db,'learningRecords/'+u.uid)),row);return row},async profile(){if(!current)return null;const snap=await get(ref(db,'studentProfiles/'+current.uid));return snap.val()},
+const api={get user(){return current},subscribe(fn){listeners.add(fn);fn(current);return()=>listeners.delete(fn)},async login(){await setPersistence(auth,browserLocalPersistence);try{return await signInWithPopup(auth,provider)}catch(e){if(['auth/popup-blocked','auth/operation-not-supported-in-this-environment'].includes(e.code))return signInWithRedirect(auth,provider);throw e}},async logout(){return signOut(auth)},async save(entry){if(!current)throw Error('Googleログインが必要です');const u=current;const token=await u.getIdTokenResult();if(token.signInProvider!=='google.com'||!u.emailVerified)throw Error('確認済みのGoogleアカウントでログインしてください');const row={...entry,createdAt:Date.now(),source:'solo'};await set(push(ref(db,'learningRecords/'+u.uid)),row);return row},async startDailyAttempt({dailyDate,dailySubject,attemptNumber}){
+ if(!current)throw Error('ログインしてください');
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(dailyDate)||!['ec','rp'].includes(dailySubject)||![1,2].includes(attemptNumber))throw Error('挑戦情報が不正です');
+ const day=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+ if(day!==dailyDate)throw Error('日付が変わりました。再度開始してください');
+ const uid=current.uid, slot='daily_'+dailyDate.replaceAll('-','')+'_'+dailySubject+'_'+attemptNumber;
+ const path=ref(db,'learningRecords/'+uid+'/'+slot);
+ const result=await runTransaction(path,old=>old===null?{dailyV1:true,dailyAttemptStarted:true,dailyCompleted:false,dailyDate,dailySubject,attemptNumber,subject:dailySubject==='ec'?'英C':'論表',lesson:'DAILY',part:dailyDate,mode:'daily',xpMode:'daily',total:0,right:0,dailyScoreXP:0,dailyDeltaXP:0,completedSet:false,createdAt:Date.now(),source:'solo'}:undefined,{applyLocally:false});
+ if(!result.committed)throw Error('この挑戦は既に開始されています。画面を再読み込みしてください');
+ return slot;
+},async finishDailyAttempt(slot,{right,dailyScoreXP,dailyDeltaXP}){
+ if(!current||!/^daily_\d{8}_(ec|rp)_[12]$/.test(slot))throw Error('挑戦情報が不正です');
+ const result=await runTransaction(ref(db,'learningRecords/'+current.uid+'/'+slot),old=>{
+  if(!old||old.dailyAttemptStarted!==true||old.dailyCompleted===true)return;
+  return {...old,total:10,right,dailyScoreXP,dailyDeltaXP,dailyCompleted:true,completedSet:true,finishedAt:Date.now()};
+ },{applyLocally:false});
+ if(!result.committed)throw Error('完了済み、または開始記録がありません');
+},async profile(){if(!current)return null;const snap=await get(ref(db,'studentProfiles/'+current.uid));return snap.val()},
 async saveProfile(p){if(!current)throw Error('ログインしてください');const cls=Number(p.classNumber),num=Number(p.studentNumber),name=String(p.name||'').trim();if(!Number.isInteger(cls)||cls<1||cls>5||!Number.isInteger(num)||num<1||num>45||name.length<1||name.length>60)throw Error('入力内容を確認してください');const path=ref(db,'studentProfiles/'+current.uid);const result=await runTransaction(path,old=>old||{classNumber:cls,studentNumber:num,name,createdAt:Date.now()},{applyLocally:false});if(!result.committed)throw Error('登録できませんでした');return result.snapshot.val()},
 async isTeacher(){if(!current)return false;const snap=await get(ref(db,'teacherUids/'+current.uid));return snap.val()===true},
 async teacherData(){if(!await this.isTeacher())throw Error('教員権限がありません');const [ps,rs]=await Promise.all([get(ref(db,'studentProfiles')),get(ref(db,'learningRecords'))]);return {profiles:ps.val()||{},records:rs.val()||{},lastAccess:(await get(ref(db,'lastAccess'))).val()||{}}},

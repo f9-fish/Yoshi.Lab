@@ -206,7 +206,7 @@ html body:not(.unused-yoshilab-selector) {
 
 const $=id=>document.getElementById(id);
 let words=[],sentences=[],deck=[],index=0,answers=[],chosen=false;
-let selectedSubject='', dailyUser=null, dailyRows=[], loadedData=null, running=false;
+let selectedSubject='', dailyUser=null, dailyRows=[], loadedData=null, running=false, activeDailySlot=null;
 const dailyXP=[0,5,15,30,55,90,140,205,285,385,500];
 const jstDay=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const account=()=>window.YoshiAccount;
@@ -287,7 +287,7 @@ function makeQuestion(type, item, seed){
  const gaps=[...item.english.matchAll(/\(([^()]+)\)/g)].map(m=>m[1].trim());
  return {type,prompt:item.english,translation:item.japanese,correct:gaps,blankCount:gaps.length};
 }
-function start(){
+async function start(){
  if(running||!dailyUser||!selectedSubject||dailyRowsFor(selectedSubject).length>=2)return;
  running=true;
  // Fixed sequence: 3 vocabulary choices, 3 vocabulary typing, 4 sentence typing.
@@ -307,6 +307,19 @@ function start(){
   ...chosenSentences.map((s,i)=>makeQuestion('sentence',s,seed+"|sentence|"+i))
  ];
  if(dailyRowsFor(selectedSubject).length===1){deck=[...seededShuffle(deck.slice(0,3),seed+'|choice|2'),...seededShuffle(deck.slice(3,6),seed+'|word|2'),...seededShuffle(deck.slice(6,10),seed+'|sentence|2')];}
+ // Reserve this attempt on Firebase before showing any question. Abandoned attempts remain spent.
+ const attemptNumber=dailyRowsFor(selectedSubject).length+1;
+ $('start').disabled=true;
+ $('status').textContent='挑戦回数を記録中…';
+ try{
+  activeDailySlot=await account().startDailyAttempt({dailyDate:jstDay(),dailySubject:selectedSubject,attemptNumber});
+  await refreshDaily();
+ }catch(e){
+  running=false;activeDailySlot=null;
+  $('status').textContent='挑戦を開始できません：'+e.message;
+  await refreshDaily().catch(()=>{});
+  return;
+ }
  $('dailyResultOverlay').classList.add('hidden');
  index=0;answers=[];$('welcome').classList.add('hidden');$('result').classList.add('hidden');$('quiz').classList.remove('hidden');render();
 }
@@ -392,7 +405,7 @@ async function next(){
  $('dailyShowReview').disabled=true;
 
  const score=answers.filter(a=>a.ok).length;
- const prev=dailyRowsFor(selectedSubject);
+ const prev=dailyRowsFor(selectedSubject).filter(r=>r.dailyCompleted===true||(!r.dailyAttemptStarted&&r.completedSet===true));
  const best=Math.max(0,...prev.map(r=>Number(r.dailyScoreXP)||0));
  const earned=dailyXP[score];const delta=Math.max(0,earned-best);
  $('dailyResultScore').innerHTML=score+' <small>/ 10 正解</small>';
@@ -403,8 +416,8 @@ async function next(){
  $('retry').disabled=true;
  let saved=false;
  try{
-  if(prev.length>=2)throw Error('本日の挑戦は終了しています');
-  await account().save({dailyV1:true,dailyDate:jstDay(),dailySubject:selectedSubject,subject:selectedSubject==='ec'?'英C':'論表',lesson:'DAILY',part:jstDay(),mode:'daily',xpMode:'daily',total:10,right:score,dailyScoreXP:earned,dailyDeltaXP:delta,completedSet:true});
+  if(!activeDailySlot)throw Error('開始記録が見つかりません');
+  await account().finishDailyAttempt(activeDailySlot,{right:score,dailyScoreXP:earned,dailyDeltaXP:delta});
   await refreshDaily();await account().syncXP();
   saved=true;
   const attempts=dailyRowsFor(selectedSubject).length;
