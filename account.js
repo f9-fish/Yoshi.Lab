@@ -9,6 +9,7 @@ function weekKey(ts){const d=new Date(ts+9*3600000);const t=new Date(Date.UTC(d.
 function yoshiRecordXP(r){
  const n=Number(r.total),correct=Number(r.right);
  if(!Number.isFinite(n)||!Number.isFinite(correct)||n<=0||correct<0||correct>n)return 0;
+ if(r.dailyV1===true)return Math.max(0,Math.min(500,Number(r.dailyDeltaXP)||0));
  const mode=String(r.xpMode||r.mode||'');
  // Legacy records lack xpMode: award no XP to old cloze check records;
  // legacy vocab cannot be reliably separated into 4-choice and typing.
