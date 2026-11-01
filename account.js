@@ -38,39 +38,27 @@ const api={get user(){return current},subscribe(fn){listeners.add(fn);fn(current
  return slot;
 },async finishDailyAttempt(slot,{right,dailyScoreXP,dailyDeltaXP}){
  if(!current||!/^daily_\d{8}_(ec|rp)_[12]$/.test(slot))throw Error('挑戦情報が不正です');
- const path=ref(db,'learningRecords/'+current.uid+'/'+slot);
- const payload={right:Number(right),dailyScoreXP:Number(dailyScoreXP),dailyDeltaXP:Number(dailyDeltaXP)};
- const alreadySaved=old=>old?.dailyCompleted===true&&Number(old.total)===10;
- // Read the server record first: without a cached value, the first transaction
- // callback can receive null and abort even when the record exists on Firebase.
+ const uid=current.uid,path=ref(db,'learningRecords/'+uid+'/'+slot);
+ const score=Number(right),earned=Number(dailyScoreXP),delta=Number(dailyDeltaXP);
+ if(!Number.isInteger(score)||score<0||score>10||![earned,delta].every(x=>Number.isFinite(x)&&x>=0))throw Error('保存する得点が不正です');
  const before=(await get(path)).val();
- if(alreadySaved(before))return {alreadySaved:true};
- if(!before)throw Error('開始記録がFirebaseに存在しません（'+slot+'）');
- if(before.dailyAttemptStarted!==true)throw Error('開始フラグが不正です（'+slot+'）');
- if(before.dailyCompleted!==false)throw Error('完了フラグが不正です（'+slot+'）');
- let result;
+ if(before?.dailyCompleted===true&&Number(before.total)===10)return {alreadySaved:true};
+ if(!before)throw Error('開始記録がありません：'+slot);
+ if(before.dailyV1!==true||before.dailyAttemptStarted!==true||before.dailyCompleted!==false||Number(before.total)!==0)
+  throw Error('開始記録の状態が不正です：'+slot);
+ if(before.dailySubject!==slot.split('_')[2])throw Error('科目が一致しません：'+slot);
+ const completed={...before,total:10,right:score,dailyScoreXP:earned,dailyDeltaXP:delta,dailyCompleted:true,completedSet:true,finishedAt:Date.now()};
  try{
-  result=await runTransaction(path,old=>{
-   if(old===null||old===undefined){
-    // Do not silently abort when the SDK has not populated local cache yet.
-    return {...before,total:10,...payload,dailyCompleted:true,completedSet:true,finishedAt:Date.now()};
-   }
-   if(old.dailyAttemptStarted!==true||alreadySaved(old))return;
-   return {...old,total:10,...payload,dailyCompleted:true,completedSet:true,finishedAt:Date.now()};
-  },{applyLocally:false});
+  // Replaces a failed transaction-based finish. RTDB validation still applies.
+  await set(path,completed);
  }catch(error){
-  // A timeout/disconnect can occur after the server committed the transaction.
-  try{const snap=await get(path);if(alreadySaved(snap.val()))return {alreadySaved:true};}
-  catch(checkError){console.warn('デイリー保存確認:',checkError);}
-  throw error;
+  try{const after=(await get(path)).val();if(after?.dailyCompleted===true&&Number(after.total)===10)return {alreadySaved:true};}
+  catch(checkError){console.warn('保存結果確認:',checkError)}
+  throw Error('完了記録の書き込みに失敗：'+(error.code||error.message||String(error)));
  }
- if(result.committed)return {saved:true};
- const existing=result.snapshot?.val();
- if(alreadySaved(existing))return {alreadySaved:true};
- const snap=await get(path);
- if(alreadySaved(snap.val()))return {alreadySaved:true};
- if(!snap.exists())throw Error('開始記録がありません。今回の得点は保存されていません');
- throw Error('更新が中断されました（'+slot+'、started='+String(snap.val()?.dailyAttemptStarted)+'、completed='+String(snap.val()?.dailyCompleted)+'、total='+String(snap.val()?.total)+'）。再度保存を試してください');
+ const after=(await get(path)).val();
+ if(after?.dailyCompleted!==true||Number(after.total)!==10)throw Error('書き込み後の記録確認に失敗：'+slot);
+ return {saved:true};
 },async resetDailyAttempts({targetUid,dailyDate,dailySubject}){
  if(!current||!await this.isTeacher())throw Error('教員権限が必要です');
  if(typeof targetUid!=='string'||!/^[a-zA-Z0-9_-]{6,128}$/.test(targetUid))throw Error('対象アカウントを選択してください');
