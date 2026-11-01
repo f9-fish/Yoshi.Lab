@@ -207,6 +207,9 @@ html body:not(.unused-yoshilab-selector) {
 const $=id=>document.getElementById(id);
 let words=[],sentences=[],deck=[],index=0,answers=[],chosen=false;
 let selectedSubject='', dailyUser=null, dailyRows=[], loadedData=null, running=false, activeDailySlot=null;
+let dailyAttemptFinished=false;
+const abandonWarning='チャレンジを途中で終了すると、挑戦回数を1回分消費します。XP（ポイント）は加算されません。終了しますか？';
+const hasUnfinishedAttempt=()=>running && activeDailySlot && !dailyAttemptFinished;
 const dailyXP=[0,5,15,30,55,90,140,205,285,385,500];
 const jstDay=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const account=()=>window.YoshiAccount;
@@ -321,6 +324,7 @@ async function start(){
   await refreshDaily().catch(()=>{});
   return;
  }
+ dailyAttemptFinished=false;
  $('dailyResultOverlay').classList.add('hidden');
  index=0;answers=[];$('welcome').classList.add('hidden');$('result').classList.add('hidden');$('quiz').classList.remove('hidden');render();
 }
@@ -420,7 +424,7 @@ async function next(){
   if(!activeDailySlot)throw Error('開始記録が見つかりません');
   await account().finishDailyAttempt(activeDailySlot,{right:score,dailyScoreXP:earned,dailyDeltaXP:delta});
   await refreshDaily();await account().syncXP();
-  saved=true;
+  saved=true;dailyAttemptFinished=true;running=false;
   const attempts=dailyRowsFor(selectedSubject).length;
   $('dailyResultStatus').textContent='今回の追加 +'+delta+' XP ／ '+attempts+' / 2回 挑戦済み';
   $('reward').textContent='獲得 '+earned+' XP（今回の追加 +'+delta+' XP）／'+attempts+' / 2回';
@@ -453,7 +457,20 @@ async function next(){
   $('result').scrollIntoView({block:'start',behavior:'smooth'});
  };
 }
-$('start').onclick=start;$('retry').onclick=()=>{window.location.href='./index.html'};$('next').onclick=next;
+// In-page navigation gets a fully worded confirmation. Browser reload/close/back
+// uses the browser's native unsaved-changes prompt (custom text is not supported).
+function confirmDailyExit(){return !hasUnfinishedAttempt() || window.confirm(abandonWarning);}
+document.querySelectorAll('a[href]').forEach(link=>{
+ link.addEventListener('click',e=>{
+  if(!hasUnfinishedAttempt() || e.defaultPrevented || e.button!==0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey)return;
+  if(!confirmDailyExit())e.preventDefault();
+ });
+});
+window.addEventListener('beforeunload',e=>{
+ if(!hasUnfinishedAttempt())return;
+ e.preventDefault();e.returnValue='';
+});
+$('start').onclick=start;$('retry').onclick=()=>{if(confirmDailyExit())window.location.href='./index.html'};$('next').onclick=next;
 $('typingSubmit').onclick=submitTyping;
 $('typingInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!chosen)select($('typingInput').value)});
 load();
