@@ -96,22 +96,22 @@
     "cards": [
       [
         "Everyone (seems) (to) (be) (enjoying) the school festival.",
-        "みんな文化祭を楽しんでいるようだ。"
+        "みんな文化祭(を楽しんでいるようだ)。"
       ],
       [
         "I (want) (to) (be) (left) (alone) today.",
-        "今日は，ひとりにしておいてほしい。"
+        "今日は，(ひとりにしておいてほしい)。"
       ],
       [
         "The flu (seems) (to) (be) (going) around.",
-        "インフルエンザが流行っているようだ。"
+        "インフルエンザが(流行っているようだ)。"
       ],
       [
         "This tablet (needs) (to) (be) (charged) before you use it.",
-        "このタブレットは使う前に充電する必要がある。"
+        "このタブレットは使う前に(充電する必要がある)。"
       ],
       [
-        "Kevin seems (to) (be) sleepy.  He is rubbing his eyes.",
+        "Kevin (seems) (to) (be) sleepy.  He is rubbing his eyes.",
         "ケヴィンは眠そうだ。目をこすっている。"
       ],
       [
@@ -143,15 +143,15 @@
       ],
       [
         "My mother (enjoys) (visiting) (temples) on weekends.",
-        "母は週末に寺を訪れるのを楽しんでいる。"
+        "母は週末に(寺を訪れるのを楽しんでいる)。"
       ],
       [
         "Sakura is very (good) (at) (making) (clothes).",
-        "サクラは服を作るのがとてもじょうずだ。"
+        "サクラは(服を作るのが)とても(じょうずだ)。"
       ],
       [
         "Where can I (practice) (swimming)?",
-        "どこで水泳の練習ができますか。"
+        "どこで(水泳の練習が)できますか。"
       ],
       [
         "Children should never (give) (up) (dreaming).",
@@ -207,7 +207,7 @@
       ],
       [
         "(Going) (to) (bed) (early) is good for my health.",
-        "早く寝ること［野菜を食べること］が私の健康によい。"
+        "(早く寝ること)は私の健康によい。"
       ]
     ]
   },
