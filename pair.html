@@ -432,10 +432,11 @@ function choice(label,action,{detail='',disabled=false,featured=false}={}){
   b.onclick=action;$('stepChoices').append(b);
 }
 function currentEntry(){return catalog().find(g=>g.subject===selection.subject&&g.id===selection.lesson&&g.name===selection.part)}
-function goStep(n){step=n;renderStep()}
+function goStep(n){step=(selection.subject==='論表'&&n===3)?4:n;renderStep()}
 function renderStep(){
-  $('stepLabel').textContent='STEP '+(step+1)+' / 5';$('stepTitle').textContent=steps[step];
-  show('stepBack',step>0);$('stepBack').onclick=()=>goStep(step-1);
+  const isRonpyo=selection.subject==='論表';
+  $('stepLabel').textContent='STEP '+(step+(isRonpyo&&step===4?0:1))+' / '+(isRonpyo?4:5);$('stepTitle').textContent=steps[step];
+  show('stepBack',step>0);$('stepBack').onclick=()=>goStep(isRonpyo&&step===4?2:step-1);
   $('stepChoices').replaceChildren();$('stepChoices').classList.toggle('study-mode-choices',step===1);$('stepMessage').textContent='';
   const all=catalog();
   if(step===0){
@@ -445,7 +446,15 @@ function renderStep(){
     }
   }else if(step===2){
     const ids=[...new Set(all.filter(g=>g.subject===selection.subject&&(selection.mode.startsWith('vocab')?vocabCards(g).length:(g.text||[]).some(c=>blank(String(c[0]??''))))).map(g=>g.id))].sort(sortNatural);
-    for(const id of ids)choice(lessonLabel(id),()=>{selection.lesson=id;goStep(3)});
+    for(const id of ids)choice(lessonLabel(id),()=>{
+      selection.lesson=id;
+      if(selection.subject==='論表'){
+        const matching=all.filter(g=>g.subject==='論表'&&g.id===id&&(selection.mode.startsWith('vocab')?vocabCards(g).length:(g.text||[]).some(c=>blank(String(c[0]??''))))).sort((a,b)=>sortNatural(a.name,b.name));
+        if(!matching.length){$('stepMessage').textContent='この単元には問題がありません';return;}
+        selection.part=matching[0].name;
+        goStep(4);
+      }else goStep(3);
+    });
   }else if(step===3){
     const parts=all.filter(g=>g.subject===selection.subject&&g.id===selection.lesson&&(selection.mode.startsWith('vocab')?vocabCards(g).length:(g.text||[]).some(c=>blank(String(c[0]??''))))).sort((a,b)=>sortNatural(a.name,b.name));
     for(const g of parts)choice(partLabel(g.name),()=>{selection.part=g.name;goStep(4)},{detail:(g.text.length?'本文 '+g.text.length+'問':'本文未登録')+' ／ '+vocabCards(g).length+'語'});
@@ -463,7 +472,7 @@ function renderStep(){
       const b=document.createElement('button');b.className='step-choice';b.textContent=label;b.onclick=()=>createRoom(seconds);row.append(b);
     }
     const summary=document.createElement('div');summary.className='step-summary';
-    summary.textContent=selection.subject+' / '+lessonLabel(selection.lesson)+' / '+partLabel(selection.part)+' / '+(selection.mode==='vocabChoice'?'単語チェック':selection.mode==='vocabTyping'?'単語チェック（タイピング）':selection.mode==='clozeTyping'?'本文穴埋め（タイピング）':'本文穴埋め');
+    summary.textContent=selection.subject+' / '+lessonLabel(selection.lesson)+(selection.subject==='論表'?'':' / '+partLabel(selection.part))+' / '+(selection.mode==='vocabChoice'?'単語チェック':selection.mode==='vocabTyping'?'単語チェック（タイピング）':selection.mode==='clozeTyping'?'本文穴埋め（タイピング）':'本文穴埋め');
     $('stepChoices').append(summary);
   }
 }
