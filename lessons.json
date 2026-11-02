@@ -217,8 +217,8 @@
     "name": "PUS",
     "cards": [
       [
-        "Boracay is a beautiful beach resort in the Philippines, but wastewater from hotels polluted the sea there.",
-        "ボラカイ島はフィリピンにある美しいビーチリゾートですが、ホテルからの排水がそこの海を汚染しました。"
+        "Boracay is a beautiful beach resort in the Philippines, but (wastewater) from hotels (polluted) the sea there.",
+        "ボラカイ島はフィリピンにある美しいビーチリゾートですが、ホテルからの(排水が)そこの海(を汚染しました)。"
       ],
       [
         "The government needed to decrease the number of tourists.",
