@@ -336,10 +336,12 @@ html body:not(.unused-yoshilab-selector) {
 <div id="pairRoleOverlay" class="pair-role-overlay hidden" role="status" aria-live="polite"><div class="pair-role-overlay-card"><div class="pair-role-overlay-title">🔄 役割チェンジ！</div><div id="pairRoleOverlaySub" class="pair-role-overlay-sub"></div></div></div><section id="done" class="panel hidden"><h2>🎉 おつかれさま！</h2><p class="big" id="result"></p><p class="muted" id="detail"></p><button id="back" class="primary">新しいペアワークへ</button></section></div>
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js';
-import {getAuth,signInAnonymously,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js';
+import {getAuth,signInAnonymously,onAuthStateChanged,inMemoryPersistence,setPersistence} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js';
 import {getDatabase,ref,onValue,runTransaction,set} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js';
 const firebaseConfig={apiKey:'AIzaSyDhm9zeUsgvF6_lbwcRj57VWXzYPA3LEzM',authDomain:'yoshi-lab-db3eb.firebaseapp.com',databaseURL:'https://yoshi-lab-db3eb-default-rtdb.firebaseio.com',projectId:'yoshi-lab-db3eb',storageBucket:'yoshi-lab-db3eb.firebasestorage.app',messagingSenderId:'543561154900',appId:'1:543561154900:web:b9ba898d1d44a385f848c1'};
-const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app),$=id=>document.getElementById(id);
+// ペア専用のFirebaseアプリに分離する。
+ // 既定アプリのGoogleログイン状態を匿名ログインで上書きしない。
+const app=initializeApp(firebaseConfig,'yoshi-pair-session'),auth=getAuth(app),db=getDatabase(app),$=id=>document.getElementById(id);
 let groups=[],vocabulary=[],uid='',code='',side='',room=null,unsubscribe=null,busy=false,lastIndex=-1,localTimer=null;
 let lastStreakEvent='';
 let pairHintKey='',pairHintUsed=false;
@@ -494,6 +496,7 @@ function renderStep(){
 }
 async function init(){
  try{
+   await setPersistence(auth,inMemoryPersistence);
    await signInAnonymously(auth);uid=auth.currentUser.uid;
    const [lr,vr,rr,rv]=await Promise.all([
      fetch('./lessons.json?t='+Date.now(),{cache:'no-store'}),
