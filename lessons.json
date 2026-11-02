@@ -53,6 +53,53 @@
   {
     "subject": "英C",
     "id": "7",
+    "name": "2",
+    "cards": [
+      [
+        "The Republic of Maldives (is) (located) (to) the southwest of India.",
+        "モルディブ共和国はインドの南西(に位置しています)。"
+      ],
+      [
+        "It (consists) (of) (nearly) 1,200 islands, and people live (on) about 200 of them.",
+        "モルディブは(約)1,200の島々(から成り)、そのうち約200の島(に)人々が住んでいます。"
+      ],
+      [
+        "The Maldives is a small country (with) a (population) of only around 550,000.",
+        "モルディブはわずか約55万人の(人口の)小さな国です。"
+      ],
+      [
+        "There are many gorgeous resort hotels on islands (where) the (residents) (do) (not) (live).",
+        "(住民が住んでいない)島々には、豪華なリゾートホテルがたくさんあります。"
+      ],
+      [
+        "Hotel guests enjoy the (breath-taking) (beauty) of the blue ocean.",
+        "ホテルの宿泊客は、青い海の(息をのむような美しさ)を楽しみます。"
+      ],
+      [
+        "It (makes) (them) (forget) their (worries).",
+        "それは(彼らに心配事を忘れさせます)。"
+      ],
+      [
+        "They sometimes pay more than 1,000 dollars just for one night.",
+        "彼らはたった1泊のために1,000ドル以上支払うこともあります。"
+      ],
+      [
+        "Today, the Maldives welcomes more than one million tourists every year.",
+        "現在、モルディブは毎年100万人以上の観光客を迎えています。"
+      ],
+      [
+        "However, it may be difficult for tourists to interact with local people.",
+        "しかし、観光客が地元の人々と交流することは難しいかもしれません。"
+      ],
+      [
+        "Tourists and residents stay on completely different islands.",
+        "観光客と住民は、まったく別々の島に滞在しているのです。"
+      ]
+    ]
+  },
+  {
+    "subject": "英C",
+    "id": "7",
     "name": "3",
     "cards": [
       [
