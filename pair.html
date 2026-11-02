@@ -309,6 +309,10 @@ html body:not(.unused-yoshilab-selector) {
  }
 }
 </style>
+<style id="pair-hint-corner-position">
+.pair-hint-blank{position:relative!important;overflow:visible!important}
+.pair-hint-initial{position:absolute;top:1px;left:3px;color:#ffe066;font-size:.72em;font-weight:900;line-height:1;pointer-events:none;transform:translate(-15%,-18%);text-shadow:0 1px 2px #07172b}
+</style>
 </head><body><div class="wrap"><a href="./index.html">← 通常練習に戻る</a><h1 class="pair-brand">Yoshi<span class="brand-accent">.Lab</span><span class="pair-suffix">PAIR</span></h1><p class="sub">LEARN × LEVEL UP</p><div class="row" style="margin:10px 0"><button id="soundToggle" type="button" style="flex:0 0 auto">🔇 効果音をON</button><span class="muted">各スマホで一度押してね</span></div><div id="status" class="status">Firebaseに接続しています…</div>
 <section id="lobby" class="panel hidden"><div id="wizard"><div class="step-label" id="stepLabel">STEP 1 / 5</div><h2 id="stepTitle">科目を選ぼう</h2><button type="button" id="stepBack" class="step-back hidden">← 戻る</button><div id="stepChoices"></div><p class="status" id="stepMessage"></p></div><div class="join-area"><h2>参加コードを持っている人（生徒B）</h2><p class="muted">生徒Aが作った6桁のコードを入力して参加してね。</p><div class="row"><input id="joinCode" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="6桁のコード" aria-label="参加コード"><button id="join">参加（生徒B）</button></div></div></section>
 <section id="waiting" class="panel hidden"><h2>相手の参加を待っています</h2><div class="code" id="roomCode"></div><p class="muted">この6桁を相手に伝えてね。相手は「参加」に入力します。</p><button id="cancel" class="red">待機を終了</button></section>
@@ -340,7 +344,7 @@ let lastStreakEvent='';
 let pairHintKey='',pairHintUsed=false;
 let roleOverlayTimer=null,roleOverlayLastIndex=null,roleOverlayRoomCode='';
 function showPairRoleChange(i){const overlay=$('pairRoleOverlay');$('pairRoleOverlaySub').textContent='次は生徒'+side+'が'+(pairAsker(room,i)===side?'出題者':'回答者')+'だよ！';overlay.classList.remove('hidden');if(roleOverlayTimer)clearTimeout(roleOverlayTimer);roleOverlayTimer=setTimeout(()=>{overlay.classList.add('hidden');roleOverlayTimer=null},1700)}
-function renderPairClozeHint(en,revealed=false){const target=$('english');target.replaceChildren();const pieces=String(en).split(/\(([^()]*)\)/g);pieces.forEach((piece,k)=>{if(k%2===0){target.append(document.createTextNode(piece))}else{const span=document.createElement('span');span.className=revealed?'pair-hint-blank pair-blank-revealed':'pair-hint-blank';span.textContent=revealed?piece:(pairHintUsed?pairFirstLetter(piece):'【 '+Math.floor(k/2+1)+' 】');target.append(span)}})}
+function renderPairClozeHint(en,revealed=false){const target=$('english');target.replaceChildren();const pieces=String(en).split(/\(([^()]*)\)/g);pieces.forEach((piece,k)=>{if(k%2===0){target.append(document.createTextNode(piece))}else{const span=document.createElement('span');span.className=revealed?'pair-hint-blank pair-blank-revealed':'pair-hint-blank';span.textContent=revealed?piece:'【 '+Math.floor(k/2+1)+' 】';if(pairHintUsed&&!revealed){const initial=document.createElement('span');initial.className='pair-hint-initial';initial.textContent=pairFirstLetter(piece);span.append(initial)}target.append(span)}})}
 function pairFirstLetter(value){const m=String(value||'').trim().match(/[A-Za-z\u3040-\u30ff\u3400-\u9fff]/u);return m?m[0]:'？'}
 function applyPairChoiceHint(){const holder=$('pairChoices');const options=[...holder.querySelectorAll('button')];if(!options.length||!room)return;const i=room.state.index;const ja=getCards(room)[i]?.[1];const wrong=options.filter(b=>b.textContent!==ja);wrong.slice(1).forEach(b=>b.classList.add('hidden'));}
 $('pairHintButton').onclick=async()=>{
