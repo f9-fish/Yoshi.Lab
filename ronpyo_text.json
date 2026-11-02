@@ -130,6 +130,53 @@
   },
   {
     "subject": "論表",
+    "id": "15",
+    "name": "動名詞(1)",
+    "cards": [
+      [
+        "(Reducing) plastic (waste) (is) (necessary) for the environment.",
+        "プラスチックゴミを減らすことは環境のために必要だ。"
+      ],
+      [
+        "My hobby is (taking) (pictures) (of) (the) (moon).",
+        "私の趣味は月の写真を撮ることだ。"
+      ],
+      [
+        "My mother (enjoys) (visiting) (temples) on weekends.",
+        "母は週末に寺を訪れるのを楽しんでいる。"
+      ],
+      [
+        "Sakura is very (good) (at) (making) (clothes).",
+        "サクラは服を作るのがとてもじょうずだ。"
+      ],
+      [
+        "Where can I (practice) (swimming)?",
+        "どこで水泳の練習ができますか。"
+      ],
+      [
+        "Children should never (give) (up) (dreaming).",
+        "子どもたちは(夢を見るのをあきらめる)べきではない。"
+      ],
+      [
+        "Mark promised (to) (send) me an email yesterday.",
+        "マークは昨日私にメール(を送ってくれると)約束した。"
+      ],
+      [
+        "I don’t (mind) (waiting) for you.",
+        "私は君を(待つの気にしないよ)。"
+      ],
+      [
+        "Remember (to) (buy) some milk (on) your (way) (home).",
+        "(帰りに)牛乳(を買うのを)覚えておいて［忘れずに牛乳(を買って)］ね。"
+      ],
+      [
+        "We all (agreed) (to) (take) part in the cleanup campaign.",
+        "私たちはみな，清掃活動に参加することに合意した。"
+      ]
+    ]
+  },
+  {
+    "subject": "論表",
     "id": "Extra 1",
     "name": "不定詞の慣用表現",
     "cards": [
