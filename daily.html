@@ -319,7 +319,7 @@ function previousJstDate(day){
  return new Date(Date.UTC(y,m-1,d-1)).toISOString().slice(0,10);
 }
 function dailyStreakCount(rows,today=jstDay()){
- const completed=new Set(rows.filter(r=>r.dailyV1===true&&r.dailyCompleted===true&&/^\\d{4}-\\d{2}-\\d{2}$/.test(r.dailyDate||'')).map(r=>r.dailyDate));
+ const completed=new Set(rows.filter(r=>r.dailyV1===true&&r.dailyCompleted===true&&/^\d{4}-\d{2}-\d{2}$/.test(r.dailyDate||'')).map(r=>r.dailyDate));
  let day=completed.has(today)?today:previousJstDate(today);
  let streak=0;
  while(completed.has(day)){streak++;day=previousJstDate(day);}
@@ -330,7 +330,7 @@ function renderDailyStreak(){
  el.replaceChildren();
  if(!dailyUser){el.textContent='🔥 ログインすると連続学習日数を表示します';return;}
  const today=jstDay();
- const completed=new Set(dailyRows.filter(r=>r.dailyV1===true&&r.dailyCompleted===true&&/^\\d{4}-\\d{2}-\\d{2}$/.test(r.dailyDate||'')).map(r=>r.dailyDate));
+ const completed=new Set(dailyRows.filter(r=>r.dailyV1===true&&r.dailyCompleted===true&&/^\d{4}-\d{2}-\d{2}$/.test(r.dailyDate||'')).map(r=>r.dailyDate));
  const count=dailyStreakCount(dailyRows,today);
  const heading=document.createElement('div');heading.className='daily-streak-heading';heading.textContent='DAILY CHALLENGE STREAK';
  const number=document.createElement('div');number.className='daily-streak-number';number.textContent='🔥 '+count+'日連続';
