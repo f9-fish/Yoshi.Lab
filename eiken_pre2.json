@@ -1,1 +1,302 @@
-[]
+[
+  {
+    "id": "P2-001",
+    "grade": "準2級",
+    "sentence": "She decided to (　　) the invitation to the school festival.",
+    "choices": [
+      "accept",
+      "collected",
+      "write",
+      "save"
+    ],
+    "answer": 1,
+    "correctWord": "accept",
+    "translation": "彼女は文化祭への招待を受け入れることにした。",
+    "explanation": "accept an invitation＝招待を受け入れる"
+  },
+  {
+    "id": "P2-002",
+    "grade": "準2級",
+    "sentence": "Please (　　) the door when you leave the classroom.",
+    "choices": [
+      "famous",
+      "heavy",
+      "close",
+      "grows"
+    ],
+    "answer": 3,
+    "correctWord": "close",
+    "translation": "教室を出るときはドアを閉めてください。",
+    "explanation": "close the door＝ドアを閉める"
+  },
+  {
+    "id": "P2-003",
+    "grade": "準2級",
+    "sentence": "I (　　) my umbrella to a friend because it was raining.",
+    "choices": [
+      "important",
+      "interested",
+      "lent",
+      "rain"
+    ],
+    "answer": 3,
+    "correctWord": "lent",
+    "translation": "雨が降っていたので友人に傘を貸した。",
+    "explanation": "lend A to B＝AをBに貸す（過去形lent）"
+  },
+  {
+    "id": "P2-004",
+    "grade": "準2級",
+    "sentence": "The museum is (　　) on Mondays, so we cannot visit today.",
+    "choices": [
+      "explain",
+      "closed",
+      "answer",
+      "discuss"
+    ],
+    "answer": 2,
+    "correctWord": "closed",
+    "translation": "博物館は月曜日が休館なので今日は行けない。",
+    "explanation": "be closed＝閉まっている"
+  },
+  {
+    "id": "P2-005",
+    "grade": "準2級",
+    "sentence": "The teacher asked us to (　　) our homework by Friday.",
+    "choices": [
+      "submit",
+      "excited",
+      "delayed",
+      "open"
+    ],
+    "answer": 1,
+    "correctWord": "submit",
+    "translation": "先生は金曜日までに宿題を提出するよう求めた。",
+    "explanation": "submit homework＝宿題を提出する"
+  },
+  {
+    "id": "P2-006",
+    "grade": "準2級",
+    "sentence": "We need to (　　) water during the dry summer months.",
+    "choices": [
+      "accept",
+      "write",
+      "collected",
+      "save"
+    ],
+    "answer": 4,
+    "correctWord": "save",
+    "translation": "乾燥する夏の間は水を節約する必要がある。",
+    "explanation": "save water＝節水する"
+  },
+  {
+    "id": "P2-007",
+    "grade": "準2級",
+    "sentence": "This bag is too (　　) for me to carry alone.",
+    "choices": [
+      "heavy",
+      "famous",
+      "close",
+      "grows"
+    ],
+    "answer": 1,
+    "correctWord": "heavy",
+    "translation": "このかばんは重すぎて一人では運べない。",
+    "explanation": "too ... to ～＝～するには…すぎる"
+  },
+  {
+    "id": "P2-008",
+    "grade": "準2級",
+    "sentence": "My brother is (　　) in learning how to cook.",
+    "choices": [
+      "important",
+      "interested",
+      "rain",
+      "lent"
+    ],
+    "answer": 2,
+    "correctWord": "interested",
+    "translation": "弟は料理の仕方を学ぶことに興味がある。",
+    "explanation": "be interested in＝～に興味がある"
+  },
+  {
+    "id": "P2-009",
+    "grade": "準2級",
+    "sentence": "Could you (　　) the meaning of this word to me?",
+    "choices": [
+      "discuss",
+      "answer",
+      "explain",
+      "closed"
+    ],
+    "answer": 3,
+    "correctWord": "explain",
+    "translation": "この単語の意味を説明してくれませんか。",
+    "explanation": "explain A to B＝AをBに説明する"
+  },
+  {
+    "id": "P2-010",
+    "grade": "準2級",
+    "sentence": "The train was (　　) because of the heavy snow.",
+    "choices": [
+      "excited",
+      "submit",
+      "delayed",
+      "open"
+    ],
+    "answer": 3,
+    "correctWord": "delayed",
+    "translation": "大雪のため電車が遅れた。",
+    "explanation": "be delayed＝遅れる"
+  },
+  {
+    "id": "P2-011",
+    "grade": "準2級",
+    "sentence": "We (　　) enough money to buy new books for the library.",
+    "choices": [
+      "accept",
+      "save",
+      "write",
+      "collected"
+    ],
+    "answer": 4,
+    "correctWord": "collected",
+    "translation": "図書館の新しい本を買うために十分なお金を集めた。",
+    "explanation": "collect money＝お金を集める"
+  },
+  {
+    "id": "P2-012",
+    "grade": "準2級",
+    "sentence": "This restaurant is (　　) for its delicious noodles.",
+    "choices": [
+      "heavy",
+      "close",
+      "famous",
+      "grows"
+    ],
+    "answer": 3,
+    "correctWord": "famous",
+    "translation": "この店はおいしい麺料理で有名だ。",
+    "explanation": "be famous for＝～で有名だ"
+  },
+  {
+    "id": "P2-013",
+    "grade": "準2級",
+    "sentence": "It is (　　) to wear a helmet when riding a bicycle.",
+    "choices": [
+      "lent",
+      "important",
+      "interested",
+      "rain"
+    ],
+    "answer": 2,
+    "correctWord": "important",
+    "translation": "自転車に乗るときヘルメットを着用することは重要だ。",
+    "explanation": "It is important to ～＝～することは重要だ"
+  },
+  {
+    "id": "P2-014",
+    "grade": "準2級",
+    "sentence": "I could not (　　) the question because I had not studied the topic.",
+    "choices": [
+      "closed",
+      "answer",
+      "discuss",
+      "explain"
+    ],
+    "answer": 2,
+    "correctWord": "answer",
+    "translation": "その話題を勉強していなかったので質問に答えられなかった。",
+    "explanation": "answer a question＝質問に答える"
+  },
+  {
+    "id": "P2-015",
+    "grade": "準2級",
+    "sentence": "The children were (　　) when they heard about the school trip.",
+    "choices": [
+      "excited",
+      "submit",
+      "open",
+      "delayed"
+    ],
+    "answer": 1,
+    "correctWord": "excited",
+    "translation": "子どもたちは修学旅行の話を聞いてわくわくした。",
+    "explanation": "be excited＝わくわくする"
+  },
+  {
+    "id": "P2-016",
+    "grade": "準2級",
+    "sentence": "Please (　　) your name at the top of the paper.",
+    "choices": [
+      "save",
+      "write",
+      "accept",
+      "collected"
+    ],
+    "answer": 2,
+    "correctWord": "write",
+    "translation": "用紙の一番上に名前を書いてください。",
+    "explanation": "write your name＝名前を書く"
+  },
+  {
+    "id": "P2-017",
+    "grade": "準2級",
+    "sentence": "My grandmother (　　) vegetables in her garden every year.",
+    "choices": [
+      "grows",
+      "close",
+      "heavy",
+      "famous"
+    ],
+    "answer": 1,
+    "correctWord": "grows",
+    "translation": "祖母は毎年庭で野菜を育てている。",
+    "explanation": "grow vegetables＝野菜を育てる"
+  },
+  {
+    "id": "P2-018",
+    "grade": "準2級",
+    "sentence": "The weather report says it will (　　) tomorrow afternoon.",
+    "choices": [
+      "important",
+      "rain",
+      "interested",
+      "lent"
+    ],
+    "answer": 2,
+    "correctWord": "rain",
+    "translation": "天気予報では明日の午後は雨が降るそうだ。",
+    "explanation": "It will rain＝雨が降るだろう"
+  },
+  {
+    "id": "P2-019",
+    "grade": "準2級",
+    "sentence": "We should (　　) our plans before buying the tickets.",
+    "choices": [
+      "closed",
+      "answer",
+      "explain",
+      "discuss"
+    ],
+    "answer": 4,
+    "correctWord": "discuss",
+    "translation": "チケットを買う前に計画を話し合うべきだ。",
+    "explanation": "discuss plans＝計画について話し合う"
+  },
+  {
+    "id": "P2-020",
+    "grade": "準2級",
+    "sentence": "The new library will (　　) next month.",
+    "choices": [
+      "excited",
+      "delayed",
+      "open",
+      "submit"
+    ],
+    "answer": 3,
+    "correctWord": "open",
+    "translation": "新しい図書館は来月開館する。",
+    "explanation": "open＝開館する・開く"
+  }
+]
