@@ -9,6 +9,12 @@
       "confirm",
       "highlights"
     ],
+    "choiceMeanings": [
+      "拡大する",
+      "反対した",
+      "確認する",
+      "強調する・浮き彫りにする"
+    ],
     "answer": 1,
     "correctWord": "expand",
     "translation": "市は交通渋滞を減らすため公共交通機関を拡充する予定だ。",
@@ -23,6 +29,12 @@
       "promote",
       "encourage",
       "reject"
+    ],
+    "choiceMeanings": [
+      "特定する・識別する",
+      "促進する",
+      "励ます・促す",
+      "拒否する・却下する"
     ],
     "answer": 1,
     "correctWord": "identify",
@@ -39,6 +51,12 @@
       "justify",
       "reduce"
     ],
+    "choiceMeanings": [
+      "示唆する・提案する",
+      "改善する・向上させる",
+      "正当化する",
+      "減らす"
+    ],
     "answer": 4,
     "correctWord": "reduce",
     "translation": "政府は大気汚染を減らすための対策を導入した。",
@@ -53,6 +71,12 @@
       "support",
       "introduced",
       "increase"
+    ],
+    "choiceMeanings": [
+      "発表する",
+      "支える・支持する",
+      "導入した・紹介した",
+      "増やす"
     ],
     "answer": 2,
     "correctWord": "support",
@@ -69,6 +93,12 @@
       "preserve",
       "adapt"
     ],
+    "choiceMeanings": [
+      "説明する",
+      "納得させる",
+      "保存する・保護する",
+      "適応する・適合させる"
+    ],
     "answer": 4,
     "correctWord": "adapt",
     "translation": "企業は市場の変化に戦略を適応させなければならない。",
@@ -83,6 +113,12 @@
       "expand",
       "highlights",
       "opposed"
+    ],
+    "choiceMeanings": [
+      "確認する",
+      "拡大する",
+      "強調する・浮き彫りにする",
+      "反対した"
     ],
     "answer": 3,
     "correctWord": "highlights",
@@ -99,6 +135,12 @@
       "calculate",
       "reject"
     ],
+    "choiceMeanings": [
+      "保存する・保護する",
+      "励ます・促す",
+      "計算する",
+      "拒否する・却下する"
+    ],
     "answer": 4,
     "correctWord": "reject",
     "translation": "委員会は長い議論の末、その提案を却下した。",
@@ -113,6 +155,12 @@
       "suggests",
       "improve",
       "reduce"
+    ],
+    "choiceMeanings": [
+      "最小限にする",
+      "示唆する・提案する",
+      "改善する・向上させる",
+      "減らす"
     ],
     "answer": 3,
     "correctWord": "improve",
@@ -129,6 +177,12 @@
       "increase",
       "introduced"
     ],
+    "choiceMeanings": [
+      "発表する",
+      "支える・支持する",
+      "増やす",
+      "導入した・紹介した"
+    ],
     "answer": 3,
     "correctWord": "increase",
     "translation": "新政策は自転車利用者数を増やす可能性がある。",
@@ -143,6 +197,12 @@
       "adapt",
       "convince",
       "preserve"
+    ],
+    "choiceMeanings": [
+      "説明する",
+      "適応する・適合させる",
+      "納得させる",
+      "保存する・保護する"
     ],
     "answer": 1,
     "correctWord": "explain",
@@ -159,6 +219,12 @@
       "opposed",
       "expand"
     ],
+    "choiceMeanings": [
+      "確認する",
+      "強調する・浮き彫りにする",
+      "反対した",
+      "拡大する"
+    ],
     "answer": 3,
     "correctWord": "opposed",
     "translation": "地元住民は新しい高速道路の建設に強く反対した。",
@@ -173,6 +239,12 @@
       "promote",
       "encourage",
       "reject"
+    ],
+    "choiceMeanings": [
+      "特定する・識別する",
+      "促進する",
+      "励ます・促す",
+      "拒否する・却下する"
     ],
     "answer": 3,
     "correctWord": "encourage",
@@ -189,6 +261,12 @@
       "improve",
       "justify"
     ],
+    "choiceMeanings": [
+      "最小限にする",
+      "示唆する・提案する",
+      "改善する・向上させる",
+      "正当化する"
+    ],
     "answer": 1,
     "correctWord": "minimize",
     "translation": "工場は製造時の廃棄物を最小限にする対策を講じた。",
@@ -203,6 +281,12 @@
       "announce",
       "increase",
       "support"
+    ],
+    "choiceMeanings": [
+      "導入した・紹介した",
+      "発表する",
+      "増やす",
+      "支える・支持する"
     ],
     "answer": 2,
     "correctWord": "announce",
@@ -219,6 +303,12 @@
       "convince",
       "explain"
     ],
+    "choiceMeanings": [
+      "保存する・保護する",
+      "適応する・適合させる",
+      "納得させる",
+      "説明する"
+    ],
     "answer": 1,
     "correctWord": "preserve",
     "translation": "博物館は古文書の保存に努めてきた。",
@@ -233,6 +323,12 @@
       "opposed",
       "highlights",
       "confirm"
+    ],
+    "choiceMeanings": [
+      "拡大する",
+      "反対した",
+      "強調する・浮き彫りにする",
+      "確認する"
     ],
     "answer": 4,
     "correctWord": "confirm",
@@ -249,6 +345,12 @@
       "calculate",
       "reject"
     ],
+    "choiceMeanings": [
+      "促進する",
+      "特定する・識別する",
+      "計算する",
+      "拒否する・却下する"
+    ],
     "answer": 1,
     "correctWord": "promote",
     "translation": "その計画は学校間の協力を促進するために作られた。",
@@ -263,6 +365,12 @@
       "improve",
       "reduce",
       "minimize"
+    ],
+    "choiceMeanings": [
+      "示唆する・提案する",
+      "改善する・向上させる",
+      "減らす",
+      "最小限にする"
     ],
     "answer": 1,
     "correctWord": "suggests",
@@ -279,6 +387,12 @@
       "support",
       "announce"
     ],
+    "choiceMeanings": [
+      "増やす",
+      "導入した・紹介した",
+      "支える・支持する",
+      "発表する"
+    ],
     "answer": 2,
     "correctWord": "introduced",
     "translation": "市は公共施設に新しいリサイクル制度を導入した。",
@@ -293,6 +407,12 @@
       "convince",
       "adapt",
       "explain"
+    ],
+    "choiceMeanings": [
+      "保存する・保護する",
+      "納得させる",
+      "適応する・適合させる",
+      "説明する"
     ],
     "answer": 2,
     "correctWord": "convince",
@@ -309,6 +429,12 @@
       "retain",
       "restrict"
     ],
+    "choiceMeanings": [
+      "応答する・対応する",
+      "評価する",
+      "保持する・引き留める",
+      "制限する"
+    ],
     "answer": 2,
     "correctWord": "evaluate",
     "translation": "委員会は新しい政策の有効性を評価する。",
@@ -323,6 +449,12 @@
       "demonstrate",
       "negotiate",
       "strengthen"
+    ],
+    "choiceMeanings": [
+      "維持する",
+      "実証する・示す",
+      "交渉する",
+      "強化する"
     ],
     "answer": 1,
     "correctWord": "maintain",
@@ -339,6 +471,12 @@
       "compensate",
       "investigate"
     ],
+    "choiceMeanings": [
+      "参加する",
+      "予測する",
+      "補償する",
+      "調査する"
+    ],
     "answer": 4,
     "correctWord": "investigate",
     "translation": "警察は事故の原因を調査しようとしている。",
@@ -353,6 +491,12 @@
       "resolve",
       "contribute",
       "distinguish"
+    ],
+    "choiceMeanings": [
+      "割り当てる・配分する",
+      "解決する",
+      "貢献する",
+      "区別する"
     ],
     "answer": 3,
     "correctWord": "contribute",
@@ -369,6 +513,12 @@
       "facilitate",
       "restrict"
     ],
+    "choiceMeanings": [
+      "強調する",
+      "設立する",
+      "促進する・円滑にする",
+      "制限する"
+    ],
     "answer": 2,
     "correctWord": "establish",
     "translation": "その団体は新しい研修センターを設立する予定だ。",
@@ -383,6 +533,12 @@
       "restrict",
       "regulate",
       "persuade"
+    ],
+    "choiceMeanings": [
+      "習得する・獲得する",
+      "制限する",
+      "規制する",
+      "説得する"
     ],
     "answer": 1,
     "correctWord": "acquire",
@@ -399,6 +555,12 @@
       "preserve",
       "recognize"
     ],
+    "choiceMeanings": [
+      "割り当てる・配分する",
+      "適応する・適合させる",
+      "保存する・保護する",
+      "認識する"
+    ],
     "answer": 4,
     "correctWord": "recognize",
     "translation": "ストレスの警告サインを認識することが重要だ。",
@@ -413,6 +575,12 @@
       "withdraw",
       "respond",
       "reveal"
+    ],
+    "choiceMeanings": [
+      "実施する・導入する",
+      "撤退する・取り下げる",
+      "応答する・対応する",
+      "明らかにする"
     ],
     "answer": 3,
     "correctWord": "respond",
@@ -429,6 +597,12 @@
       "enhance",
       "sustain"
     ],
+    "choiceMeanings": [
+      "正当化する",
+      "実証する・示す",
+      "高める・向上させる",
+      "維持する・持続させる"
+    ],
     "answer": 2,
     "correctWord": "demonstrate",
     "translation": "実験は熱がその材料にどう影響するかを示す。",
@@ -443,6 +617,12 @@
       "retain",
       "acknowledge",
       "transform"
+    ],
+    "choiceMeanings": [
+      "参加する",
+      "保持する・引き留める",
+      "認める",
+      "変革する"
     ],
     "answer": 1,
     "correctWord": "participate",
@@ -459,6 +639,12 @@
       "verify",
       "allocate"
     ],
+    "choiceMeanings": [
+      "交渉する",
+      "取り除く",
+      "検証する",
+      "割り当てる・配分する"
+    ],
     "answer": 4,
     "correctWord": "allocate",
     "translation": "市は公共図書館により多くの資金を配分することにした。",
@@ -473,6 +659,12 @@
       "estimate",
       "emphasize",
       "restrict"
+    ],
+    "choiceMeanings": [
+      "予測する",
+      "見積もる",
+      "強調する",
+      "制限する"
     ],
     "answer": 3,
     "correctWord": "emphasize",
@@ -489,6 +681,12 @@
       "allocate",
       "maintain"
     ],
+    "choiceMeanings": [
+      "解決する",
+      "制限する",
+      "割り当てる・配分する",
+      "維持する"
+    ],
     "answer": 2,
     "correctWord": "restrict",
     "translation": "新しい規則は特定の区域への立ち入りを制限する。",
@@ -503,6 +701,12 @@
       "facilitate",
       "allocate",
       "generate"
+    ],
+    "choiceMeanings": [
+      "評価する・査定する",
+      "促進する・円滑にする",
+      "割り当てる・配分する",
+      "生み出す・発生させる"
     ],
     "answer": 1,
     "correctWord": "assess",
@@ -519,6 +723,12 @@
       "contribute",
       "implement"
     ],
+    "choiceMeanings": [
+      "規制する",
+      "強化する",
+      "貢献する",
+      "実施する・導入する"
+    ],
     "answer": 4,
     "correctWord": "implement",
     "translation": "学校は来学期に新制度を実施する予定だ。",
@@ -533,6 +743,12 @@
       "compensate",
       "justify",
       "establish"
+    ],
+    "choiceMeanings": [
+      "適応する・適合させる",
+      "補償する",
+      "正当化する",
+      "設立する"
     ],
     "answer": 3,
     "correctWord": "justify",
@@ -549,6 +765,12 @@
       "distinguish",
       "acquire"
     ],
+    "choiceMeanings": [
+      "撤退する・取り下げる",
+      "保持する・引き留める",
+      "区別する",
+      "習得する・獲得する"
+    ],
     "answer": 2,
     "correctWord": "retain",
     "translation": "会社は経験豊富な従業員を引き留めるため柔軟な勤務時間を提供する。",
@@ -563,6 +785,12 @@
       "enhance",
       "expand",
       "recognize"
+    ],
+    "choiceMeanings": [
+      "交渉する",
+      "高める・向上させる",
+      "拡大する",
+      "認識する"
     ],
     "answer": 1,
     "correctWord": "negotiate",
@@ -579,6 +807,12 @@
       "respond",
       "anticipate"
     ],
+    "choiceMeanings": [
+      "実施する・導入する",
+      "説得する",
+      "応答する・対応する",
+      "予測する"
+    ],
     "answer": 4,
     "correctWord": "anticipate",
     "translation": "専門家はクリーンエネルギー需要の増加を予測している。",
@@ -593,6 +827,12 @@
       "preserve",
       "resolve",
       "demonstrate"
+    ],
+    "choiceMeanings": [
+      "取り除く",
+      "保存する・保護する",
+      "解決する",
+      "実証する・示す"
     ],
     "answer": 3,
     "correctWord": "resolve",
@@ -609,6 +849,12 @@
       "reveal",
       "participate"
     ],
+    "choiceMeanings": [
+      "見積もる",
+      "促進する・円滑にする",
+      "明らかにする",
+      "参加する"
+    ],
     "answer": 2,
     "correctWord": "facilitate",
     "translation": "新しいウェブサイトは顧客と職員の意思疎通を円滑にする。",
@@ -623,6 +869,12 @@
       "generate",
       "sustain",
       "allocate"
+    ],
+    "choiceMeanings": [
+      "規制する",
+      "生み出す・発生させる",
+      "維持する・持続させる",
+      "割り当てる・配分する"
     ],
     "answer": 1,
     "correctWord": "regulate",
@@ -639,6 +891,12 @@
       "emphasize",
       "adapt"
     ],
+    "choiceMeanings": [
+      "明確にする",
+      "変革する",
+      "強調する",
+      "適応する・適合させる"
+    ],
     "answer": 4,
     "correctWord": "adapt",
     "translation": "中小企業は変化する市場環境に適応しなければならない。",
@@ -653,6 +911,12 @@
       "verify",
       "withdraw",
       "negotiate"
+    ],
+    "choiceMeanings": [
+      "強化する",
+      "検証する",
+      "撤退する・取り下げる",
+      "交渉する"
     ],
     "answer": 3,
     "correctWord": "withdraw",
@@ -669,6 +933,12 @@
       "evaluate",
       "allocate"
     ],
+    "choiceMeanings": [
+      "補償する",
+      "高める・向上させる",
+      "評価する",
+      "割り当てる・配分する"
+    ],
     "answer": 2,
     "correctWord": "enhance",
     "translation": "新しい照明設備は駅の安全性を高める。",
@@ -683,6 +953,12 @@
       "distinguish",
       "maintain",
       "implement"
+    ],
+    "choiceMeanings": [
+      "認める",
+      "区別する",
+      "維持する",
+      "実施する・導入する"
     ],
     "answer": 1,
     "correctWord": "acknowledge",
@@ -699,6 +975,12 @@
       "justify",
       "eliminate"
     ],
+    "choiceMeanings": [
+      "拡大する",
+      "調査する",
+      "正当化する",
+      "取り除く"
+    ],
     "answer": 4,
     "correctWord": "eliminate",
     "translation": "工場は生産工程から不要な廃棄物をなくすことを目指している。",
@@ -713,6 +995,12 @@
       "contribute",
       "estimate",
       "retain"
+    ],
+    "choiceMeanings": [
+      "説得する",
+      "貢献する",
+      "見積もる",
+      "保持する・引き留める"
     ],
     "answer": 3,
     "correctWord": "estimate",
@@ -729,6 +1017,12 @@
       "establish",
       "negotiate"
     ],
+    "choiceMeanings": [
+      "保存する・保護する",
+      "生み出す・発生させる",
+      "設立する",
+      "交渉する"
+    ],
     "answer": 2,
     "correctWord": "generate",
     "translation": "太陽光パネルは燃料を燃やさずに発電できる。",
@@ -743,6 +1037,12 @@
       "maintain",
       "acquire",
       "anticipate"
+    ],
+    "choiceMeanings": [
+      "明確にする",
+      "維持する",
+      "習得する・獲得する",
+      "予測する"
     ],
     "answer": 1,
     "correctWord": "clarify",
@@ -759,6 +1059,12 @@
       "resolve",
       "strengthen"
     ],
+    "choiceMeanings": [
+      "割り当てる・配分する",
+      "認識する",
+      "解決する",
+      "強化する"
+    ],
     "answer": 4,
     "correctWord": "strengthen",
     "translation": "定期的な練習はチームメンバー間の関係を強める。",
@@ -773,6 +1079,12 @@
       "respond",
       "compensate",
       "facilitate"
+    ],
+    "choiceMeanings": [
+      "変革する",
+      "応答する・対応する",
+      "補償する",
+      "促進する・円滑にする"
     ],
     "answer": 3,
     "correctWord": "compensate",
@@ -789,6 +1101,12 @@
       "demonstrate",
       "regulate"
     ],
+    "choiceMeanings": [
+      "割り当てる・配分する",
+      "区別する",
+      "実証する・示す",
+      "規制する"
+    ],
     "answer": 2,
     "correctWord": "distinguish",
     "translation": "信頼できるニュースと誤情報を区別するのは難しい場合がある。",
@@ -804,6 +1122,12 @@
       "participate",
       "adapt"
     ],
+    "choiceMeanings": [
+      "拡大する",
+      "割り当てる・配分する",
+      "参加する",
+      "適応する・適合させる"
+    ],
     "answer": 1,
     "correctWord": "expand",
     "translation": "大学は来年研究施設を拡張したいと考えている。",
@@ -815,9 +1139,15 @@
     "sentence": "The campaign aims to (　　) people to use public transportation.",
     "choices": [
       "allocate",
-      "allocate",
+      "recognize",
       "withdraw",
       "persuade"
+    ],
+    "choiceMeanings": [
+      "割り当てる・配分する",
+      "認識する",
+      "撤退する・取り下げる",
+      "説得する"
     ],
     "answer": 4,
     "correctWord": "persuade",
@@ -832,7 +1162,13 @@
       "allocate",
       "emphasize",
       "preserve",
-      "allocate"
+      "negotiate"
+    ],
+    "choiceMeanings": [
+      "割り当てる・配分する",
+      "強調する",
+      "保存する・保護する",
+      "交渉する"
     ],
     "answer": 3,
     "correctWord": "preserve",
@@ -849,6 +1185,12 @@
       "restrict",
       "implement"
     ],
+    "choiceMeanings": [
+      "貢献する",
+      "明らかにする",
+      "制限する",
+      "実施する・導入する"
+    ],
     "answer": 2,
     "correctWord": "reveal",
     "translation": "その調査は2つの年齢層の違いを明らかにするかもしれない。",
@@ -863,6 +1205,12 @@
       "establish",
       "assess",
       "eliminate"
+    ],
+    "choiceMeanings": [
+      "維持する・持続させる",
+      "設立する",
+      "評価する・査定する",
+      "取り除く"
     ],
     "answer": 1,
     "correctWord": "sustain",
@@ -879,6 +1227,12 @@
       "estimate",
       "transform"
     ],
+    "choiceMeanings": [
+      "習得する・獲得する",
+      "実施する・導入する",
+      "見積もる",
+      "変革する"
+    ],
     "answer": 4,
     "correctWord": "transform",
     "translation": "デジタル技術は人々の働き方を変え始めている。",
@@ -893,6 +1247,12 @@
       "justify",
       "verify",
       "generate"
+    ],
+    "choiceMeanings": [
+      "認識する",
+      "正当化する",
+      "検証する",
+      "生み出す・発生させる"
     ],
     "answer": 3,
     "correctWord": "verify",
