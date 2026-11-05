@@ -36,7 +36,7 @@
     "choices": [
       "suggests",
       "improve",
-      "minimize",
+      "justify",
       "reduce"
     ],
     "answer": 4,
@@ -187,7 +187,7 @@
       "minimize",
       "suggests",
       "improve",
-      "reduce"
+      "justify"
     ],
     "answer": 1,
     "correctWord": "minimize",
@@ -298,5 +298,605 @@
     "correctWord": "convince",
     "translation": "講演者はその計画が現実的だと聴衆を納得させようとした。",
     "explanation": "convince A that＝Aに～だと納得させる"
+  },
+  {
+    "id": "G2-021",
+    "grade": "2級",
+    "sentence": "The committee will (　　) the effectiveness of the new policy.",
+    "choices": [
+      "respond",
+      "evaluate",
+      "retain",
+      "restrict"
+    ],
+    "answer": 2,
+    "correctWord": "evaluate",
+    "translation": "委員会は新しい政策の有効性を評価する。",
+    "explanation": "evaluate＝評価する"
+  },
+  {
+    "id": "G2-022",
+    "grade": "2級",
+    "sentence": "It is expensive to (　　) old buildings in good condition.",
+    "choices": [
+      "maintain",
+      "demonstrate",
+      "negotiate",
+      "strengthen"
+    ],
+    "answer": 1,
+    "correctWord": "maintain",
+    "translation": "古い建物を良好な状態に維持するには費用がかかる。",
+    "explanation": "maintain＝維持する"
+  },
+  {
+    "id": "G2-023",
+    "grade": "2級",
+    "sentence": "Police are trying to (　　) the cause of the accident.",
+    "choices": [
+      "participate",
+      "anticipate",
+      "compensate",
+      "investigate"
+    ],
+    "answer": 4,
+    "correctWord": "investigate",
+    "translation": "警察は事故の原因を調査しようとしている。",
+    "explanation": "investigate＝調査する"
+  },
+  {
+    "id": "G2-024",
+    "grade": "2級",
+    "sentence": "Volunteers can (　　) to the success of the event.",
+    "choices": [
+      "allocate",
+      "resolve",
+      "contribute",
+      "distinguish"
+    ],
+    "answer": 3,
+    "correctWord": "contribute",
+    "translation": "ボランティアは行事の成功に貢献できる。",
+    "explanation": "contribute to＝～に貢献する"
+  },
+  {
+    "id": "G2-025",
+    "grade": "2級",
+    "sentence": "The organization plans to (　　) a new training center.",
+    "choices": [
+      "emphasize",
+      "establish",
+      "facilitate",
+      "restrict"
+    ],
+    "answer": 2,
+    "correctWord": "establish",
+    "translation": "その団体は新しい研修センターを設立する予定だ。",
+    "explanation": "establish＝設立する"
+  },
+  {
+    "id": "G2-026",
+    "grade": "2級",
+    "sentence": "Students can (　　) practical skills through internships.",
+    "choices": [
+      "acquire",
+      "restrict",
+      "regulate",
+      "persuade"
+    ],
+    "answer": 1,
+    "correctWord": "acquire",
+    "translation": "生徒はインターンシップを通じて実践的な技能を身につけられる。",
+    "explanation": "acquire＝習得する"
+  },
+  {
+    "id": "G2-027",
+    "grade": "2級",
+    "sentence": "It is important to (　　) the warning signs of stress.",
+    "choices": [
+      "assess",
+      "adapt",
+      "preserve",
+      "recognize"
+    ],
+    "answer": 4,
+    "correctWord": "recognize",
+    "translation": "ストレスの警告サインを認識することが重要だ。",
+    "explanation": "recognize＝認識する"
+  },
+  {
+    "id": "G2-028",
+    "grade": "2級",
+    "sentence": "The company failed to (　　) to customers' complaints quickly.",
+    "choices": [
+      "implement",
+      "withdraw",
+      "respond",
+      "reveal"
+    ],
+    "answer": 3,
+    "correctWord": "respond",
+    "translation": "その会社は顧客の苦情に素早く対応できなかった。",
+    "explanation": "respond to＝～に対応する"
+  },
+  {
+    "id": "G2-029",
+    "grade": "2級",
+    "sentence": "The experiment will (　　) how heat affects the material.",
+    "choices": [
+      "justify",
+      "demonstrate",
+      "enhance",
+      "sustain"
+    ],
+    "answer": 2,
+    "correctWord": "demonstrate",
+    "translation": "実験は熱がその材料にどう影響するかを示す。",
+    "explanation": "demonstrate＝実証する"
+  },
+  {
+    "id": "G2-030",
+    "grade": "2級",
+    "sentence": "More residents are encouraged to (　　) in local elections.",
+    "choices": [
+      "participate",
+      "retain",
+      "acknowledge",
+      "transform"
+    ],
+    "answer": 1,
+    "correctWord": "participate",
+    "translation": "より多くの住民が地方選挙に参加するよう促されている。",
+    "explanation": "participate in＝～に参加する"
+  },
+  {
+    "id": "G2-031",
+    "grade": "2級",
+    "sentence": "The city decided to (　　) more funds to public libraries.",
+    "choices": [
+      "negotiate",
+      "eliminate",
+      "verify",
+      "allocate"
+    ],
+    "answer": 4,
+    "correctWord": "allocate",
+    "translation": "市は公共図書館により多くの資金を配分することにした。",
+    "explanation": "allocate A to B＝AをBに配分する"
+  },
+  {
+    "id": "G2-032",
+    "grade": "2級",
+    "sentence": "The report will (　　) the importance of early education.",
+    "choices": [
+      "anticipate",
+      "estimate",
+      "emphasize",
+      "restrict"
+    ],
+    "answer": 3,
+    "correctWord": "emphasize",
+    "translation": "報告書は早期教育の重要性を強調する。",
+    "explanation": "emphasize＝強調する"
+  },
+  {
+    "id": "G2-033",
+    "grade": "2級",
+    "sentence": "The new rules will (　　) access to certain areas.",
+    "choices": [
+      "resolve",
+      "restrict",
+      "generate",
+      "maintain"
+    ],
+    "answer": 2,
+    "correctWord": "restrict",
+    "translation": "新しい規則は特定の区域への立ち入りを制限する。",
+    "explanation": "restrict＝制限する"
+  },
+  {
+    "id": "G2-034",
+    "grade": "2級",
+    "sentence": "Doctors need to (　　) the risks before recommending treatment.",
+    "choices": [
+      "assess",
+      "facilitate",
+      "clarify",
+      "generate"
+    ],
+    "answer": 1,
+    "correctWord": "assess",
+    "translation": "医師は治療を勧める前にリスクを評価する必要がある。",
+    "explanation": "assess＝評価する"
+  },
+  {
+    "id": "G2-035",
+    "grade": "2級",
+    "sentence": "The school plans to (　　) the new system next semester.",
+    "choices": [
+      "regulate",
+      "strengthen",
+      "contribute",
+      "implement"
+    ],
+    "answer": 4,
+    "correctWord": "implement",
+    "translation": "学校は来学期に新制度を実施する予定だ。",
+    "explanation": "implement＝実施する"
+  },
+  {
+    "id": "G2-036",
+    "grade": "2級",
+    "sentence": "The manager could not (　　) the sudden increase in costs.",
+    "choices": [
+      "adapt",
+      "compensate",
+      "justify",
+      "establish"
+    ],
+    "answer": 3,
+    "correctWord": "justify",
+    "translation": "管理者は費用の急増を正当化できなかった。",
+    "explanation": "justify＝正当化する"
+  },
+  {
+    "id": "G2-037",
+    "grade": "2級",
+    "sentence": "The company offers flexible hours to (　　) experienced workers.",
+    "choices": [
+      "withdraw",
+      "retain",
+      "distinguish",
+      "acquire"
+    ],
+    "answer": 2,
+    "correctWord": "retain",
+    "translation": "会社は経験豊富な従業員を引き留めるため柔軟な勤務時間を提供する。",
+    "explanation": "retain＝保持する・引き留める"
+  },
+  {
+    "id": "G2-038",
+    "grade": "2級",
+    "sentence": "The two sides agreed to (　　) a new contract.",
+    "choices": [
+      "negotiate",
+      "enhance",
+      "expand",
+      "recognize"
+    ],
+    "answer": 1,
+    "correctWord": "negotiate",
+    "translation": "双方は新しい契約について交渉することで合意した。",
+    "explanation": "negotiate＝交渉する"
+  },
+  {
+    "id": "G2-039",
+    "grade": "2級",
+    "sentence": "Experts (　　) a rise in demand for clean energy.",
+    "choices": [
+      "acknowledge",
+      "persuade",
+      "respond",
+      "anticipate"
+    ],
+    "answer": 4,
+    "correctWord": "anticipate",
+    "translation": "専門家はクリーンエネルギー需要の増加を予測している。",
+    "explanation": "anticipate＝予測する"
+  },
+  {
+    "id": "G2-040",
+    "grade": "2級",
+    "sentence": "The team worked together to (　　) the technical problem.",
+    "choices": [
+      "eliminate",
+      "preserve",
+      "resolve",
+      "demonstrate"
+    ],
+    "answer": 3,
+    "correctWord": "resolve",
+    "translation": "チームは技術的な問題を解決するため協力した。",
+    "explanation": "resolve＝解決する"
+  },
+  {
+    "id": "G2-041",
+    "grade": "2級",
+    "sentence": "The new website will (　　) communication between customers and staff.",
+    "choices": [
+      "estimate",
+      "facilitate",
+      "reveal",
+      "participate"
+    ],
+    "answer": 2,
+    "correctWord": "facilitate",
+    "translation": "新しいウェブサイトは顧客と職員の意思疎通を円滑にする。",
+    "explanation": "facilitate＝促進する"
+  },
+  {
+    "id": "G2-042",
+    "grade": "2級",
+    "sentence": "The government plans to (　　) the use of certain chemicals.",
+    "choices": [
+      "regulate",
+      "generate",
+      "sustain",
+      "allocate"
+    ],
+    "answer": 1,
+    "correctWord": "regulate",
+    "translation": "政府は特定の化学物質の使用を規制する予定だ。",
+    "explanation": "regulate＝規制する"
+  },
+  {
+    "id": "G2-043",
+    "grade": "2級",
+    "sentence": "Small businesses must (　　) to changing market conditions.",
+    "choices": [
+      "clarify",
+      "transform",
+      "emphasize",
+      "adapt"
+    ],
+    "answer": 4,
+    "correctWord": "adapt",
+    "translation": "中小企業は変化する市場環境に適応しなければならない。",
+    "explanation": "adapt to＝～に適応する"
+  },
+  {
+    "id": "G2-044",
+    "grade": "2級",
+    "sentence": "The athlete decided to (　　) from the competition due to an injury.",
+    "choices": [
+      "strengthen",
+      "verify",
+      "withdraw",
+      "restrict"
+    ],
+    "answer": 3,
+    "correctWord": "withdraw",
+    "translation": "その選手はけがのため大会を棄権することにした。",
+    "explanation": "withdraw from＝～から撤退する"
+  },
+  {
+    "id": "G2-045",
+    "grade": "2級",
+    "sentence": "The new lighting system will (　　) safety at the station.",
+    "choices": [
+      "compensate",
+      "enhance",
+      "evaluate",
+      "assess"
+    ],
+    "answer": 2,
+    "correctWord": "enhance",
+    "translation": "新しい照明設備は駅の安全性を高める。",
+    "explanation": "enhance＝高める"
+  },
+  {
+    "id": "G2-046",
+    "grade": "2級",
+    "sentence": "The director refused to (　　) that mistakes had been made.",
+    "choices": [
+      "acknowledge",
+      "distinguish",
+      "maintain",
+      "implement"
+    ],
+    "answer": 1,
+    "correctWord": "acknowledge",
+    "translation": "責任者はミスがあったことを認めようとしなかった。",
+    "explanation": "acknowledge＝認める"
+  },
+  {
+    "id": "G2-047",
+    "grade": "2級",
+    "sentence": "The factory aims to (　　) unnecessary waste from production.",
+    "choices": [
+      "expand",
+      "investigate",
+      "justify",
+      "eliminate"
+    ],
+    "answer": 4,
+    "correctWord": "eliminate",
+    "translation": "工場は生産工程から不要な廃棄物をなくすことを目指している。",
+    "explanation": "eliminate＝除去する"
+  },
+  {
+    "id": "G2-048",
+    "grade": "2級",
+    "sentence": "Researchers tried to (　　) the total cost of the project.",
+    "choices": [
+      "persuade",
+      "contribute",
+      "estimate",
+      "retain"
+    ],
+    "answer": 3,
+    "correctWord": "estimate",
+    "translation": "研究者たちは事業の総費用を見積もろうとした。",
+    "explanation": "estimate＝見積もる"
+  },
+  {
+    "id": "G2-049",
+    "grade": "2級",
+    "sentence": "Solar panels can (　　) electricity without burning fuel.",
+    "choices": [
+      "preserve",
+      "generate",
+      "establish",
+      "negotiate"
+    ],
+    "answer": 2,
+    "correctWord": "generate",
+    "translation": "太陽光パネルは燃料を燃やさずに発電できる。",
+    "explanation": "generate electricity＝発電する"
+  },
+  {
+    "id": "G2-050",
+    "grade": "2級",
+    "sentence": "The teacher asked the student to (　　) the meaning of the statement.",
+    "choices": [
+      "clarify",
+      "maintain",
+      "acquire",
+      "anticipate"
+    ],
+    "answer": 1,
+    "correctWord": "clarify",
+    "translation": "教師は生徒にその発言の意味を明確にするよう求めた。",
+    "explanation": "clarify＝明確にする"
+  },
+  {
+    "id": "G2-051",
+    "grade": "2級",
+    "sentence": "Regular practice can (　　) the relationship between team members.",
+    "choices": [
+      "sustain",
+      "recognize",
+      "resolve",
+      "strengthen"
+    ],
+    "answer": 4,
+    "correctWord": "strengthen",
+    "translation": "定期的な練習はチームメンバー間の関係を強める。",
+    "explanation": "strengthen＝強める"
+  },
+  {
+    "id": "G2-052",
+    "grade": "2級",
+    "sentence": "The airline agreed to (　　) passengers for the delay.",
+    "choices": [
+      "transform",
+      "respond",
+      "compensate",
+      "facilitate"
+    ],
+    "answer": 3,
+    "correctWord": "compensate",
+    "translation": "航空会社は遅延について乗客に補償することに同意した。",
+    "explanation": "compensate A for B＝AにBを補償する"
+  },
+  {
+    "id": "G2-053",
+    "grade": "2級",
+    "sentence": "It can be difficult to (　　) reliable news from false information.",
+    "choices": [
+      "verify",
+      "distinguish",
+      "demonstrate",
+      "regulate"
+    ],
+    "answer": 2,
+    "correctWord": "distinguish",
+    "translation": "信頼できるニュースと誤情報を区別するのは難しい場合がある。",
+    "explanation": "distinguish A from B＝AとBを区別する"
+  },
+  {
+    "id": "G2-054",
+    "grade": "2級",
+    "sentence": "The university hopes to (　　) its research facilities next year.",
+    "choices": [
+      "expand",
+      "evaluate",
+      "participate",
+      "adapt"
+    ],
+    "answer": 1,
+    "correctWord": "expand",
+    "translation": "大学は来年研究施設を拡張したいと考えている。",
+    "explanation": "expand＝拡張する"
+  },
+  {
+    "id": "G2-055",
+    "grade": "2級",
+    "sentence": "The campaign aims to (　　) people to use public transportation.",
+    "choices": [
+      "maintain",
+      "allocate",
+      "withdraw",
+      "persuade"
+    ],
+    "answer": 4,
+    "correctWord": "persuade",
+    "translation": "その運動は人々に公共交通機関を利用するよう説得することを目指す。",
+    "explanation": "persuade A to do＝Aを説得して～させる"
+  },
+  {
+    "id": "G2-056",
+    "grade": "2級",
+    "sentence": "Local groups are working to (　　) the historic theater.",
+    "choices": [
+      "investigate",
+      "emphasize",
+      "preserve",
+      "allocate"
+    ],
+    "answer": 3,
+    "correctWord": "preserve",
+    "translation": "地域団体は歴史ある劇場を保存しようと活動している。",
+    "explanation": "preserve＝保存する"
+  },
+  {
+    "id": "G2-057",
+    "grade": "2級",
+    "sentence": "The survey may (　　) differences between the two age groups.",
+    "choices": [
+      "contribute",
+      "reveal",
+      "restrict",
+      "implement"
+    ],
+    "answer": 2,
+    "correctWord": "reveal",
+    "translation": "その調査は2つの年齢層の違いを明らかにするかもしれない。",
+    "explanation": "reveal＝明らかにする"
+  },
+  {
+    "id": "G2-058",
+    "grade": "2級",
+    "sentence": "The community needs support to (　　) its cultural traditions.",
+    "choices": [
+      "sustain",
+      "establish",
+      "assess",
+      "eliminate"
+    ],
+    "answer": 1,
+    "correctWord": "sustain",
+    "translation": "地域社会が文化的伝統を維持するには支援が必要だ。",
+    "explanation": "sustain＝維持する"
+  },
+  {
+    "id": "G2-059",
+    "grade": "2級",
+    "sentence": "Digital technology has begun to (　　) the way people work.",
+    "choices": [
+      "acquire",
+      "implement",
+      "estimate",
+      "transform"
+    ],
+    "answer": 4,
+    "correctWord": "transform",
+    "translation": "デジタル技術は人々の働き方を変え始めている。",
+    "explanation": "transform＝変革する"
+  },
+  {
+    "id": "G2-060",
+    "grade": "2級",
+    "sentence": "Before publishing the article, the editor must (　　) the facts.",
+    "choices": [
+      "recognize",
+      "justify",
+      "verify",
+      "generate"
+    ],
+    "answer": 3,
+    "correctWord": "verify",
+    "translation": "記事を公開する前に編集者は事実を検証しなければならない。",
+    "explanation": "verify＝検証する"
   }
 ]
