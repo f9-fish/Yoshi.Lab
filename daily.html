@@ -333,9 +333,8 @@ function renderDailyStreak(){
   cell.append(label,mark);week.append(cell);
  });
  const rewards=document.createElement('div');rewards.className='daily-streak-note';
- rewards.textContent=YoshiWeeklyDaily.milestones.map(m=>(progress.count>=m.days?'✓ ':'')+m.days+'日で +'+m.xp+' XP').join(' ／ ');
- const earned=document.createElement('small');earned.textContent='今週の達成ボーナス：+'+progress.bonusXP+' XP（各段階を週1回、7日で合計800 XP）';
- el.append(heading,number,note,week,rewards,earned);
+ rewards.textContent=YoshiWeeklyDaily.milestones.map(m=>(progress.count>=m.days?'✓ ':'')+m.days+'日で +'+m.xp+' XP').join(' ／ ')+'（合計：最大800 XP）';
+ el.append(heading,number,note,week,rewards);
 }
 // An open page also rolls over to the next JST day/week, without interrupting a quiz.
 setInterval(()=>{if(dailyUser&&!running&&!dailySaving&&weeklyRenderedDay!==jstDay())void refreshDaily();},30000);
