@@ -1,6 +1,7 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const vm=require('node:vm');
+const {createHash}=require('node:crypto');
 const {context,read,accountHarness,functionFromLine}=require('./helpers/app-harness.cjs');
 const sandbox=context();vm.runInContext(read('eiken-training.js'),sandbox);
 const core=vm.runInContext('YoshiEiken',sandbox);
@@ -9,6 +10,12 @@ const payload=(overrides={})=>({sessionId:id,grade:'準2級',right:8,total:10,be
 const fixture=(i=1,answer=1)=>({id:'P2-'+i,grade:'準2級',sentence:'Question '+i+' (　　).',
   choices:['first','second','third','fourth'],answer,correctWord:['first','second','third','fourth'][answer-1],translation:'和訳 '+i,explanation:'解説 '+i});
 const tick=()=>new Promise(setImmediate);
+
+test('EIKEN glossary URL changes with its content so old cached scripts are not reused',()=>{
+  const version=createHash('sha256').update(read('eiken-training.js')).digest('hex').slice(0,12);
+  const urls=[...read('eiken.html').matchAll(/src="\.\/eiken-training\.js\?v=([^"]+)"/g)];
+  assert.equal(urls.length,1);assert.equal(urls[0][1],version,'辞書更新時はeiken.htmlの読み込みバージョンも更新してください');
+});
 
 for(const [grade,file] of [['pre2','eiken_pre2.json'],['2','eiken_2.json']])test(`published ${file} matches the EIKEN contract`,()=>{
   const data=JSON.parse(read(file)),parsed=core.questions(data,grade);
