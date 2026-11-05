@@ -290,7 +290,7 @@ function xpWeekKey(ts){const d=new Date(ts+9*3600000),t=new Date(Date.UTC(d.getU
 const number=x=>Math.max(0,Number(x)||0);
 const tiers=[{name:'ブロンズ',min:0,color:'#c98c60'},{name:'シルバー',min:500,color:'#c3d5ea'},{name:'ゴールド',min:1500,color:'#f4c04d'},{name:'プラチナ',min:3500,color:'#7ad5e8'},{name:'ダイヤモンド',min:7000,color:'#7aafff'},{name:'マスター',min:12000,color:'#bb89ff'},{name:'レディアント',min:12000,color:'#ffd779'}];
 function rankOf(xp,pos){if(xp>=12000&&pos>=0&&pos<10)return 6;for(let i=5;i>=0;i--)if(xp>=tiers[i].min)return i;return 0}
-function recordXP(r){const n=Number(r.total),c=Number(r.right);if(!Number.isFinite(n)||!Number.isFinite(c)||n<=0||c<0||c>n)return 0;if(r.dailyV1===true)return Math.max(0,Math.min(500,Number(r.dailyDeltaXP)||0));const m=String(r.xpMode||r.mode||'');return Math.min(30,Math.floor(c)*(m==='textTyping'?7:m==='vocabTyping'?4:m==='vocab'?1:0))}
+function recordXP(r){const n=Number(r.total),c=Number(r.right);if(!Number.isFinite(n)||!Number.isFinite(c)||n<=0||c<0||c>n)return 0;if(r.dailyV1===true)return Math.max(0,Math.min(500,Number(r.dailyDeltaXP)||0));const m=String(r.xpMode||r.mode||'');if(r.subject==='英検'&&m==='eikenChoice')return Math.min(50,Math.floor(c)*5);return Math.min(30,Math.floor(c)*(m==='textTyping'?7:m==='vocabTyping'?4:m==='vocab'?1:0))}
 function historicalSeasonXP(records,season){
  // As in account.js syncXP, count attempts across the entire history before
  // selecting the season. A season boundary does not reset the repeat policy.

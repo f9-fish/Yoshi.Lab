@@ -209,6 +209,7 @@ function xpFromRecords(recs){
   attempts.set(key,previous+1);
   if(r.repeatPolicyV1===true&&previous>=4&&r.completedSet!==true)continue;
   if(r.dailyV1===true){xp+=Math.max(0,Math.min(500,Number(r.dailyDeltaXP)||0));}
+  else if(r.subject==='英検'&&mode==='eikenChoice'){xp+=Math.min(50,Math.floor(right)*5);}
   else {
    const rate=mode==='textTyping'?7:mode==='vocabTyping'?4:mode==='vocab'?1:0;
    xp+=Math.min(30,Math.floor(right)*rate);

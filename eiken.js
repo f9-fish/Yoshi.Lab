@@ -123,15 +123,16 @@
   const currentSession=session,result=core.score(currentSession);
   try{
    if(!currentSession.saved){
-    await withTimeout(a.saveEikenResult({sessionId:currentSession.id,grade:core.grades[currentSession.grade].label,
+    const saved=await withTimeout(a.saveEikenResult({sessionId:currentSession.id,grade:core.grades[currentSession.grade].label,
      right:result.right,total:result.total,bestStreak:result.bestStreak,
      durationSeconds:currentSession.durationSeconds||0}),12000);
+    currentSession.awardedXP=saved.xpMode==='eikenChoice'?Math.min(50,saved.right*5):Math.min(30,saved.right);
     currentSession.saved=true;
    }
    if(a.user?.uid!==currentSession.uid)throw Error('ログイン状態が変わりました。開始時のアカウントで再試行してください。');
    const updated=await withTimeout(a.syncXP(),8000);
    if(a.user?.uid!==currentSession.uid)throw Error('ログイン状態が変わりました');
-   $('resultXP').textContent=(updated?'獲得 +':'記録済み・反映予定 +')+result.xp+' XP';
+   $('resultXP').textContent=(updated?'獲得 +':'記録済み・反映予定 +')+(currentSession.awardedXP??result.xp)+' XP';
    $('saveStatus').textContent=updated?'記録・XPを保存しました。累計XP・ランキングに反映されます。':'記録は保存済みです。XP反映にはMY PAGEでプロフィール登録が必要です。';
    $('setupProfile').hidden=!!updated;$('retrySave').hidden=true;
    try{const data=JSON.parse(sessionStorage.getItem(pendingKey(currentSession.uid))||'null');if(data?.id===currentSession.id)sessionStorage.removeItem(pendingKey(currentSession.uid));}catch{}
