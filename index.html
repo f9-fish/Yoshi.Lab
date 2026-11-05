@@ -1123,7 +1123,7 @@ body.yoshi-game-started .daily-hero-link{display:none!important}
 <section class="panel"><h2>🏆 スコアボード</h2><div class="grid2"><div class="stat"><strong id="scoreA">0 / 0</strong><span>生徒A（正解 / 回答）</span></div><div class="stat"><strong id="scoreB">0 / 0</strong><span>生徒B（正解 / 回答）</span></div></div><div class="space"></div><button class="outline" id="export">結果をCSV保存</button></section>
 <section class="panel hidden"><details id="editor"><summary>✏️ 先生用：熟語リストを編集する</summary><div><p class="muted">1行に「英語 | 日本語」を入力。タブ区切りもOK。保存した内容はこの端末のブラウザに記憶されます。生徒の端末へ共有する場合は、下の「共有用HTMLを保存」を使ってください。</p><textarea id="terms" spellcheck="false"></textarea><div class="space"></div><div class="controls"><button class="primary" id="save">この端末に保存</button><button id="restore">初期リストに戻す</button><button id="share">共有用HTMLを保存</button></div><p id="editMessage" class="notice"></p></div></details></section></div><div class="footer">Yoshi<span class="brand-accent">.Lab</span></div></div>
 <div id="streakCelebration" class="streak-celebration" hidden aria-live="polite"><div class="streak-celebration-card"><div class="streak-fire" id="streakFire">🔥</div><div class="streak-count"><b id="streakNumber">5</b> <span>STREAK!</span></div><div class="streak-praise" id="streakPraise">AWESOME!</div></div></div>
-<script type="module" src="./account.js"></script>
+<script src="./weekly-daily.js?v=1"></script><script type="module" src="./account.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 let accountAttached=false;
