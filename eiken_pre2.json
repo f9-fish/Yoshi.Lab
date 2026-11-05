@@ -109,7 +109,7 @@
     "grade": "準2級",
     "sentence": "My brother is (　　) in learning how to cook.",
     "choices": [
-      "important",
+      "borrow",
       "interested",
       "rain",
       "lent"
@@ -140,7 +140,7 @@
     "sentence": "The train was (　　) because of the heavy snow.",
     "choices": [
       "excited",
-      "submit",
+      "invite",
       "delayed",
       "open"
     ],
@@ -187,7 +187,7 @@
       "lent",
       "important",
       "interested",
-      "rain"
+      "borrow"
     ],
     "answer": 2,
     "correctWord": "important",
@@ -381,7 +381,7 @@
     "choices": [
       "avoid",
       "repair",
-      "repair",
+      "calculate",
       "organize"
     ],
     "answer": 2,
@@ -427,7 +427,7 @@
       "choose",
       "save",
       "continue",
-      "accept"
+      "borrow"
     ],
     "answer": 3,
     "correctWord": "continue",
@@ -442,7 +442,7 @@
       "belong",
       "decide",
       "offer",
-      "consider"
+      "borrow"
     ],
     "answer": 2,
     "correctWord": "decide",
@@ -544,7 +544,7 @@
     "grade": "準2級",
     "sentence": "These shoes (　　) to my younger brother.",
     "choices": [
-      "depend",
+      "repair",
       "reduce",
       "belong",
       "repair"
@@ -559,7 +559,7 @@
     "grade": "準2級",
     "sentence": "Did you (　　) the email I sent yesterday?",
     "choices": [
-      "save",
+      "repair",
       "receive",
       "encourage",
       "prepare"
