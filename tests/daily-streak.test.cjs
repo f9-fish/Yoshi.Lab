@@ -20,7 +20,10 @@ for (const [label, rows, expectedCount, expectedMarks] of [
     const h = dailyHarness({ records: Object.fromEntries(rows.map((r, i) => [`fixture${i}`, r])) });
     await h.ready();
     assert.equal(h.evaluate('YoshiWeeklyDaily.progress(dailyRows).count'), expectedCount);
-    assert.equal(h.elements.get('dailyStreak').children[1].textContent, `🔥 ${expectedCount}日 / 7日達成`);
+    const progress=h.elements.get('dailyStreak').children[1];
+    assert.equal(progress.children[1].className, 'daily-streak-count');
+    assert.equal(progress.children[1].textContent, `${expectedCount}日`);
+    assert.equal(progress.children[2].textContent, ' / 7日 達成');
     assert.deepEqual(marks(h), expectedMarks);
     assert.equal(h.elements.get('dailyStreak').children[3].children[3].children[0].textContent, '木');
   });
@@ -40,5 +43,5 @@ test('completing and saving a Daily immediately refreshes today checkmark', asyn
   h.evaluate("index=9;answers=Array.from({length:10},()=>({ok:true,type:'word',prompt:'fixture',selected:'x',correct:'x'}));");
   await h.evaluate('next()');
   assert.equal(marks(h)[3], '✓');
-  assert.equal(h.elements.get('dailyStreak').children[1].textContent, '🔥 1日 / 7日達成');
+  assert.equal(h.elements.get('dailyStreak').children[1].children[1].textContent, '1日');
 });
