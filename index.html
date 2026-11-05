@@ -1117,6 +1117,85 @@ body.yoshi-game-started .daily-hero-link{display:none!important}
 </style><style id="eiken-home-entry">
 .eiken-home-link{display:flex;align-items:center;gap:14px;padding:15px 20px;margin:16px 0 0;border:1px solid #6ea9b9;border-radius:17px;background:linear-gradient(110deg,#113b4aee,#162b4ddd);color:#f2f8ff;text-decoration:none;box-shadow:0 6px 18px #0003;transition:border-color .2s,transform .2s}
 .eiken-home-link:hover{border-color:#a7dfdb;transform:translateY(-2px)}.eiken-home-icon{font-size:29px;color:#e9d48b}.eiken-home-link small{display:block;font-size:9px;letter-spacing:.16em;color:#9bcfcf;font-weight:800}.eiken-home-link strong{display:block;font-size:21px;letter-spacing:.04em;margin-top:2px}.eiken-home-grades{margin-left:auto;font-size:12px;color:#d6e5ef;border:1px solid #8ab8c44d;border-radius:99px;padding:5px 10px;white-space:nowrap}.eiken-home-link:focus-visible{outline:3px solid #ffe09a;outline-offset:3px}body.yoshi-game-started .eiken-home-link{display:none!important}@media(max-width:480px){.eiken-home-link{padding:12px 15px;gap:10px}.eiken-home-link strong{font-size:19px}.eiken-home-grades{font-size:11px;padding:4px 8px}}
+</style><style id="subject-selection-reference">
+/* Subject-screen surfaces only. Existing page backgrounds and actions are preserved. */
+.wrap>header{padding-bottom:14px;border-bottom:1px solid #72c8f255}
+.wrap>header .brand{font-style:italic;font-size:30px;letter-spacing:-.04em}
+.wrap>header .brand::before{content:'';display:inline-block;width:30px;height:23px;margin-right:9px;vertical-align:middle;background:repeating-linear-gradient(125deg,transparent 0 5px,#6ddfff 6px 10px,transparent 11px 15px);transform:skewX(-10deg)}
+.wrap>header .sub{letter-spacing:.14em;font-size:10px}
+.header-account .account-nav-links a{border:1px solid #799cc7;border-radius:999px;background:#0b1b34b3;padding:8px 14px}
+.header-account .account-nav-links a:last-child{border-color:#45c7ff;background:linear-gradient(135deg,#064477,#0d274b);box-shadow:inset 0 0 12px #00b9ff36,0 0 10px #00b9ff33}
+body:has(#subjects:not(.hidden)) #subjects{padding:26px 28px 20px;border-color:#769de0!important;border-radius:30px!important;background:linear-gradient(135deg,#092b52ed,#102747de)!important;box-shadow:inset 0 0 35px #5283cb25,0 12px 30px #0004!important}
+body:has(#subjects:not(.hidden)) #subjects .growth-section-label{justify-content:center;gap:18px;font-style:italic;letter-spacing:.3em;color:#d8e9ff!important;font-size:12px;margin-bottom:14px}
+#subjects .growth-section-label::before,#subjects .growth-section-label::after{content:'';height:1px;width:65px;background:linear-gradient(90deg,transparent,#bfdbff)}
+#subjects .growth-section-label::after{transform:rotate(180deg)}
+#subjects .growth-section-label>span{display:none}
+#subjects>h2{text-align:center;font-size:clamp(23px,3.5vw,34px);letter-spacing:.08em;margin:0 0 12px;font-style:italic}
+#subjects .growth-subcopy{text-align:center;font-size:12px;margin-bottom:22px;color:#b8cce5}
+body:has(#subjects:not(.hidden)) #subjects .subject-grid{gap:24px!important}
+body:has(#subjects:not(.hidden)) #subjects .choice{position:relative;isolation:isolate;overflow:hidden;display:grid!important;grid-template-columns:64px minmax(0,1fr) 32px;grid-template-rows:auto auto;column-gap:16px;row-gap:3px;align-content:center;align-items:center!important;height:150px!important;padding:21px!important;border-radius:22px!important;box-shadow:inset 0 0 20px #ffffff38,0 0 14px var(--glow)!important}
+body:has(#subjects:not(.hidden)) #subjects .choice[data-subject="英C"]{--glow:#00bfff77;background:linear-gradient(125deg,#0796d0,#063b80 65%,#052b5d)!important;border:2px solid #a4f5ff!important}
+body:has(#subjects:not(.hidden)) #subjects .choice[data-subject="論表"]{--glow:#c34aff77;background:linear-gradient(125deg,#8b38df,#49218c 65%,#301869)!important;border:2px solid #efd0ff!important}
+body:has(#subjects:not(.hidden)) #subjects .choice::before,body:has(#subjects:not(.hidden)) #subjects .choice::after{content:'';position:absolute;z-index:-1;pointer-events:none;width:130%;height:110px;inset:auto auto -90px -10%;border-radius:45%;background:linear-gradient(90deg,#38cfff66,#47d8ff11);transform:rotate(-9deg);opacity:1}
+body:has(#subjects:not(.hidden)) #subjects .choice::after{bottom:-86px;transform:rotate(12deg);background:#ffffff10}
+body:has(#subjects:not(.hidden)) #subjects .choice[data-subject="論表"]::before{background:linear-gradient(90deg,#b653ff66,#dc99ff11)}
+body:has(#subjects:not(.hidden)) #subjects .growth-subject-emoji{grid-column:1;grid-row:1/3;display:block;width:64px;height:64px;color:#90f1ff;font-size:0!important;filter:drop-shadow(0 0 8px #61daff33)}
+#subjects .growth-subject-emoji svg{display:block;width:100%;height:100%}
+body:has(#subjects:not(.hidden)) #subjects [data-subject="論表"] .growth-subject-emoji{color:#f6e8ff}
+body:has(#subjects:not(.hidden)) #subjects .growth-subject-name{grid-column:2;grid-row:1;font-size:clamp(36px,4.8vw,52px)!important;font-style:italic;letter-spacing:.08em;line-height:1.15;white-space:nowrap}
+body:has(#subjects:not(.hidden)) #subjects .choice small{grid-column:2;grid-row:2;font-size:clamp(10px,1.25vw,13px)!important;line-height:1.6;white-space:normal}
+body:has(#subjects:not(.hidden)) #subjects .growth-subject-cta{grid-column:3;grid-row:1/3;display:grid;place-items:center;width:32px;height:32px;margin:0;padding:0!important;border:0;border-radius:50%;font-size:30px!important;line-height:1;background:#405bdb88;color:white!important;box-shadow:0 0 15px #497eff66}
+#subjects .eiken-home-link{position:relative;max-width:88%;margin:22px auto 0;padding:12px 26px;gap:18px;border:2px solid #f3d77d;border-radius:21px;background:linear-gradient(115deg,#5b552c99,#0b2842e8 45%,#54451a99);box-shadow:inset 0 0 18px #f8da6b16,0 0 12px #f3c74d55;color:#fff7dc;transform:skewX(-10deg)}
+#subjects .eiken-home-link>*{transform:skewX(10deg)}
+#subjects .eiken-home-link:hover{border-color:#fff1b6;filter:brightness(1.12)}
+#subjects .eiken-home-icon{width:46px;flex:0 0 46px;color:#ffe59a;filter:drop-shadow(0 0 7px #ffde6a55)}
+#subjects .eiken-home-icon svg{display:block;width:100%;height:46px}
+#subjects .eiken-home-link small{font-size:10px;color:#f6dc81;letter-spacing:.18em}
+#subjects .eiken-home-link strong{font-size:29px;font-style:italic;letter-spacing:.08em;line-height:1.25;color:#fff5d5!important}
+#subjects>.status{font-size:11px;color:#a5bad6;margin:14px 0 0}
+#subjects .eiken-home-grades{font-size:14px;padding:7px 16px;border:1px solid #ebcd79;color:#fff4d0;background:#10233f80}
+#subjects .eiken-home-link>span:last-child{font-size:30px;color:#ffe48a}
+#subjects+.quest-rewards{grid-template-columns:1.2fr repeat(4,minmax(0,1fr));align-items:stretch;gap:12px;margin:20px 0;padding:18px 20px;border:2px solid #7799cb;border-radius:25px;background:linear-gradient(135deg,#0b284cdd,#071b37ed);box-shadow:inset 0 0 22px #5283cb22}
+#subjects.hidden+.quest-rewards{display:none}
+#subjects+.quest-rewards>strong{grid-column:auto;align-self:center;font-size:17px;line-height:1.5;letter-spacing:.03em}
+#subjects+.quest-rewards .quest-reward{justify-content:center;gap:8px;padding:12px 5px;border-radius:15px;background:#123255b3;font-size:11px}
+#subjects+.quest-rewards .quest-reward b{font-size:23px}
+#subjects+.quest-rewards .q1{background:#063b66bb;box-shadow:0 0 12px #00baff44}
+#subjects+.quest-rewards .q4{background:#3a176acc}
+#subjects+.quest-rewards .q7{background:linear-gradient(130deg,#6b480fcc,#35210cdd)}
+@media(max-width:700px){
+ body:has(#subjects:not(.hidden)) #subjects{padding:20px 16px 16px;border-radius:23px!important}
+ body:has(#subjects:not(.hidden)) #subjects .subject-grid{gap:12px!important}
+ body:has(#subjects:not(.hidden)) #subjects .choice{grid-template-columns:42px minmax(0,1fr);column-gap:10px;height:125px!important;padding:15px!important}
+ body:has(#subjects:not(.hidden)) #subjects .growth-subject-emoji{width:42px;height:42px}
+ body:has(#subjects:not(.hidden)) #subjects .growth-subject-name{font-size:35px!important}
+ body:has(#subjects:not(.hidden)) #subjects .growth-subject-cta{display:none}
+ #subjects .eiken-home-link{max-width:95%;padding:10px 16px;gap:12px}
+ #subjects .eiken-home-link strong{font-size:25px}
+ #subjects .eiken-home-grades{font-size:12px;padding:6px 10px}
+ #subjects+.quest-rewards{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:14px;border-radius:20px}
+ #subjects+.quest-rewards>strong{grid-column:1/-1;text-align:center;font-size:15px}
+ #subjects+.quest-rewards .quest-reward{font-size:10px;padding:10px 3px}
+ #subjects+.quest-rewards .quest-reward b{font-size:20px}
+}
+@media(max-width:480px){
+ #subjects>h2{font-size:22px;letter-spacing:.025em}
+ #subjects .growth-subcopy{font-size:11px;margin-bottom:16px}
+ body:has(#subjects:not(.hidden)) #subjects .growth-section-label{font-size:9px;letter-spacing:.18em;gap:10px}
+ #subjects .growth-section-label::before,#subjects .growth-section-label::after{width:24px}
+ body:has(#subjects:not(.hidden)) #subjects .choice{grid-template-columns:minmax(0,1fr);grid-template-rows:40px auto auto;row-gap:7px;height:160px!important;padding:14px!important;text-align:center!important;justify-items:center}
+ body:has(#subjects:not(.hidden)) #subjects .growth-subject-emoji{grid-column:1;grid-row:1;width:40px;height:40px}
+ body:has(#subjects:not(.hidden)) #subjects .growth-subject-name{grid-column:1;grid-row:2;font-size:36px!important}
+ body:has(#subjects:not(.hidden)) #subjects .choice small{grid-column:1;grid-row:3;font-size:10px!important}
+ #subjects .eiken-home-link{max-width:94%;padding:10px 12px;gap:9px;border-radius:16px}
+ #subjects .eiken-home-icon{width:32px;flex-basis:32px}
+ #subjects .eiken-home-icon svg{height:32px}
+ #subjects .eiken-home-link strong{font-size:22px}
+ #subjects .eiken-home-link small{font-size:8px;letter-spacing:.08em}
+ #subjects .eiken-home-grades{font-size:10px;padding:5px 8px}
+ #subjects .eiken-home-link>span:last-child{font-size:23px}
+ #subjects+.quest-rewards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+}
 </style></head><body><div id="welcomeCover" aria-label="Yoshi.Lab オープニング"><div class="welcome-inner">
   <div class="welcome-hero"><a class="welcome-hero-link welcome-hero-link-mypage" href="mypage.html" aria-label="MY PAGE"></a><a class="welcome-hero-link welcome-hero-link-home" href="./" aria-label="HOME"></a><div class="welcome-crown" aria-hidden="true">♕</div><div class="welcome-logo">Yoshi<span>.Lab</span></div><div class="welcome-tagline">YOUR ENGLISH<br>PRACTICE SPACE</div><div class="welcome-motto">LEARN × LEVEL UP</div><div class="welcome-line"></div></div>
   <section aria-label="使い方"><h2 class="welcome-how">🎮 HOW TO USE <span>学び方を選ぼう！</span></h2><div class="welcome-steps">
@@ -1142,7 +1221,7 @@ body.yoshi-game-started .daily-hero-link{display:none!important}
 <div class="wrap"><header><div><div class="brand">Yoshi<span class="brand-accent">.Lab</span></div><div class="sub">LEARN × LEVEL UP</div></div><div class="header-account"><div class="account-msg"><strong id="accountStatus">学習記録を保存するにはGoogleログイン</strong><small id="accountDetail">Googleアカウントを使用</small></div><button id="googleLogin" type="button">Googleでログイン</button><div class="account-nav-links"><a href="./mypage.html">📊 MY PAGE →</a><a href="./index.html?view=subjects" id="goHomeLink">🏠 HOME →</a></div></div></header><a class="daily-hero-link" href="./daily.html" aria-label="デイリーチャレンジへ進む"><span class="daily-hero-copy"><span class="daily-hero-top"><span class="daily-hero-kicker">🏆 DAILY CHALLENGE</span><span class="daily-hero-limit">各科目 1日2回</span></span><span class="daily-hero-title">デイリーチャレンジ</span><span class="daily-hero-detail">全10問・全問正解で <strong>500 <span>XP</span></strong></span><span class="daily-hero-footer"><span class="daily-home-week" aria-live="polite"><span class="daily-home-summary" id="dailyHomeSummary">達成状況を確認中…</span><span class="daily-home-days" id="dailyHomeDays"></span></span><span class="daily-hero-arrow" aria-hidden="true">›</span></span></span></a><div class="growth-eyebrow" id="growthEyebrow">⚡ LEARN · EARN · LEVEL UP</div><h1 id="pageTitle">科目を選ぼう ✦</h1><p class="sub" id="pageSub">英C・論表から学習をスタート！</p><div class="growth-motivation" id="growthMotivation"><div class="growth-motivation-copy"><span class="growth-motivation-en">Small Steps. Big Progress.</span><span class="growth-motivation-ja">今日の挑戦が、明日のレベルにつながる。</span></div></div>
 <div class="quest-progress" id="questProgress"><div class="quest-crown">♛</div><div class="quest-progress-copy"><b id="questLevel">Lv. —</b><div class="quest-track"><span id="questFill"></span></div><small id="questXP">ログインするとXPを表示</small></div></div>
 <div class="quest-rank"><span>🎯 学んでXPを獲得し、レベルアップしよう！</span><a href="./ranking.html">🏆 ランキングを見る →</a></div>
-<section class="panel subjects-panel" id="subjects"><div class="growth-section-label">CHOOSE YOUR PATH <span>01 / 02</span></div><h2>🎮 挑戦する科目を選ぼう</h2><p class="growth-subcopy">科目を選んで、レッスンに挑戦。難しいモードほどXPを獲得できる！</p><div class="subject-grid"><button class="choice" data-subject="英C"><span class="growth-subject-emoji">📘</span><span class="growth-subject-name">英C</span><small>英語コミュニケーション</small><span class="growth-subject-cta">CHALLENGE <span aria-hidden="true">→</span></span></button><button class="choice" data-subject="論表"><span class="growth-subject-emoji">✍️</span><span class="growth-subject-name">論表</span><small>論理・表現</small><span class="growth-subject-cta">CHALLENGE <span aria-hidden="true">→</span></span></button></div><a class="eiken-home-link" href="./eiken.html"><span class="eiken-home-icon" aria-hidden="true">✦</span><span><small>EIKEN TRAINING</small><strong>英検対策</strong></span><span class="eiken-home-grades">準2級・2級</span><span aria-hidden="true">→</span></a><div class="quest-rewards"><strong>各モードの獲得XP</strong><div class="quest-reward q0">📑 本文チェック<b>0 XP</b></div><div class="quest-reward q1">🔘 単語4択<b>+1 XP</b></div><div class="quest-reward q4">⌨️ 単語タイピング<b>+4 XP</b></div><div class="quest-reward q7">⚡ 本文タイピング<b>+7 XP</b></div></div><p class="status" id="loadStatus">問題集を読み込み中…</p></section>
+<section class="panel subjects-panel" id="subjects"><div class="growth-section-label">CHOOSE YOUR PATH <span>01 / 02</span></div><h2>挑戦する科目を選ぼう</h2><p class="growth-subcopy">科目を選んで、レッスンに挑戦。難しいモードほどXPを獲得できる！</p><div class="subject-grid"><button class="choice" data-subject="英C"><span class="growth-subject-emoji"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"><path d="M32 16C23 9 14 10 6 14L3 52c10-5 19-4 29 1 10-5 19-6 29-1l-3-38c-8-4-17-5-26 2Z"/><path d="M32 16v37M10 20 8 44c7-2 13-1 19 2m27-26 2 24c-7-2-13-1-19 2"/></svg></span><span class="growth-subject-name">英C</span><small>英語コミュニケーション</small><span class="growth-subject-cta" aria-hidden="true">›</span></button><button class="choice" data-subject="論表"><span class="growth-subject-emoji"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"><path d="m7 56 9-33L44 6l14 14-17 28-34 8Z"/><path d="m7 56 22-22m8-24 17 17"/><circle cx="31" cy="32" r="4"/></svg></span><span class="growth-subject-name">論表</span><small>論理・表現</small><span class="growth-subject-cta" aria-hidden="true">›</span></button></div><a class="eiken-home-link" href="./eiken.html"><span class="eiken-home-icon" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false" fill="currentColor"><path d="m8 20 14 11L32 13l10 18 14-11-7 29H15Z"/><rect x="15" y="53" width="34" height="4" rx="2"/><circle cx="8" cy="17" r="4"/><circle cx="32" cy="9" r="4"/><circle cx="56" cy="17" r="4"/></svg></span><span><small>EIKEN TRAINING</small><strong>英検対策</strong></span><span class="eiken-home-grades">準2級・2級</span><span aria-hidden="true">→</span></a><p class="status" id="loadStatus">問題集を読み込み中…</p></section><div class="quest-rewards"><strong>各モードの獲得XP</strong><div class="quest-reward q0">📑 本文チェック<b>0 XP</b></div><div class="quest-reward q1">🔘 単語4択<b>+1 XP</b></div><div class="quest-reward q4">⌨️ 単語タイピング<b>+4 XP</b></div><div class="quest-reward q7">⚡ 本文タイピング<b>+7 XP</b></div></div>
 
 <section class="panel pair-feature"><h2>📱📱 ペアワーク</h2><p class="muted">2人がそれぞれのスマホで参加。交代のタイミングは開始前に選べます。</p><a href="./pair.html?v=20261029-role-sync" class="pair-start">ペアワーク →</a></section><section class="panel hidden" id="units"><button class="outline back" id="toSubjects">← 学習内容選択に戻る</button><h2 id="unitTitle">Lessonを選ぼう</h2><div id="unitList"></div></section>
 <section class="panel hidden" id="parts"><button class="outline back" id="toLessons">← Lesson選択に戻る</button><h2 id="partTitle">Partを選ぼう</h2><div id="partList"></div></section>
@@ -1295,7 +1374,8 @@ function syncPairPlacement(){
   const showPair=!!active;
   pairFeature.classList.toggle('hidden',!showPair);
   pairFeature.classList.toggle('pair-compact',!!active&&active.id!=='subjects');
-  if(active&&active.nextElementSibling!==pairFeature)active.after(pairFeature);
+  const placement=active?.id==='subjects'?document.querySelector('.quest-rewards'):active;
+  if(placement&&placement.nextElementSibling!==pairFeature)placement.after(pairFeature);
 }
 const pairObserver=new MutationObserver(syncPairPlacement);
 selectionScreens.forEach(id=>pairObserver.observe($(id),{attributes:true,attributeFilter:['class']}));
