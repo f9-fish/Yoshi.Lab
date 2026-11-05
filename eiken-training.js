@@ -6,7 +6,7 @@ globalThis.YoshiEiken=(()=>{
  const choiceGlossary=Object.freeze({
   accept:'受け入れる',adapt:'適応する／適応させる',announce:'発表する／知らせる',answer:'答える／答え',
   close:'閉める／近い',closed:'閉じた／閉まっている',collected:'集めた／集められた',confirm:'確認する',
-  convince:'納得させる／確信させる',delayed:'遅らせた／遅れた',discuss:'話し合う／議論する',encourage:'励ます／促す',
+  convince:'納得させる／確信させる',delayed:'遅らせた／遅れた',discuss:'話し合う／議論する',encourage:'励ます／促す',encouraging:'励みになる／有望な',
   excited:'わくわくした／興奮した',expand:'広げる／拡大する',explain:'説明する',famous:'有名な',
   grows:'成長する／増える',heavy:'重い',highlights:'強調する／最も目立つ点（複数）',identify:'特定する／見分ける',
   important:'重要な',improve:'改善する／上達する',increase:'増やす／増加する',interested:'興味を持っている',

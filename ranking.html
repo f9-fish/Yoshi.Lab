@@ -304,7 +304,7 @@ function historicalSeasonXP(records,season){
   const key=JSON.stringify([String(r.subject||''),String(r.lesson||''),String(r.part||''),String(r.xpMode||r.mode||'')]);
   const previous=attempts.get(key)||0;
   attempts.set(key,previous+1);
-  const earned=(r.repeatPolicyV1===true&&previous>=4&&r.completedSet!==true)?0:recordXP(r);
+  const earned=(r.repeatPolicyV1===true&&previous>=4&&r.completedSet!==true&&!(r.subject==='英検'&&r.xpMode==='eikenChoice'))?0:recordXP(r);
   const ts=Number(r.createdAt);
   if(ts>=start&&ts<=end)xp+=earned;
  }
