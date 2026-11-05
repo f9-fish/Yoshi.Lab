@@ -14,9 +14,11 @@ const clone = value => value == null ? value : structuredClone(value);
 
 // Deliberately has no network primitives, real Firebase SDK, or credentials.
 function context(extra = {}) {
-  return vm.createContext({ Date: FixedDate, Intl, console, ...extra }, {
+  const sandbox = vm.createContext({ Date: FixedDate, Intl, console, ...extra }, {
     codeGeneration: { strings: false, wasm: false },
   });
+  if(!extra.YoshiWeeklyDaily)vm.runInContext(read('weekly-daily.js'), sandbox, { filename: 'weekly-daily.js', timeout: 1000 });
+  return sandbox;
 }
 
 function accountHarness({ records = {}, teacher = false, loggedIn = true, now = NOW } = {}) {
