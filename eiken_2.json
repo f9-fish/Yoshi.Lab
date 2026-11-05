@@ -94,9 +94,9 @@
     "grade": "2級",
     "sentence": "The committee decided to (　　) the proposal after a long debate.",
     "choices": [
-      "identify",
+      "preserve",
       "encourage",
-      "promote",
+      "calculate",
       "reject"
     ],
     "answer": 4,
@@ -246,7 +246,7 @@
     "choices": [
       "promote",
       "identify",
-      "encouraging",
+      "calculate",
       "reject"
     ],
     "answer": 1,
@@ -394,7 +394,7 @@
     "grade": "2級",
     "sentence": "It is important to (　　) the warning signs of stress.",
     "choices": [
-      "assess",
+      "allocate",
       "adapt",
       "preserve",
       "recognize"
@@ -486,7 +486,7 @@
     "choices": [
       "resolve",
       "restrict",
-      "generate",
+      "allocate",
       "maintain"
     ],
     "answer": 2,
@@ -501,7 +501,7 @@
     "choices": [
       "assess",
       "facilitate",
-      "clarify",
+      "allocate",
       "generate"
     ],
     "answer": 1,
@@ -574,7 +574,7 @@
     "grade": "2級",
     "sentence": "Experts (　　) a rise in demand for clean energy.",
     "choices": [
-      "acknowledge",
+      "implement",
       "persuade",
       "respond",
       "anticipate"
@@ -652,7 +652,7 @@
       "strengthen",
       "verify",
       "withdraw",
-      "restrict"
+      "negotiate"
     ],
     "answer": 3,
     "correctWord": "withdraw",
@@ -667,7 +667,7 @@
       "compensate",
       "enhance",
       "evaluate",
-      "assess"
+      "allocate"
     ],
     "answer": 2,
     "correctWord": "enhance",
@@ -754,7 +754,7 @@
     "grade": "2級",
     "sentence": "Regular practice can (　　) the relationship between team members.",
     "choices": [
-      "sustain",
+      "allocate",
       "recognize",
       "resolve",
       "strengthen"
@@ -784,7 +784,7 @@
     "grade": "2級",
     "sentence": "It can be difficult to (　　) reliable news from false information.",
     "choices": [
-      "verify",
+      "allocate",
       "distinguish",
       "demonstrate",
       "regulate"
@@ -800,7 +800,7 @@
     "sentence": "The university hopes to (　　) its research facilities next year.",
     "choices": [
       "expand",
-      "evaluate",
+      "allocate",
       "participate",
       "adapt"
     ],
@@ -814,7 +814,7 @@
     "grade": "2級",
     "sentence": "The campaign aims to (　　) people to use public transportation.",
     "choices": [
-      "maintain",
+      "allocate",
       "allocate",
       "withdraw",
       "persuade"
@@ -829,7 +829,7 @@
     "grade": "2級",
     "sentence": "Local groups are working to (　　) the historic theater.",
     "choices": [
-      "investigate",
+      "allocate",
       "emphasize",
       "preserve",
       "allocate"
