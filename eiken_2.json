@@ -1,1 +1,302 @@
-[]
+[
+  {
+    "id": "G2-001",
+    "grade": "2級",
+    "sentence": "The city plans to (　　) public transportation to reduce traffic.",
+    "choices": [
+      "expand",
+      "opposed",
+      "confirm",
+      "highlights"
+    ],
+    "answer": 1,
+    "correctWord": "expand",
+    "translation": "市は交通渋滞を減らすため公共交通機関を拡充する予定だ。",
+    "explanation": "expand＝拡大する・拡充する"
+  },
+  {
+    "id": "G2-002",
+    "grade": "2級",
+    "sentence": "The manager tried to (　　) the cause of the sudden decline in sales.",
+    "choices": [
+      "identify",
+      "promote",
+      "encourage",
+      "reject"
+    ],
+    "answer": 1,
+    "correctWord": "identify",
+    "translation": "管理者は売上急減の原因を特定しようとした。",
+    "explanation": "identify the cause＝原因を特定する"
+  },
+  {
+    "id": "G2-003",
+    "grade": "2級",
+    "sentence": "The government introduced measures to (　　) air pollution.",
+    "choices": [
+      "suggests",
+      "improve",
+      "minimize",
+      "reduce"
+    ],
+    "answer": 4,
+    "correctWord": "reduce",
+    "translation": "政府は大気汚染を減らすための対策を導入した。",
+    "explanation": "reduce pollution＝汚染を減らす"
+  },
+  {
+    "id": "G2-004",
+    "grade": "2級",
+    "sentence": "The scientist gathered data to (　　) her theory.",
+    "choices": [
+      "announce",
+      "support",
+      "introduced",
+      "increase"
+    ],
+    "answer": 2,
+    "correctWord": "support",
+    "translation": "科学者は自説を裏付けるデータを集めた。",
+    "explanation": "support a theory＝理論を裏付ける"
+  },
+  {
+    "id": "G2-005",
+    "grade": "2級",
+    "sentence": "The company must (　　) its strategy to changing market conditions.",
+    "choices": [
+      "explain",
+      "convince",
+      "preserve",
+      "adapt"
+    ],
+    "answer": 4,
+    "correctWord": "adapt",
+    "translation": "企業は市場の変化に戦略を適応させなければならない。",
+    "explanation": "adapt A to B＝AをBに適応させる"
+  },
+  {
+    "id": "G2-006",
+    "grade": "2級",
+    "sentence": "The report (　　) several serious problems with the current system.",
+    "choices": [
+      "confirm",
+      "expand",
+      "highlights",
+      "opposed"
+    ],
+    "answer": 3,
+    "correctWord": "highlights",
+    "translation": "報告書は現行制度の深刻な問題をいくつか浮き彫りにしている。",
+    "explanation": "highlight a problem＝問題を浮き彫りにする"
+  },
+  {
+    "id": "G2-007",
+    "grade": "2級",
+    "sentence": "The committee decided to (　　) the proposal after a long debate.",
+    "choices": [
+      "identify",
+      "encourage",
+      "promote",
+      "reject"
+    ],
+    "answer": 4,
+    "correctWord": "reject",
+    "translation": "委員会は長い議論の末、その提案を却下した。",
+    "explanation": "reject a proposal＝提案を却下する"
+  },
+  {
+    "id": "G2-008",
+    "grade": "2級",
+    "sentence": "The charity aims to (　　) access to education in rural areas.",
+    "choices": [
+      "minimize",
+      "suggests",
+      "improve",
+      "reduce"
+    ],
+    "answer": 3,
+    "correctWord": "improve",
+    "translation": "その慈善団体は農村地域の教育へのアクセス改善を目指す。",
+    "explanation": "improve access to＝～へのアクセスを改善する"
+  },
+  {
+    "id": "G2-009",
+    "grade": "2級",
+    "sentence": "The new policy could (　　) the number of people who use bicycles.",
+    "choices": [
+      "announce",
+      "support",
+      "increase",
+      "introduced"
+    ],
+    "answer": 3,
+    "correctWord": "increase",
+    "translation": "新政策は自転車利用者数を増やす可能性がある。",
+    "explanation": "increase the number of＝～の数を増やす"
+  },
+  {
+    "id": "G2-010",
+    "grade": "2級",
+    "sentence": "The researcher was unable to (　　) the results of the experiment.",
+    "choices": [
+      "explain",
+      "adapt",
+      "convince",
+      "preserve"
+    ],
+    "answer": 1,
+    "correctWord": "explain",
+    "translation": "研究者は実験結果を説明できなかった。",
+    "explanation": "explain results＝結果を説明する"
+  },
+  {
+    "id": "G2-011",
+    "grade": "2級",
+    "sentence": "Local residents strongly (　　) the construction of the new highway.",
+    "choices": [
+      "confirm",
+      "highlights",
+      "opposed",
+      "expand"
+    ],
+    "answer": 3,
+    "correctWord": "opposed",
+    "translation": "地元住民は新しい高速道路の建設に強く反対した。",
+    "explanation": "oppose＝反対する（前置詞toは不要）"
+  },
+  {
+    "id": "G2-012",
+    "grade": "2級",
+    "sentence": "The school hopes to (　　) students to participate in volunteer work.",
+    "choices": [
+      "identify",
+      "promote",
+      "encourage",
+      "reject"
+    ],
+    "answer": 3,
+    "correctWord": "encourage",
+    "translation": "学校は生徒にボランティア活動への参加を促したいと考えている。",
+    "explanation": "encourage A to do＝Aに～するよう促す"
+  },
+  {
+    "id": "G2-013",
+    "grade": "2級",
+    "sentence": "The factory has taken steps to (　　) waste during production.",
+    "choices": [
+      "minimize",
+      "suggests",
+      "improve",
+      "reduce"
+    ],
+    "answer": 1,
+    "correctWord": "minimize",
+    "translation": "工場は製造時の廃棄物を最小限にする対策を講じた。",
+    "explanation": "minimize waste＝廃棄物を最小限にする"
+  },
+  {
+    "id": "G2-014",
+    "grade": "2級",
+    "sentence": "The company will (　　) the results of the survey next week.",
+    "choices": [
+      "introduced",
+      "announce",
+      "increase",
+      "support"
+    ],
+    "answer": 2,
+    "correctWord": "announce",
+    "translation": "会社は来週調査結果を発表する。",
+    "explanation": "announce results＝結果を発表する"
+  },
+  {
+    "id": "G2-015",
+    "grade": "2級",
+    "sentence": "The museum has made efforts to (　　) ancient documents.",
+    "choices": [
+      "preserve",
+      "adapt",
+      "convince",
+      "explain"
+    ],
+    "answer": 1,
+    "correctWord": "preserve",
+    "translation": "博物館は古文書の保存に努めてきた。",
+    "explanation": "preserve＝保存する・保護する"
+  },
+  {
+    "id": "G2-016",
+    "grade": "2級",
+    "sentence": "The team needs to (　　) whether the information is accurate.",
+    "choices": [
+      "expand",
+      "opposed",
+      "highlights",
+      "confirm"
+    ],
+    "answer": 4,
+    "correctWord": "confirm",
+    "translation": "チームは情報が正確かどうか確認する必要がある。",
+    "explanation": "confirm whether＝～かどうか確認する"
+  },
+  {
+    "id": "G2-017",
+    "grade": "2級",
+    "sentence": "The program was designed to (　　) cooperation between schools.",
+    "choices": [
+      "promote",
+      "identify",
+      "encourage",
+      "reject"
+    ],
+    "answer": 1,
+    "correctWord": "promote",
+    "translation": "その計画は学校間の協力を促進するために作られた。",
+    "explanation": "promote cooperation＝協力を促進する"
+  },
+  {
+    "id": "G2-018",
+    "grade": "2級",
+    "sentence": "The article (　　) that regular exercise can improve sleep quality.",
+    "choices": [
+      "suggests",
+      "improve",
+      "reduce",
+      "minimize"
+    ],
+    "answer": 1,
+    "correctWord": "suggests",
+    "translation": "その記事は定期的な運動が睡眠の質を改善し得ると示唆している。",
+    "explanation": "suggest that＝～ということを示唆する"
+  },
+  {
+    "id": "G2-019",
+    "grade": "2級",
+    "sentence": "The city has (　　) a new recycling system in public buildings.",
+    "choices": [
+      "increase",
+      "introduced",
+      "support",
+      "announce"
+    ],
+    "answer": 2,
+    "correctWord": "introduced",
+    "translation": "市は公共施設に新しいリサイクル制度を導入した。",
+    "explanation": "introduce a system＝制度を導入する"
+  },
+  {
+    "id": "G2-020",
+    "grade": "2級",
+    "sentence": "The speaker tried to (　　) the audience that the plan was realistic.",
+    "choices": [
+      "preserve",
+      "convince",
+      "adapt",
+      "explain"
+    ],
+    "answer": 2,
+    "correctWord": "convince",
+    "translation": "講演者はその計画が現実的だと聴衆を納得させようとした。",
+    "explanation": "convince A that＝Aに～だと納得させる"
+  }
+]
