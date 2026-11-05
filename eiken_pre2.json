@@ -298,5 +298,620 @@
     "correctWord": "open",
     "translation": "新しい図書館は来月開館する。",
     "explanation": "open＝開館する・開く"
+  },
+  {
+    "id": "P2-021",
+    "grade": "準2級",
+    "sentence": "Can I (　　) your dictionary until tomorrow?",
+    "choices": [
+      "borrow",
+      "repair",
+      "invite",
+      "protect"
+    ],
+    "answer": 1,
+    "correctWord": "borrow",
+    "translation": "明日まであなたの辞書を借りてもいいですか。",
+    "explanation": "borrow A＝Aを借りる"
+  },
+  {
+    "id": "P2-022",
+    "grade": "準2級",
+    "sentence": "Reading English articles every day can (　　) your vocabulary.",
+    "choices": [
+      "continue",
+      "improve",
+      "receive",
+      "require"
+    ],
+    "answer": 2,
+    "correctWord": "improve",
+    "translation": "毎日英語の記事を読むと語彙力を伸ばせる。",
+    "explanation": "improve＝向上させる"
+  },
+  {
+    "id": "P2-023",
+    "grade": "準2級",
+    "sentence": "We need to (　　) at the station before eight.",
+    "choices": [
+      "arrive",
+      "decide",
+      "notice",
+      "deliver"
+    ],
+    "answer": 1,
+    "correctWord": "arrive",
+    "translation": "私たちは8時前に駅に到着する必要がある。",
+    "explanation": "arrive at＝～に到着する"
+  },
+  {
+    "id": "P2-024",
+    "grade": "準2級",
+    "sentence": "Our teacher will (　　) a guest speaker to the class.",
+    "choices": [
+      "explain",
+      "allow",
+      "reduce",
+      "invite"
+    ],
+    "answer": 4,
+    "correctWord": "invite",
+    "translation": "先生は授業にゲスト講師を招く予定だ。",
+    "explanation": "invite A to B＝AをBに招く"
+  },
+  {
+    "id": "P2-025",
+    "grade": "準2級",
+    "sentence": "Wearing a helmet can (　　) your head during a fall.",
+    "choices": [
+      "compare",
+      "suggest",
+      "protect",
+      "encourage"
+    ],
+    "answer": 3,
+    "correctWord": "protect",
+    "translation": "ヘルメットをかぶると転倒時に頭を守れる。",
+    "explanation": "protect＝守る"
+  },
+  {
+    "id": "P2-026",
+    "grade": "準2級",
+    "sentence": "My father offered to (　　) my broken bicycle.",
+    "choices": [
+      "avoid",
+      "repair",
+      "repair",
+      "organize"
+    ],
+    "answer": 2,
+    "correctWord": "repair",
+    "translation": "父は壊れた自転車を修理すると申し出た。",
+    "explanation": "repair＝修理する"
+  },
+  {
+    "id": "P2-027",
+    "grade": "準2級",
+    "sentence": "Please (　　) your presentation before Friday.",
+    "choices": [
+      "prepare",
+      "depend",
+      "receive",
+      "replace"
+    ],
+    "answer": 1,
+    "correctWord": "prepare",
+    "translation": "金曜日までに発表の準備をしてください。",
+    "explanation": "prepare＝準備する"
+  },
+  {
+    "id": "P2-028",
+    "grade": "準2級",
+    "sentence": "The students hope to (　　) something new during the experiment.",
+    "choices": [
+      "increase",
+      "depend",
+      "introduce",
+      "discover"
+    ],
+    "answer": 4,
+    "correctWord": "discover",
+    "translation": "生徒たちは実験で何か新しいことを発見したいと思っている。",
+    "explanation": "discover＝発見する"
+  },
+  {
+    "id": "P2-029",
+    "grade": "準2級",
+    "sentence": "Although it started raining, the players decided to (　　) the game.",
+    "choices": [
+      "choose",
+      "save",
+      "continue",
+      "accept"
+    ],
+    "answer": 3,
+    "correctWord": "continue",
+    "translation": "雨が降り始めたが、選手たちは試合を続けることにした。",
+    "explanation": "continue＝続ける"
+  },
+  {
+    "id": "P2-030",
+    "grade": "準2級",
+    "sentence": "We must (　　) which train to take before leaving.",
+    "choices": [
+      "belong",
+      "decide",
+      "offer",
+      "consider"
+    ],
+    "answer": 2,
+    "correctWord": "decide",
+    "translation": "出発前にどの電車に乗るか決めなければならない。",
+    "explanation": "decide＝決める"
+  },
+  {
+    "id": "P2-031",
+    "grade": "準2級",
+    "sentence": "Could you (　　) how this machine works?",
+    "choices": [
+      "explain",
+      "receive",
+      "refuse",
+      "attend"
+    ],
+    "answer": 1,
+    "correctWord": "explain",
+    "translation": "この機械の仕組みを説明してくれますか。",
+    "explanation": "explain how＝どのように～か説明する"
+  },
+  {
+    "id": "P2-032",
+    "grade": "準2級",
+    "sentence": "Let's (　　) the prices of these two computers.",
+    "choices": [
+      "notice",
+      "support",
+      "share",
+      "compare"
+    ],
+    "answer": 4,
+    "correctWord": "compare",
+    "translation": "この2台のパソコンの価格を比較しよう。",
+    "explanation": "compare＝比較する"
+  },
+  {
+    "id": "P2-033",
+    "grade": "準2級",
+    "sentence": "You should (　　) using your phone while crossing the street.",
+    "choices": [
+      "allow",
+      "expect",
+      "avoid",
+      "improve"
+    ],
+    "answer": 3,
+    "correctWord": "avoid",
+    "translation": "道路を渡る間は携帯電話を使わないようにすべきだ。",
+    "explanation": "avoid -ing＝～するのを避ける"
+  },
+  {
+    "id": "P2-034",
+    "grade": "準2級",
+    "sentence": "The hotel will (　　) towels for all guests.",
+    "choices": [
+      "suggest",
+      "provide",
+      "remain",
+      "arrive"
+    ],
+    "answer": 2,
+    "correctWord": "provide",
+    "translation": "ホテルはすべての宿泊客にタオルを提供する。",
+    "explanation": "provide＝提供する"
+  },
+  {
+    "id": "P2-035",
+    "grade": "準2級",
+    "sentence": "The school hopes to (　　) the number of students who read books.",
+    "choices": [
+      "increase",
+      "collect",
+      "require",
+      "invite"
+    ],
+    "answer": 1,
+    "correctWord": "increase",
+    "translation": "学校は読書する生徒の数を増やしたいと考えている。",
+    "explanation": "increase＝増やす"
+  },
+  {
+    "id": "P2-036",
+    "grade": "準2級",
+    "sentence": "You can (　　) one activity from the list.",
+    "choices": [
+      "return",
+      "deliver",
+      "protect",
+      "choose"
+    ],
+    "answer": 4,
+    "correctWord": "choose",
+    "translation": "一覧から活動を1つ選べる。",
+    "explanation": "choose＝選ぶ"
+  },
+  {
+    "id": "P2-037",
+    "grade": "準2級",
+    "sentence": "These shoes (　　) to my younger brother.",
+    "choices": [
+      "depend",
+      "reduce",
+      "belong",
+      "repair"
+    ],
+    "answer": 3,
+    "correctWord": "belong",
+    "translation": "この靴は弟のものだ。",
+    "explanation": "belong to＝～のものである"
+  },
+  {
+    "id": "P2-038",
+    "grade": "準2級",
+    "sentence": "Did you (　　) the email I sent yesterday?",
+    "choices": [
+      "save",
+      "receive",
+      "encourage",
+      "prepare"
+    ],
+    "answer": 2,
+    "correctWord": "receive",
+    "translation": "昨日私が送ったメールを受け取りましたか。",
+    "explanation": "receive＝受け取る"
+  },
+  {
+    "id": "P2-039",
+    "grade": "準2級",
+    "sentence": "I didn't (　　) the sign near the entrance.",
+    "choices": [
+      "notice",
+      "offer",
+      "organize",
+      "depend"
+    ],
+    "answer": 1,
+    "correctWord": "notice",
+    "translation": "私は入口の近くの看板に気づかなかった。",
+    "explanation": "notice＝気づく"
+  },
+  {
+    "id": "P2-040",
+    "grade": "準2級",
+    "sentence": "The library does not (　　) visitors to eat inside.",
+    "choices": [
+      "refuse",
+      "replace",
+      "continue",
+      "allow"
+    ],
+    "answer": 4,
+    "correctWord": "allow",
+    "translation": "図書館では利用者が館内で食べることを許可していない。",
+    "explanation": "allow A to do＝Aが～することを許す"
+  },
+  {
+    "id": "P2-041",
+    "grade": "準2級",
+    "sentence": "Could you (　　) a good book for my English class?",
+    "choices": [
+      "support",
+      "introduce",
+      "suggest",
+      "decide"
+    ],
+    "answer": 3,
+    "correctWord": "suggest",
+    "translation": "英語の授業におすすめの本を提案してくれますか。",
+    "explanation": "suggest＝提案する"
+  },
+  {
+    "id": "P2-042",
+    "grade": "準2級",
+    "sentence": "Our class will (　　) used batteries for recycling.",
+    "choices": [
+      "expect",
+      "collect",
+      "accept",
+      "explain"
+    ],
+    "answer": 2,
+    "correctWord": "collect",
+    "translation": "私たちのクラスはリサイクルのため使用済み電池を集める。",
+    "explanation": "collect＝集める"
+  },
+  {
+    "id": "P2-043",
+    "grade": "準2級",
+    "sentence": "Please (　　) the books to the library by Monday.",
+    "choices": [
+      "return",
+      "remain",
+      "consider",
+      "compare"
+    ],
+    "answer": 1,
+    "correctWord": "return",
+    "translation": "月曜日までに本を図書館へ返してください。",
+    "explanation": "return＝返す"
+  },
+  {
+    "id": "P2-044",
+    "grade": "準2級",
+    "sentence": "The picnic will (　　) on the weather.",
+    "choices": [
+      "require",
+      "attend",
+      "avoid",
+      "depend"
+    ],
+    "answer": 4,
+    "correctWord": "depend",
+    "translation": "ピクニックは天気次第だ。",
+    "explanation": "depend on＝～次第である"
+  },
+  {
+    "id": "P2-045",
+    "grade": "準2級",
+    "sentence": "We can (　　) electricity by turning off unused lights.",
+    "choices": [
+      "deliver",
+      "share",
+      "save",
+      "provide"
+    ],
+    "answer": 3,
+    "correctWord": "save",
+    "translation": "使っていない電灯を消すことで節電できる。",
+    "explanation": "save electricity＝節電する"
+  },
+  {
+    "id": "P2-046",
+    "grade": "準2級",
+    "sentence": "The restaurant will (　　) a special lunch menu tomorrow.",
+    "choices": [
+      "reduce",
+      "offer",
+      "improve",
+      "increase"
+    ],
+    "answer": 2,
+    "correctWord": "offer",
+    "translation": "そのレストランは明日特別なランチメニューを提供する。",
+    "explanation": "offer＝提供する"
+  },
+  {
+    "id": "P2-047",
+    "grade": "準2級",
+    "sentence": "He had to (　　) the invitation because he was sick.",
+    "choices": [
+      "refuse",
+      "encourage",
+      "arrive",
+      "depend"
+    ],
+    "answer": 1,
+    "correctWord": "refuse",
+    "translation": "彼は病気だったので招待を断らなければならなかった。",
+    "explanation": "refuse＝断る"
+  },
+  {
+    "id": "P2-048",
+    "grade": "準2級",
+    "sentence": "Many parents came to (　　) the school basketball team.",
+    "choices": [
+      "organize",
+      "invite",
+      "belong",
+      "support"
+    ],
+    "answer": 4,
+    "correctWord": "support",
+    "translation": "多くの保護者が学校のバスケットボール部を応援しに来た。",
+    "explanation": "support＝支援する・応援する"
+  },
+  {
+    "id": "P2-049",
+    "grade": "準2級",
+    "sentence": "We (　　) the train to arrive in ten minutes.",
+    "choices": [
+      "replace",
+      "protect",
+      "expect",
+      "receive"
+    ],
+    "answer": 3,
+    "correctWord": "expect",
+    "translation": "私たちは電車が10分後に到着すると予想している。",
+    "explanation": "expect A to do＝Aが～すると予想する"
+  },
+  {
+    "id": "P2-050",
+    "grade": "準2級",
+    "sentence": "Only three tickets (　　) for tonight's concert.",
+    "choices": [
+      "introduce",
+      "remain",
+      "repair",
+      "notice"
+    ],
+    "answer": 2,
+    "correctWord": "remain",
+    "translation": "今夜のコンサートのチケットは3枚しか残っていない。",
+    "explanation": "remain＝残っている"
+  },
+  {
+    "id": "P2-051",
+    "grade": "準2級",
+    "sentence": "This job will (　　) basic computer skills.",
+    "choices": [
+      "require",
+      "accept",
+      "prepare",
+      "allow"
+    ],
+    "answer": 1,
+    "correctWord": "require",
+    "translation": "この仕事には基本的なパソコン技能が必要だ。",
+    "explanation": "require＝必要とする"
+  },
+  {
+    "id": "P2-052",
+    "grade": "準2級",
+    "sentence": "The store will (　　) the new sofa on Friday.",
+    "choices": [
+      "consider",
+      "discover",
+      "suggest",
+      "deliver"
+    ],
+    "answer": 4,
+    "correctWord": "deliver",
+    "translation": "店は金曜日に新しいソファを配送する。",
+    "explanation": "deliver＝届ける"
+  },
+  {
+    "id": "P2-053",
+    "grade": "準2級",
+    "sentence": "We should (　　) the amount of plastic we use.",
+    "choices": [
+      "attend",
+      "continue",
+      "reduce",
+      "collect"
+    ],
+    "answer": 3,
+    "correctWord": "reduce",
+    "translation": "私たちは使うプラスチックの量を減らすべきだ。",
+    "explanation": "reduce＝減らす"
+  },
+  {
+    "id": "P2-054",
+    "grade": "準2級",
+    "sentence": "Our coach tries to (　　) every player after practice.",
+    "choices": [
+      "share",
+      "encourage",
+      "decide",
+      "return"
+    ],
+    "answer": 2,
+    "correctWord": "encourage",
+    "translation": "コーチは練習後にすべての選手を励まそうとする。",
+    "explanation": "encourage＝励ます"
+  },
+  {
+    "id": "P2-055",
+    "grade": "準2級",
+    "sentence": "Students will (　　) a charity event next month.",
+    "choices": [
+      "organize",
+      "improve",
+      "explain",
+      "depend"
+    ],
+    "answer": 1,
+    "correctWord": "organize",
+    "translation": "生徒たちは来月チャリティー行事を企画する。",
+    "explanation": "organize＝企画・運営する"
+  },
+  {
+    "id": "P2-056",
+    "grade": "準2級",
+    "sentence": "We need to (　　) the broken window before winter.",
+    "choices": [
+      "arrive",
+      "compare",
+      "save",
+      "replace"
+    ],
+    "answer": 4,
+    "correctWord": "replace",
+    "translation": "冬になる前に壊れた窓を交換する必要がある。",
+    "explanation": "replace＝取り替える"
+  },
+  {
+    "id": "P2-057",
+    "grade": "準2級",
+    "sentence": "Let me (　　) my new classmate to you.",
+    "choices": [
+      "invite",
+      "avoid",
+      "introduce",
+      "offer"
+    ],
+    "answer": 3,
+    "correctWord": "introduce",
+    "translation": "新しいクラスメートを紹介させてください。",
+    "explanation": "introduce A to B＝AをBに紹介する"
+  },
+  {
+    "id": "P2-058",
+    "grade": "準2級",
+    "sentence": "She decided to (　　) the job offer after graduation.",
+    "choices": [
+      "protect",
+      "accept",
+      "provide",
+      "organize"
+    ],
+    "answer": 2,
+    "correctWord": "accept",
+    "translation": "彼女は卒業後にその仕事の申し出を受け入れることにした。",
+    "explanation": "accept＝受け入れる"
+  },
+  {
+    "id": "P2-059",
+    "grade": "準2級",
+    "sentence": "Please (　　) the cost before buying a new phone.",
+    "choices": [
+      "consider",
+      "repair",
+      "increase",
+      "support"
+    ],
+    "answer": 1,
+    "correctWord": "consider",
+    "translation": "新しい携帯電話を買う前に費用を考慮してください。",
+    "explanation": "consider＝考慮する"
+  },
+  {
+    "id": "P2-060",
+    "grade": "準2級",
+    "sentence": "More than fifty students will (　　) the science lecture.",
+    "choices": [
+      "prepare",
+      "choose",
+      "expect",
+      "attend"
+    ],
+    "answer": 4,
+    "correctWord": "attend",
+    "translation": "50人以上の生徒が科学の講演に出席する予定だ。",
+    "explanation": "attend＝出席する"
+  },
+  {
+    "id": "P2-061",
+    "grade": "準2級",
+    "sentence": "The two sisters (　　) a bedroom in their new house.",
+    "choices": [
+      "discover",
+      "belong",
+      "share",
+      "remain"
+    ],
+    "answer": 3,
+    "correctWord": "share",
+    "translation": "その姉妹は新居で寝室を共有している。",
+    "explanation": "share＝共有する"
   }
 ]
