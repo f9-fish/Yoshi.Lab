@@ -70,7 +70,7 @@
   q.choices.forEach((choice,i)=>{
    const button=document.createElement('button');button.className='choice';button.type='button';
    const number=document.createElement('span');number.className='choice-number';number.textContent=i+1;
-   const text=document.createElement('span');text.textContent=choice;button.append(number,text);
+   const text=document.createElement('span');text.className='choice-word';text.textContent=choice;button.append(number,text);
    button.onclick=()=>answer(i+1);$('choices').append(button);
   });
   $('sentence').focus();
@@ -78,7 +78,11 @@
  function answer(number){
   if(!session||session.answers.length!==index)return;
   const q=session.questions[index],ok=number===q.answer;session.answers.push(number);
-  [...$('choices').children].forEach((button,i)=>{button.disabled=true;if(i+1===q.answer)button.classList.add('correct');else if(i+1===number)button.classList.add('wrong');});
+  const meanings=core.meanings(q);
+  [...$('choices').children].forEach((button,i)=>{
+   button.disabled=true;if(i+1===q.answer)button.classList.add('correct');else if(i+1===number)button.classList.add('wrong');
+   const meaning=document.createElement('span');meaning.className='choice-meaning';meaning.textContent='（'+meanings[i]+'）';button.append(meaning);
+  });
   $('judgment').textContent=ok?'✓ 正解！':'✕ 不正解';
   $('correctAnswer').textContent='正解：'+q.answer+'. '+q.choices[q.answer-1];
   $('translation').textContent='和訳：'+q.translation;$('explanation').textContent='解説：'+q.explanation;
@@ -99,7 +103,10 @@
   session.questions.forEach((q,i)=>{
    const ok=q.answer===session.answers[i],card=document.createElement('article');card.className='review-item';
    const heading=document.createElement('h3');heading.textContent=(ok?'✓ ':'✕ ')+(i+1)+'. '+q.sentence;
-   const choices=document.createElement('ol');q.choices.forEach(choice=>{const li=document.createElement('li');li.textContent=choice;choices.append(li);});
+   const meanings=core.meanings(q),choices=document.createElement('ol');q.choices.forEach((choice,j)=>{
+    const li=document.createElement('li');li.textContent=choice;
+    const meaning=document.createElement('span');meaning.className='choice-meaning';meaning.textContent='（'+meanings[j]+'）';li.append(meaning);choices.append(li);
+   });
    const response=document.createElement('p');response.className='response-label';response.textContent='あなたの回答：'+session.answers[i]+'. '+q.choices[session.answers[i]-1];
    const correct=document.createElement('p');correct.className='answer-label';correct.textContent='正解：'+q.answer+'. '+q.choices[q.answer-1];
    const translation=document.createElement('p');translation.textContent='和訳：'+q.translation;

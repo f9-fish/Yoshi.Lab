@@ -146,3 +146,37 @@ test('EIKEN UI: sync failure retries only synchronization after a successful sav
   h.nodes.get('retrySave').onclick();await tick();await tick();
   assert.equal((await h.account.api.records()).length,1);assert.equal((await h.account.api.syncXP()).totalXP,10);
 });
+test('every currently published EIKEN choice has a Japanese meaning',()=>{
+  for(const [grade,file] of [['pre2','eiken_pre2.json'],['2','eiken_2.json']]){
+   for(const q of core.questions(JSON.parse(read(file)),grade).valid){
+    assert.equal(core.meanings(q).length,4);
+    assert.ok(core.meanings(q).every(m=>m!=='意味未登録'),q.id);
+   }
+  }
+});
+test('question-specific meanings override dictionary entries; missing meanings fall back safely',()=>{
+  const q={...fixture(),choices:['accept','write','unknown term','constructor'],choiceMeanings:['招待を受ける','',null,{}]};
+  assert.deepEqual(Array.from(core.meanings(q)),['招待を受ける','書く','意味未登録','意味未登録']);
+  assert.equal(core.meanings({...q,choiceMeanings:['short array']})[0],'受け入れる');
+});
+test('choice meanings are hidden before answering, revealed for all four choices and reset next question',async()=>{
+  const data=[{...fixture(1),choices:['accept','write','close','save'],correctWord:'accept'},
+    {...fixture(2),choices:['accept','write','close','save'],correctWord:'accept'}];
+  const h=ui({data});await h.choose();h.nodes.get('start').onclick();
+  assert.ok(h.nodes.get('choices').children.every(b=>b.children.length===2));
+  h.nodes.get('choices').children[1].onclick();
+  assert.deepEqual(h.nodes.get('choices').children.map(b=>b.children[2].textContent),
+    ['（受け入れる）','（書く）','（閉める／近い）','（節約する／救う／保存する）']);
+  h.nodes.get('choices').children[1].onclick();
+  assert.ok(h.nodes.get('choices').children.every(b=>b.children.length===3),'No duplicate reveal');
+  h.nodes.get('next').onclick();
+  assert.ok(h.nodes.get('choices').children.every(b=>b.children.length===2));
+});
+test('final review includes the meanings of correct and incorrect choices',async()=>{
+  const h=ui({data:[{...fixture(1),choices:['accept','write','close','save'],correctWord:'accept'}]});
+  await h.choose();await h.finish();
+  const choices=h.nodes.get('review').children[0].children[1].children;
+  assert.equal(choices.length,4);
+  assert.deepEqual(choices.map(li=>li.children[0].textContent),
+    ['（受け入れる）','（書く）','（閉める／近い）','（節約する／救う／保存する）']);
+});
