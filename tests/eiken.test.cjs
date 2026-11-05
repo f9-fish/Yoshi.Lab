@@ -115,8 +115,8 @@ test('EIKEN UI: guests can study but no result or XP is written',async()=>{
   const h=ui({account:accountHarness({loggedIn:false})});await h.choose();await h.finish();
   assert.match(h.nodes.get('saveStatus').textContent,/ゲスト学習/);assert.equal(h.account.writes.length,0);
 });
-test('EIKEN UI: quit never saves a partial set',async()=>{
-  const h=ui();await h.choose();h.nodes.get('start').onclick();h.nodes.get('choices').children[0].onclick();h.nodes.get('quit').onclick();
+test('EIKEN UI: quit with zero answers never saves a record',async()=>{
+  const h=ui();await h.choose();h.nodes.get('start').onclick();h.nodes.get('quit').onclick();
   assert.equal((await h.account.api.records()).length,0);assert.equal(h.nodes.get('gradeScreen').hidden,false);
 });
 test('EIKEN UI: failed save survives reload and retry keeps the same session ID',async()=>{
@@ -197,4 +197,48 @@ test('legacy EIKEN keeps 1 XP, normal learning keeps 30 XP cap, and retry never 
   const saved=await h.api.saveEikenResult(payload({right:10}));
   assert.equal(saved.xpMode,'vocab');assert.equal((await h.api.syncXP()).totalXP,40);
   assert.equal(functionFromLine('teacher.html','xpFromRecords')(await h.api.records()),40);
+});
+test('partial EIKEN sets earn 5 XP per correct answer even after four prior runs, in every view',async()=>{
+  const h=accountHarness();for(let i=0;i<6;i++)await h.api.saveEikenResult(payload({sessionId:id.slice(0,-1)+i,right:1,total:2,bestStreak:1,completedSet:false}));
+  const rows=await h.api.records(),xp=await h.api.syncXP();
+  assert.equal(xp.totalXP,30);assert.equal(xp.weeklyXP,30);assert.equal(xp.seasonXP,30);
+  assert.ok(rows.every(r=>r.completedSet===false));
+  assert.equal(functionFromLine('teacher.html','xpFromRecords')(rows),30);
+  const history=functionFromLine('ranking.html','historicalSeasonXP',{recordXP:functionFromLine('ranking.html','recordXP')});
+  assert.equal(history(rows,h.api.getSeason()),30);
+});
+test('partial save retries are idempotent and cannot change the saved completion state',async()=>{
+  const h=accountHarness(),partial=payload({right:2,total:3,bestStreak:1,completedSet:false});
+  await Promise.all([h.api.saveEikenResult(partial),h.api.saveEikenResult(partial)]);
+  await assert.rejects(h.api.saveEikenResult({...partial,completedSet:true}),/異なる記録/);
+  assert.equal((await h.api.records()).length,1);assert.equal((await h.api.syncXP()).totalXP,10);
+  await assert.rejects(h.api.saveEikenResult({...partial,completedSet:'false'}),/不正/);
+});
+test('quit after four answers saves only those answers and displays their earned XP',async()=>{
+  const data=Array.from({length:10},(_,i)=>fixture(i)),h=ui({data});await h.choose();h.nodes.get('start').onclick();
+  for(let i=0;i<4;i++){
+   h.nodes.get('choices').children[i===3?1:0].onclick();
+   if(i<3)h.nodes.get('next').onclick();
+  }
+  h.nodes.get('quit').onclick();await tick();await tick();
+  const rows=await h.account.api.records();assert.equal(rows.length,1);assert.equal(rows[0].right,3);assert.equal(rows[0].total,4);assert.equal(rows[0].completedSet,false);
+  assert.equal(h.nodes.get('resultXP').textContent,'獲得 +15 XP');assert.equal(h.nodes.get('review').children.length,4);
+  assert.match(h.nodes.get('completionStatus').textContent,/10問中4問に解答/);
+  assert.match(h.nodes.get('completionStatus').textContent,/未解答の6問は採点しません/);
+});
+test('quit before answering the current question does not count it as wrong',async()=>{
+  const h=ui({data:Array.from({length:10},(_,i)=>fixture(i))});await h.choose();h.nodes.get('start').onclick();
+  h.nodes.get('choices').children[0].onclick();h.nodes.get('next').onclick();h.nodes.get('quit').onclick();await tick();await tick();
+  const row=(await h.account.api.records())[0];assert.equal(row.total,1);assert.equal(row.right,1);
+  assert.equal((await h.account.api.syncXP()).totalXP,5);
+});
+test('a failed partial save can be restored after reload without completing unattempted questions',async()=>{
+  const account=accountHarness(),save=account.api.saveEikenResult;let fail=true;
+  account.api.saveEikenResult=async payload=>{const row=await save(payload);if(fail)throw Error('fixture lost response');return row;};
+  const h=ui({account,data:Array.from({length:10},(_,i)=>fixture(i))});await h.choose();h.nodes.get('start').onclick();
+  h.nodes.get('choices').children[0].onclick();h.nodes.get('quit').onclick();await tick();await tick();
+  assert.equal(h.storage.size,1);fail=false;
+  const restored=ui({account,storage:h.storage});restored.nodes.get('restorePending').onclick();await tick();await tick();
+  assert.equal((await account.api.records()).length,1);assert.equal((await account.api.syncXP()).totalXP,5);
+  assert.match(restored.nodes.get('completionStatus').textContent,/10問中1問/);assert.equal(h.storage.size,0);
 });

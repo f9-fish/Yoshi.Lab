@@ -97,7 +97,7 @@ const ordered=[...rows].sort((a,b)=>(Number(a.createdAt)||0)-(Number(b.createdAt
 for(const r of ordered){const n=Number(r.total),correct=Number(r.right);if(!Number.isFinite(n)||!Number.isFinite(correct)||n<=0||correct<0||correct>n)continue;const key=JSON.stringify([String(r.subject||''),String(r.lesson||''),String(r.part||''),String(r.xpMode||r.mode||'')]);
 const previous=attempts.get(key)||0;
 attempts.set(key,previous+1);
-const xp=(r.repeatPolicyV1===true&&previous>=4&&r.completedSet!==true)?0:yoshiRecordXP(r);
+const xp=(r.repeatPolicyV1===true&&previous>=4&&r.completedSet!==true&&!(r.subject==='英検'&&r.xpMode==='eikenChoice'))?0:yoshiRecordXP(r);
 total+=xp;if(weekKey(Number(r.createdAt))===week)weekly+=xp;if(season&&Number(r.createdAt)>=Date.parse(season.start)&&Number(r.createdAt)<=Date.parse(season.end))seasonXP+=xp;}
 // Derive each weekly milestone once from saved completion days, never increment it.
 for(const bonus of YoshiWeeklyDaily.bonuses(rows)){total+=bonus.xp;if(weekKey(bonus.earnedAt)===week)weekly+=bonus.xp;if(season&&bonus.earnedAt>=Date.parse(season.start)&&bonus.earnedAt<=Date.parse(season.end))seasonXP+=bonus.xp;}
@@ -105,20 +105,20 @@ total=Math.min(99999999,total);weekly=Math.min(99999999,weekly);const item={clas
 async records(){if(!current)return [];const snap=await get(ref(db,'learningRecords/'+current.uid));return Object.values(snap.val()||{}).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))}};
 // A stable session key makes retries (including a lost acknowledgement) idempotent.
 // Keep the existing record shape; distinguish the new EIKEN rate from legacy vocab records.
-api.saveEikenResult=async function({sessionId,grade,right,total,bestStreak=0,durationSeconds=0}){
+api.saveEikenResult=async function({sessionId,grade,right,total,bestStreak=0,durationSeconds=0,completedSet=true}){
  if(!current)throw Error('Googleログインが必要です');
  const u=current,token=await u.getIdTokenResult();
  if(token.signInProvider!=='google.com'||!u.emailVerified)throw Error('確認済みのGoogleアカウントでログインしてください');
  if(current?.uid!==u.uid)throw Error('ログイン状態が変わりました');
  if(typeof sessionId!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(sessionId)||
-  !['準2級','2級'].includes(grade)||!Number.isInteger(total)||total<1||total>10||!Number.isInteger(right)||right<0||right>total||
+  typeof completedSet!=='boolean'||!['準2級','2級'].includes(grade)||!Number.isInteger(total)||total<1||total>10||!Number.isInteger(right)||right<0||right>total||
   !Number.isInteger(bestStreak)||bestStreak<0||bestStreak>right||!Number.isFinite(durationSeconds)||durationSeconds<0)throw Error('英検の保存内容が不正です');
  const row={subject:'英検',lesson:grade,part:'空所補充4択',mode:'vocab',xpMode:'eikenChoice',right,total,
-  repeatPolicyV1:true,completedSet:true,bestStreak,durationSeconds:Math.round(durationSeconds),createdAt:Date.now(),source:'solo'};
+  repeatPolicyV1:true,completedSet,bestStreak,durationSeconds:Math.round(durationSeconds),createdAt:Date.now(),source:'solo'};
  const result=await runTransaction(ref(db,'learningRecords/'+u.uid+'/eiken_'+sessionId),old=>old===null?row:undefined,{applyLocally:false});
  const saved=result.snapshot.val();
  if(!saved||saved.subject!==row.subject||saved.lesson!==grade||saved.part!==row.part||saved.mode!=='vocab'||!['vocab','eikenChoice'].includes(saved.xpMode)||
-  saved.total!==total||saved.right!==right||saved.completedSet!==true)throw Error('同じセットIDに異なる記録があります');
+  saved.total!==total||saved.right!==right||saved.completedSet!==completedSet)throw Error('同じセットIDに異なる記録があります');
  return saved;
 };
 window.YoshiAccount=api;setPersistence(auth,browserLocalPersistence).catch(e=>console.warn('ログイン保持設定:',e));onAuthStateChanged(auth,u=>{authReady=true;current=u&&u.emailVerified?u:null;listeners.forEach(fn=>fn(current));if(current)void recordLastAccess(current);document.dispatchEvent(new Event('yoshi-auth-ready'))});getRedirectResult(auth).catch(e=>console.warn('Googleログイン:',e));

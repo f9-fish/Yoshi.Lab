@@ -28,7 +28,7 @@
  }
  function authUI(){
   const a=window.YoshiAccount,u=a?.user;
-  $('authStatus').textContent=u?'✓ ログイン中 · 完了した記録とXPを保存します':a?.authReady?'ゲスト学習 · 記録・XPは保存されません':'ログイン状態を確認中…';
+  $('authStatus').textContent=u?'✓ ログイン中 · 解答済みの記録とXPを保存します':a?.authReady?'ゲスト学習 · 記録・XPは保存されません':'ログイン状態を確認中…';
   $('login').hidden=!a?.authReady||!!u;
   $('restorePending').hidden=!!session||!pending();
  }
@@ -90,14 +90,31 @@
  }
  $('next').onclick=()=>{
   if(!session||session.answers.length!==index+1)return;
-  if(index===session.questions.length-1){session.durationSeconds=Math.max(0,(Date.now()-session.startedAt)/1000);keepPending();renderResult();void save();}
+  if(index===session.questions.length-1)finishSession();
   else{index++;renderQuestion();}
  };
- $('quit').onclick=()=>{if(confirm('途中終了すると今回の記録・XPは保存されません。終了しますか？')){session=null;show('gradeScreen');authUI();}};
+ function finishSession(){
+  if(!session||session.finished||!session.answers.length)return;
+  session.plannedTotal=session.questions.length;
+  session.completedSet=session.answers.length===session.plannedTotal;
+  session.questions=session.questions.slice(0,session.answers.length);
+  session.durationSeconds=Math.max(0,(Date.now()-session.startedAt)/1000);
+  keepPending();renderResult();void save();
+ }
+ $('quit').onclick=()=>{
+  if(!session||session.finished)return;
+  const answered=session.answers.length;
+  if(!confirm(answered?'ここまでの解答結果と正解分のXPで終了しますか？':'まだ解答していないため記録・XPは保存されません。終了しますか？'))return;
+  if(answered)finishSession();
+  else{session=null;show('gradeScreen');authUI();}
+ };
  function renderResult(){
   session.finished=true;
   show('resultScreen');const result=core.score(session);
+  $('reviewTitle').textContent=session.completedSet===false?'解答した問題の振り返り':'全問題の振り返り';
   $('resultScore').textContent=result.right+' / '+result.total+' 問正解';
+  $('completionStatus').textContent=session.completedSet===false?
+   `途中終了：${session.plannedTotal}問中${result.total}問に解答。未解答の${session.plannedTotal-result.total}問は採点しません。`:'全問題に解答しました。';
   $('resultXP').textContent=session.uid?'獲得予定 +'+result.xp+' XP':'学習スコア '+result.xp+' XP相当（ゲスト）';
   $('saveStatus').textContent='結果を確認しています…';$('retrySave').hidden=true;$('setupProfile').hidden=true;$('review').replaceChildren();
   session.questions.forEach((q,i)=>{
@@ -124,7 +141,7 @@
   try{
    if(!currentSession.saved){
     const saved=await withTimeout(a.saveEikenResult({sessionId:currentSession.id,grade:core.grades[currentSession.grade].label,
-     right:result.right,total:result.total,bestStreak:result.bestStreak,
+     right:result.right,total:result.total,bestStreak:result.bestStreak,completedSet:currentSession.completedSet!==false,
      durationSeconds:currentSession.durationSeconds||0}),12000);
     currentSession.awardedXP=saved.xpMode==='eikenChoice'?Math.min(50,saved.right*5):Math.min(30,saved.right);
     currentSession.saved=true;
