@@ -1078,6 +1078,37 @@ body.yoshi-game-started .daily-hero-link{display:none!important}
 .daily-hero-link .daily-hero-limit{background:#592c1de8!important;border-color:#d58d5b!important;color:#fff0d9!important}
 @media(max-width:480px){.daily-launch-chip{margin-left:4px;padding:3px 7px;font-size:10px}.daily-hero-link .daily-hero-limit{font-size:10px;max-width:55%;text-align:center;white-space:nowrap;padding:5px 7px}.daily-hero-kicker{padding-top:19px}.daily-hero-copy{max-width:94%}}
 @media(max-width:480px){.daily-hero-link .daily-hero-limit{top:10px;right:10px}.daily-hero-kicker{padding-top:27px}.daily-launch-chip{display:inline-block}}
+</style><style id="home-daily-card-layout">
+/* Preserve the existing mountain background; refine only the card content. */
+.daily-hero-link{padding:20px 24px;min-height:220px}
+.daily-hero-link .daily-hero-copy{display:flex;flex-direction:column;gap:12px;width:100%;max-width:none}
+.daily-hero-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.daily-hero-link .daily-hero-kicker{margin:0;padding:0;font-size:10px;letter-spacing:.15em;color:#f3d5a5;line-height:1.4}
+.daily-hero-link .daily-hero-limit{position:static;max-width:none;padding:5px 10px;border-radius:7px;font-size:10px;font-weight:650;line-height:1.4;white-space:nowrap;background:#311d16b8!important;border-color:#e1af7359!important;color:#f5dec0!important;box-shadow:inset 0 1px #ffffff0d}
+.daily-hero-link .daily-hero-title{font-size:clamp(22px,4.8vw,30px);letter-spacing:.015em;line-height:1.3}
+.daily-hero-link .daily-hero-detail{display:flex;align-items:baseline;gap:7px;max-width:none;margin:0;font-size:12px;font-weight:600;color:#e5eaf2}
+.daily-hero-link .daily-hero-detail strong{font-size:28px;line-height:1.15;letter-spacing:-.025em;color:#ffe09a}
+.daily-hero-detail strong span{font-size:.62em;letter-spacing:.04em}
+.daily-hero-footer{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding-top:3px}
+.daily-home-week{display:flex;flex-direction:column;gap:7px;min-width:0}
+.daily-home-summary{font-size:10px;font-weight:650;color:#e3d5c2;line-height:1.4;letter-spacing:.025em}
+.daily-home-days{display:grid;grid-template-columns:repeat(7,22px);gap:5px}
+.daily-home-day{display:flex;flex-direction:column;align-items:center;gap:4px}
+.daily-home-weekday{font-size:9px;font-weight:600;line-height:1;color:#c3cbd7}
+.daily-home-mark{display:grid;place-items:center;box-sizing:border-box;width:20px;height:20px;border-radius:50%;border:1px solid #c9d4e22b;background:#07152875;color:#aab7c7;font-size:12px;line-height:1}
+.daily-home-day.is-done .daily-home-mark{border-color:#f1c77b;background:#f6ce8733;color:#ffe6ad;font-weight:900}
+.daily-home-day.is-today .daily-home-weekday{color:#ffe1a2;font-weight:850}
+.daily-hero-link .daily-hero-arrow{position:static;flex:0 0 34px;width:34px;height:34px;font-size:25px;border:1px solid #f4c48b70;box-shadow:0 3px 10px #28130766!important}
+.daily-hero-link:focus-visible{outline:3px solid #ffe09a;outline-offset:4px}
+@media(max-width:480px){
+ .daily-hero-link{padding:16px;min-height:216px;border-radius:20px}
+ .daily-hero-link .daily-hero-copy{gap:11px}
+ .daily-hero-link .daily-hero-kicker{font-size:9px;letter-spacing:.1em}
+ .daily-hero-link .daily-hero-limit{font-size:9px;padding:4px 7px}
+ .daily-hero-link .daily-hero-title{font-size:clamp(21px,5.8vw,26px)}
+ .daily-home-days{grid-template-columns:repeat(7,20px);gap:5px}
+ .daily-hero-footer{gap:10px}
+}
 </style></head><body><div id="welcomeCover" aria-label="Yoshi.Lab オープニング"><div class="welcome-inner">
   <div class="welcome-hero"><a class="welcome-hero-link welcome-hero-link-mypage" href="mypage.html" aria-label="MY PAGE"></a><a class="welcome-hero-link welcome-hero-link-home" href="./" aria-label="HOME"></a><div class="welcome-crown" aria-hidden="true">♕</div><div class="welcome-logo">Yoshi<span>.Lab</span></div><div class="welcome-tagline">YOUR ENGLISH<br>PRACTICE SPACE</div><div class="welcome-motto">LEARN × LEVEL UP</div><div class="welcome-line"></div></div>
   <section aria-label="使い方"><h2 class="welcome-how">🎮 HOW TO USE <span>学び方を選ぼう！</span></h2><div class="welcome-steps">
@@ -1100,7 +1131,7 @@ body.yoshi-game-started .daily-hero-link{display:none!important}
   }
   if (!directSubjects && !visited) document.body.classList.add('welcome-active');
 })();document.getElementById('welcomeStart').addEventListener('click',function(){document.body.classList.remove('welcome-active');document.getElementById('welcomeCover').remove();window.scrollTo(0,0);});</script>
-<div class="wrap"><header><div><div class="brand">Yoshi<span class="brand-accent">.Lab</span></div><div class="sub">LEARN × LEVEL UP</div></div><div class="header-account"><div class="account-msg"><strong id="accountStatus">学習記録を保存するにはGoogleログイン</strong><small id="accountDetail">Googleアカウントを使用</small></div><button id="googleLogin" type="button">Googleでログイン</button><div class="account-nav-links"><a href="./mypage.html">📊 MY PAGE →</a><a href="./index.html?view=subjects" id="goHomeLink">🏠 HOME →</a></div></div></header><a class="daily-hero-link" href="./daily.html" aria-label="デイリーチャレンジへ進む"><span class="daily-hero-copy"><span class="daily-hero-kicker">🏆 DAILY CHALLENGE <span class="daily-launch-chip">NEW · 公開開始！</span></span><span class="daily-hero-title">デイリーチャレンジ</span><span class="daily-hero-detail">全10問・全問正解で <strong>500 XP</strong></span></span><span class="daily-hero-limit">✨ 挑戦可！ · 各科目1日2回</span><span class="daily-hero-arrow" aria-hidden="true">›</span></a><div class="growth-eyebrow" id="growthEyebrow">⚡ LEARN · EARN · LEVEL UP</div><h1 id="pageTitle">科目を選ぼう ✦</h1><p class="sub" id="pageSub">英C・論表から学習をスタート！</p><div class="growth-motivation" id="growthMotivation"><div class="growth-motivation-copy"><span class="growth-motivation-en">Small Steps. Big Progress.</span><span class="growth-motivation-ja">今日の挑戦が、明日のレベルにつながる。</span></div></div>
+<div class="wrap"><header><div><div class="brand">Yoshi<span class="brand-accent">.Lab</span></div><div class="sub">LEARN × LEVEL UP</div></div><div class="header-account"><div class="account-msg"><strong id="accountStatus">学習記録を保存するにはGoogleログイン</strong><small id="accountDetail">Googleアカウントを使用</small></div><button id="googleLogin" type="button">Googleでログイン</button><div class="account-nav-links"><a href="./mypage.html">📊 MY PAGE →</a><a href="./index.html?view=subjects" id="goHomeLink">🏠 HOME →</a></div></div></header><a class="daily-hero-link" href="./daily.html" aria-label="デイリーチャレンジへ進む"><span class="daily-hero-copy"><span class="daily-hero-top"><span class="daily-hero-kicker">🏆 DAILY CHALLENGE</span><span class="daily-hero-limit">各科目 1日2回</span></span><span class="daily-hero-title">デイリーチャレンジ</span><span class="daily-hero-detail">全10問・全問正解で <strong>500 <span>XP</span></strong></span><span class="daily-hero-footer"><span class="daily-home-week" aria-live="polite"><span class="daily-home-summary" id="dailyHomeSummary">達成状況を確認中…</span><span class="daily-home-days" id="dailyHomeDays"></span></span><span class="daily-hero-arrow" aria-hidden="true">›</span></span></span></a><div class="growth-eyebrow" id="growthEyebrow">⚡ LEARN · EARN · LEVEL UP</div><h1 id="pageTitle">科目を選ぼう ✦</h1><p class="sub" id="pageSub">英C・論表から学習をスタート！</p><div class="growth-motivation" id="growthMotivation"><div class="growth-motivation-copy"><span class="growth-motivation-en">Small Steps. Big Progress.</span><span class="growth-motivation-ja">今日の挑戦が、明日のレベルにつながる。</span></div></div>
 <div class="quest-progress" id="questProgress"><div class="quest-crown">♛</div><div class="quest-progress-copy"><b id="questLevel">Lv. —</b><div class="quest-track"><span id="questFill"></span></div><small id="questXP">ログインするとXPを表示</small></div></div>
 <div class="quest-rank"><span>🎯 学んでXPを獲得し、レベルアップしよう！</span><a href="./ranking.html">🏆 ランキングを見る →</a></div>
 <section class="panel subjects-panel" id="subjects"><div class="growth-section-label">CHOOSE YOUR PATH <span>01 / 02</span></div><h2>🎮 挑戦する科目を選ぼう</h2><p class="growth-subcopy">科目を選んで、レッスンに挑戦。難しいモードほどXPを獲得できる！</p><div class="subject-grid"><button class="choice" data-subject="英C"><span class="growth-subject-emoji">📘</span><span class="growth-subject-name">英C</span><small>英語コミュニケーション</small><span class="growth-subject-cta">CHALLENGE <span aria-hidden="true">→</span></span></button><button class="choice" data-subject="論表"><span class="growth-subject-emoji">✍️</span><span class="growth-subject-name">論表</span><small>論理・表現</small><span class="growth-subject-cta">CHALLENGE <span aria-hidden="true">→</span></span></button></div><div class="quest-rewards"><strong>各モードの獲得XP</strong><div class="quest-reward q0">📑 本文チェック<b>0 XP</b></div><div class="quest-reward q1">🔘 単語4択<b>+1 XP</b></div><div class="quest-reward q4">⌨️ 単語タイピング<b>+4 XP</b></div><div class="quest-reward q7">⚡ 本文タイピング<b>+7 XP</b></div></div><p class="status" id="loadStatus">問題集を読み込み中…</p></section>
@@ -2015,4 +2046,4 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
  document.addEventListener('click',e=>{if(e.target.closest('#xpCelebrationClose'))setTimeout(update,500)});
 })();
 </script>
-</body></html>
+<script src="./home-daily.js?v=1"></script></body></html>
