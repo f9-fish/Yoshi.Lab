@@ -9,6 +9,12 @@
       "write",
       "save"
     ],
+    "choiceMeanings": [
+      "受け入れる",
+      "集めた",
+      "書く",
+      "節約する・保存する"
+    ],
     "answer": 1,
     "correctWord": "accept",
     "translation": "彼女は文化祭への招待を受け入れることにした。",
@@ -23,6 +29,12 @@
       "heavy",
       "close",
       "grows"
+    ],
+    "choiceMeanings": [
+      "有名な",
+      "重い",
+      "閉める",
+      "育てる・育つ"
     ],
     "answer": 3,
     "correctWord": "close",
@@ -39,6 +51,12 @@
       "lent",
       "rain"
     ],
+    "choiceMeanings": [
+      "重要な",
+      "興味がある",
+      "貸した",
+      "雨が降る"
+    ],
     "answer": 3,
     "correctWord": "lent",
     "translation": "雨が降っていたので友人に傘を貸した。",
@@ -53,6 +71,12 @@
       "closed",
       "answer",
       "discuss"
+    ],
+    "choiceMeanings": [
+      "説明する",
+      "閉まっている",
+      "答える",
+      "話し合う"
     ],
     "answer": 2,
     "correctWord": "closed",
@@ -69,6 +93,12 @@
       "delayed",
       "open"
     ],
+    "choiceMeanings": [
+      "提出する",
+      "わくわくした",
+      "遅れた",
+      "開く・開館する"
+    ],
     "answer": 1,
     "correctWord": "submit",
     "translation": "先生は金曜日までに宿題を提出するよう求めた。",
@@ -83,6 +113,12 @@
       "write",
       "collected",
       "save"
+    ],
+    "choiceMeanings": [
+      "受け入れる",
+      "書く",
+      "集めた",
+      "節約する・保存する"
     ],
     "answer": 4,
     "correctWord": "save",
@@ -99,6 +135,12 @@
       "close",
       "grows"
     ],
+    "choiceMeanings": [
+      "重い",
+      "有名な",
+      "閉める",
+      "育てる・育つ"
+    ],
     "answer": 1,
     "correctWord": "heavy",
     "translation": "このかばんは重すぎて一人では運べない。",
@@ -113,6 +155,12 @@
       "interested",
       "rain",
       "lent"
+    ],
+    "choiceMeanings": [
+      "借りる",
+      "興味がある",
+      "雨が降る",
+      "貸した"
     ],
     "answer": 2,
     "correctWord": "interested",
@@ -129,6 +177,12 @@
       "explain",
       "closed"
     ],
+    "choiceMeanings": [
+      "話し合う",
+      "答える",
+      "説明する",
+      "閉まっている"
+    ],
     "answer": 3,
     "correctWord": "explain",
     "translation": "この単語の意味を説明してくれませんか。",
@@ -143,6 +197,12 @@
       "invite",
       "delayed",
       "open"
+    ],
+    "choiceMeanings": [
+      "わくわくした",
+      "招待する",
+      "遅れた",
+      "開く・開館する"
     ],
     "answer": 3,
     "correctWord": "delayed",
@@ -159,6 +219,12 @@
       "write",
       "collected"
     ],
+    "choiceMeanings": [
+      "受け入れる",
+      "節約する・保存する",
+      "書く",
+      "集めた"
+    ],
     "answer": 4,
     "correctWord": "collected",
     "translation": "図書館の新しい本を買うために十分なお金を集めた。",
@@ -173,6 +239,12 @@
       "close",
       "famous",
       "grows"
+    ],
+    "choiceMeanings": [
+      "重い",
+      "閉める",
+      "有名な",
+      "育てる・育つ"
     ],
     "answer": 3,
     "correctWord": "famous",
@@ -189,6 +261,12 @@
       "interested",
       "borrow"
     ],
+    "choiceMeanings": [
+      "貸した",
+      "重要な",
+      "興味がある",
+      "借りる"
+    ],
     "answer": 2,
     "correctWord": "important",
     "translation": "自転車に乗るときヘルメットを着用することは重要だ。",
@@ -203,6 +281,12 @@
       "answer",
       "discuss",
       "explain"
+    ],
+    "choiceMeanings": [
+      "閉まっている",
+      "答える",
+      "話し合う",
+      "説明する"
     ],
     "answer": 2,
     "correctWord": "answer",
@@ -219,6 +303,12 @@
       "open",
       "delayed"
     ],
+    "choiceMeanings": [
+      "わくわくした",
+      "提出する",
+      "開く・開館する",
+      "遅れた"
+    ],
     "answer": 1,
     "correctWord": "excited",
     "translation": "子どもたちは修学旅行の話を聞いてわくわくした。",
@@ -233,6 +323,12 @@
       "write",
       "accept",
       "collected"
+    ],
+    "choiceMeanings": [
+      "節約する・保存する",
+      "書く",
+      "受け入れる",
+      "集めた"
     ],
     "answer": 2,
     "correctWord": "write",
@@ -249,6 +345,12 @@
       "heavy",
       "famous"
     ],
+    "choiceMeanings": [
+      "育てる・育つ",
+      "閉める",
+      "重い",
+      "有名な"
+    ],
     "answer": 1,
     "correctWord": "grows",
     "translation": "祖母は毎年庭で野菜を育てている。",
@@ -263,6 +365,12 @@
       "rain",
       "interested",
       "lent"
+    ],
+    "choiceMeanings": [
+      "重要な",
+      "雨が降る",
+      "興味がある",
+      "貸した"
     ],
     "answer": 2,
     "correctWord": "rain",
@@ -279,6 +387,12 @@
       "explain",
       "discuss"
     ],
+    "choiceMeanings": [
+      "閉まっている",
+      "答える",
+      "説明する",
+      "話し合う"
+    ],
     "answer": 4,
     "correctWord": "discuss",
     "translation": "チケットを買う前に計画を話し合うべきだ。",
@@ -293,6 +407,12 @@
       "delayed",
       "open",
       "submit"
+    ],
+    "choiceMeanings": [
+      "わくわくした",
+      "遅れた",
+      "開く・開館する",
+      "提出する"
     ],
     "answer": 3,
     "correctWord": "open",
@@ -309,6 +429,12 @@
       "invite",
       "protect"
     ],
+    "choiceMeanings": [
+      "借りる",
+      "修理する",
+      "招待する",
+      "守る"
+    ],
     "answer": 1,
     "correctWord": "borrow",
     "translation": "明日まであなたの辞書を借りてもいいですか。",
@@ -323,6 +449,12 @@
       "improve",
       "receive",
       "require"
+    ],
+    "choiceMeanings": [
+      "続ける",
+      "改善する・向上させる",
+      "受け取る",
+      "必要とする"
     ],
     "answer": 2,
     "correctWord": "improve",
@@ -339,6 +471,12 @@
       "notice",
       "deliver"
     ],
+    "choiceMeanings": [
+      "到着する",
+      "決める",
+      "気づく",
+      "届ける"
+    ],
     "answer": 1,
     "correctWord": "arrive",
     "translation": "私たちは8時前に駅に到着する必要がある。",
@@ -353,6 +491,12 @@
       "allow",
       "reduce",
       "invite"
+    ],
+    "choiceMeanings": [
+      "説明する",
+      "許可する",
+      "減らす",
+      "招待する"
     ],
     "answer": 4,
     "correctWord": "invite",
@@ -369,6 +513,12 @@
       "protect",
       "encourage"
     ],
+    "choiceMeanings": [
+      "比較する",
+      "提案する",
+      "守る",
+      "励ます・促す"
+    ],
     "answer": 3,
     "correctWord": "protect",
     "translation": "ヘルメットをかぶると転倒時に頭を守れる。",
@@ -383,6 +533,12 @@
       "repair",
       "calculate",
       "organize"
+    ],
+    "choiceMeanings": [
+      "避ける",
+      "修理する",
+      "計算する",
+      "企画する・整理する"
     ],
     "answer": 2,
     "correctWord": "repair",
@@ -399,6 +555,12 @@
       "receive",
       "replace"
     ],
+    "choiceMeanings": [
+      "準備する",
+      "依存する・～次第である",
+      "受け取る",
+      "取り替える"
+    ],
     "answer": 1,
     "correctWord": "prepare",
     "translation": "金曜日までに発表の準備をしてください。",
@@ -413,6 +575,12 @@
       "depend",
       "introduce",
       "discover"
+    ],
+    "choiceMeanings": [
+      "増やす",
+      "依存する・～次第である",
+      "紹介する・導入する",
+      "発見する"
     ],
     "answer": 4,
     "correctWord": "discover",
@@ -429,6 +597,12 @@
       "continue",
       "borrow"
     ],
+    "choiceMeanings": [
+      "選ぶ",
+      "節約する・保存する",
+      "続ける",
+      "借りる"
+    ],
     "answer": 3,
     "correctWord": "continue",
     "translation": "雨が降り始めたが、選手たちは試合を続けることにした。",
@@ -443,6 +617,12 @@
       "decide",
       "offer",
       "borrow"
+    ],
+    "choiceMeanings": [
+      "所属する・～のものである",
+      "決める",
+      "申し出る・提供する",
+      "借りる"
     ],
     "answer": 2,
     "correctWord": "decide",
@@ -459,6 +639,12 @@
       "refuse",
       "attend"
     ],
+    "choiceMeanings": [
+      "説明する",
+      "受け取る",
+      "断る",
+      "出席する"
+    ],
     "answer": 1,
     "correctWord": "explain",
     "translation": "この機械の仕組みを説明してくれますか。",
@@ -473,6 +659,12 @@
       "support",
       "share",
       "compare"
+    ],
+    "choiceMeanings": [
+      "気づく",
+      "支える・支持する",
+      "共有する",
+      "比較する"
     ],
     "answer": 4,
     "correctWord": "compare",
@@ -489,6 +681,12 @@
       "avoid",
       "improve"
     ],
+    "choiceMeanings": [
+      "許可する",
+      "予想する・期待する",
+      "避ける",
+      "改善する・向上させる"
+    ],
     "answer": 3,
     "correctWord": "avoid",
     "translation": "道路を渡る間は携帯電話を使わないようにすべきだ。",
@@ -503,6 +701,12 @@
       "provide",
       "remain",
       "arrive"
+    ],
+    "choiceMeanings": [
+      "提案する",
+      "提供する",
+      "残る",
+      "到着する"
     ],
     "answer": 2,
     "correctWord": "provide",
@@ -519,6 +723,12 @@
       "require",
       "invite"
     ],
+    "choiceMeanings": [
+      "増やす",
+      "集める",
+      "必要とする",
+      "招待する"
+    ],
     "answer": 1,
     "correctWord": "increase",
     "translation": "学校は読書する生徒の数を増やしたいと考えている。",
@@ -534,6 +744,12 @@
       "protect",
       "choose"
     ],
+    "choiceMeanings": [
+      "返す・戻る",
+      "届ける",
+      "守る",
+      "選ぶ"
+    ],
     "answer": 4,
     "correctWord": "choose",
     "translation": "一覧から活動を1つ選べる。",
@@ -544,10 +760,16 @@
     "grade": "準2級",
     "sentence": "These shoes (　　) to my younger brother.",
     "choices": [
-      "repair",
+      "compare",
       "reduce",
       "belong",
       "repair"
+    ],
+    "choiceMeanings": [
+      "比較する",
+      "減らす",
+      "所属する・～のものである",
+      "修理する"
     ],
     "answer": 3,
     "correctWord": "belong",
@@ -564,6 +786,12 @@
       "encourage",
       "prepare"
     ],
+    "choiceMeanings": [
+      "修理する",
+      "受け取る",
+      "励ます・促す",
+      "準備する"
+    ],
     "answer": 2,
     "correctWord": "receive",
     "translation": "昨日私が送ったメールを受け取りましたか。",
@@ -578,6 +806,12 @@
       "offer",
       "organize",
       "depend"
+    ],
+    "choiceMeanings": [
+      "気づく",
+      "申し出る・提供する",
+      "企画する・整理する",
+      "依存する・～次第である"
     ],
     "answer": 1,
     "correctWord": "notice",
@@ -594,6 +828,12 @@
       "continue",
       "allow"
     ],
+    "choiceMeanings": [
+      "断る",
+      "取り替える",
+      "続ける",
+      "許可する"
+    ],
     "answer": 4,
     "correctWord": "allow",
     "translation": "図書館では利用者が館内で食べることを許可していない。",
@@ -608,6 +848,12 @@
       "introduce",
       "suggest",
       "decide"
+    ],
+    "choiceMeanings": [
+      "支える・支持する",
+      "紹介する・導入する",
+      "提案する",
+      "決める"
     ],
     "answer": 3,
     "correctWord": "suggest",
@@ -624,6 +870,12 @@
       "accept",
       "explain"
     ],
+    "choiceMeanings": [
+      "予想する・期待する",
+      "集める",
+      "受け入れる",
+      "説明する"
+    ],
     "answer": 2,
     "correctWord": "collect",
     "translation": "私たちのクラスはリサイクルのため使用済み電池を集める。",
@@ -638,6 +890,12 @@
       "remain",
       "consider",
       "compare"
+    ],
+    "choiceMeanings": [
+      "返す・戻る",
+      "残る",
+      "よく考える・考慮する",
+      "比較する"
     ],
     "answer": 1,
     "correctWord": "return",
@@ -654,6 +912,12 @@
       "avoid",
       "depend"
     ],
+    "choiceMeanings": [
+      "必要とする",
+      "出席する",
+      "避ける",
+      "依存する・～次第である"
+    ],
     "answer": 4,
     "correctWord": "depend",
     "translation": "ピクニックは天気次第だ。",
@@ -668,6 +932,12 @@
       "share",
       "save",
       "provide"
+    ],
+    "choiceMeanings": [
+      "届ける",
+      "共有する",
+      "節約する・保存する",
+      "提供する"
     ],
     "answer": 3,
     "correctWord": "save",
@@ -684,6 +954,12 @@
       "improve",
       "increase"
     ],
+    "choiceMeanings": [
+      "減らす",
+      "申し出る・提供する",
+      "改善する・向上させる",
+      "増やす"
+    ],
     "answer": 2,
     "correctWord": "offer",
     "translation": "そのレストランは明日特別なランチメニューを提供する。",
@@ -698,6 +974,12 @@
       "encourage",
       "arrive",
       "depend"
+    ],
+    "choiceMeanings": [
+      "断る",
+      "励ます・促す",
+      "到着する",
+      "依存する・～次第である"
     ],
     "answer": 1,
     "correctWord": "refuse",
@@ -714,6 +996,12 @@
       "belong",
       "support"
     ],
+    "choiceMeanings": [
+      "企画する・整理する",
+      "招待する",
+      "所属する・～のものである",
+      "支える・支持する"
+    ],
     "answer": 4,
     "correctWord": "support",
     "translation": "多くの保護者が学校のバスケットボール部を応援しに来た。",
@@ -728,6 +1016,12 @@
       "protect",
       "expect",
       "receive"
+    ],
+    "choiceMeanings": [
+      "取り替える",
+      "守る",
+      "予想する・期待する",
+      "受け取る"
     ],
     "answer": 3,
     "correctWord": "expect",
@@ -744,6 +1038,12 @@
       "repair",
       "notice"
     ],
+    "choiceMeanings": [
+      "紹介する・導入する",
+      "残る",
+      "修理する",
+      "気づく"
+    ],
     "answer": 2,
     "correctWord": "remain",
     "translation": "今夜のコンサートのチケットは3枚しか残っていない。",
@@ -758,6 +1058,12 @@
       "accept",
       "prepare",
       "allow"
+    ],
+    "choiceMeanings": [
+      "必要とする",
+      "受け入れる",
+      "準備する",
+      "許可する"
     ],
     "answer": 1,
     "correctWord": "require",
@@ -774,6 +1080,12 @@
       "suggest",
       "deliver"
     ],
+    "choiceMeanings": [
+      "よく考える・考慮する",
+      "発見する",
+      "提案する",
+      "届ける"
+    ],
     "answer": 4,
     "correctWord": "deliver",
     "translation": "店は金曜日に新しいソファを配送する。",
@@ -788,6 +1100,12 @@
       "continue",
       "reduce",
       "collect"
+    ],
+    "choiceMeanings": [
+      "出席する",
+      "続ける",
+      "減らす",
+      "集める"
     ],
     "answer": 3,
     "correctWord": "reduce",
@@ -804,6 +1122,12 @@
       "decide",
       "return"
     ],
+    "choiceMeanings": [
+      "共有する",
+      "励ます・促す",
+      "決める",
+      "返す・戻る"
+    ],
     "answer": 2,
     "correctWord": "encourage",
     "translation": "コーチは練習後にすべての選手を励まそうとする。",
@@ -818,6 +1142,12 @@
       "improve",
       "explain",
       "depend"
+    ],
+    "choiceMeanings": [
+      "企画する・整理する",
+      "改善する・向上させる",
+      "説明する",
+      "依存する・～次第である"
     ],
     "answer": 1,
     "correctWord": "organize",
@@ -834,6 +1164,12 @@
       "save",
       "replace"
     ],
+    "choiceMeanings": [
+      "到着する",
+      "比較する",
+      "節約する・保存する",
+      "取り替える"
+    ],
     "answer": 4,
     "correctWord": "replace",
     "translation": "冬になる前に壊れた窓を交換する必要がある。",
@@ -848,6 +1184,12 @@
       "avoid",
       "introduce",
       "offer"
+    ],
+    "choiceMeanings": [
+      "招待する",
+      "避ける",
+      "紹介する・導入する",
+      "申し出る・提供する"
     ],
     "answer": 3,
     "correctWord": "introduce",
@@ -864,6 +1206,12 @@
       "provide",
       "organize"
     ],
+    "choiceMeanings": [
+      "守る",
+      "受け入れる",
+      "提供する",
+      "企画する・整理する"
+    ],
     "answer": 2,
     "correctWord": "accept",
     "translation": "彼女は卒業後にその仕事の申し出を受け入れることにした。",
@@ -878,6 +1226,12 @@
       "repair",
       "increase",
       "support"
+    ],
+    "choiceMeanings": [
+      "よく考える・考慮する",
+      "修理する",
+      "増やす",
+      "支える・支持する"
     ],
     "answer": 1,
     "correctWord": "consider",
@@ -894,6 +1248,12 @@
       "expect",
       "attend"
     ],
+    "choiceMeanings": [
+      "準備する",
+      "選ぶ",
+      "予想する・期待する",
+      "出席する"
+    ],
     "answer": 4,
     "correctWord": "attend",
     "translation": "50人以上の生徒が科学の講演に出席する予定だ。",
@@ -908,6 +1268,12 @@
       "belong",
       "share",
       "remain"
+    ],
+    "choiceMeanings": [
+      "発見する",
+      "所属する・～のものである",
+      "共有する",
+      "残る"
     ],
     "answer": 3,
     "correctWord": "share",
