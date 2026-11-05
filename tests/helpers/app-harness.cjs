@@ -19,7 +19,7 @@ function context(extra = {}) {
   });
 }
 
-function accountHarness({ records = {}, teacher = false, loggedIn = true } = {}) {
+function accountHarness({ records = {}, teacher = false, loggedIn = true, now = NOW } = {}) {
   const uid = 'student_test_001';
   const data = {
     studentProfiles: { [uid]: { classNumber: 1, studentNumber: 1, name: '架空の生徒' } },
@@ -38,6 +38,10 @@ function accountHarness({ records = {}, teacher = false, loggedIn = true } = {})
   };
   const user = { uid, emailVerified: true, getIdTokenResult: async () => ({ signInProvider: 'google.com' }) };
   const sandbox = context({
+    Date: class extends Date {
+      constructor(...args) { super(...(args.length ? args : [now])); }
+      static now() { return now; }
+    },
     window: {}, document: { dispatchEvent() {} }, Event: class {},
     initializeApp: () => ({}), getApps: () => [], getApp: () => ({}),
     getAuth: () => ({ currentUser: loggedIn ? user : null }), getDatabase: () => ({}),
@@ -128,7 +132,7 @@ function dailyHarness(options) {
   };
 }
 
-function functionFromLine(file, name) {
+function functionFromLine(file, name, bindings = {}) {
   const lines = read(file).split(/\r?\n/);
   const starts = lines.flatMap((line, i) => line.startsWith(`function ${name}(`) ? [i] : []);
   assert.equal(starts.length, 1, `Review extraction of ${name}`);
@@ -137,7 +141,7 @@ function functionFromLine(file, name) {
   // closing brace is on its own unindented line. Never evaluate adjacent code.
   const end = lines[start].endsWith('}') ? start : lines.findIndex((line, i) => i > start && line === '}');
   assert.ok(end >= start, `Missing closing brace for ${name}`);
-  return vm.runInContext(`(${lines.slice(start, end + 1).join('\n')})`, context(), { filename: file, timeout: 1000 });
+  return vm.runInContext(`(${lines.slice(start, end + 1).join('\n')})`, context(bindings), { filename: file, timeout: 1000 });
 }
 
 module.exports = { accountHarness, dailyHarness, functionFromLine, context, read, NOW };
