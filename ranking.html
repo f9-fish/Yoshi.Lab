@@ -290,8 +290,27 @@ function xpWeekKey(ts){const d=new Date(ts+9*3600000),t=new Date(Date.UTC(d.getU
 const number=x=>Math.max(0,Number(x)||0);
 const tiers=[{name:'ブロンズ',min:0,color:'#c98c60'},{name:'シルバー',min:500,color:'#c3d5ea'},{name:'ゴールド',min:1500,color:'#f4c04d'},{name:'プラチナ',min:3500,color:'#7ad5e8'},{name:'ダイヤモンド',min:7000,color:'#7aafff'},{name:'マスター',min:12000,color:'#bb89ff'},{name:'レディアント',min:12000,color:'#ffd779'}];
 function rankOf(xp,pos){if(xp>=12000&&pos>=0&&pos<10)return 6;for(let i=5;i>=0;i--)if(xp>=tiers[i].min)return i;return 0}
-function recordXP(r){const n=Number(r.total),c=Number(r.right);if(!Number.isFinite(n)||!Number.isFinite(c)||n<=0||c<0||c>n)return 0;const m=String(r.xpMode||r.mode||'');return Math.min(30,Math.floor(c)*(m==='textTyping'?7:m==='vocabTyping'?4:m==='vocab'?1:0))}
-function renderHistory(records){const el=$('seasonHistory');el.replaceChildren();const seasons=window.YoshiAccount?.getSeasons?.()||[];const now=Date.now();const past=seasons.filter(s=>Date.parse(s.end)<now).reverse();if(!past.length){el.textContent='最初のシーズン終了後に、ここへ成績が残ります。';return}for(const s of past){const xp=records.reduce((sum,r)=>{const ts=Number(r.createdAt);return sum+(ts>=Date.parse(s.start)&&ts<=Date.parse(s.end)?recordXP(r):0)},0);const t=tiers[rankOf(xp,-1)];const card=document.createElement('div');card.className='history-card';const gem=document.createElement('span');gem.className='gem gem-'+rankOf(xp,-1);gem.append(document.createElement('i'));const body=document.createElement('div');const title=document.createElement('strong');title.textContent=(s.id==='2026-S1'||s.id==='2026-S2'?'2026年前期 '+s.label:s.label)+' · '+window.YoshiRanks.get(xp,-1).name;const desc=document.createElement('small');desc.textContent=xp.toLocaleString()+' XP ／ '+new Date(s.end).toLocaleDateString('ja-JP')+'終了';body.append(title,desc);card.append(gem,body);el.append(card)}const note=document.createElement('p');note.className='muted';note.textContent='過去の学習記録から再計算したXPランクです。レディアントの最終順位は保存されていないため表示しません。';el.append(note)}
+function recordXP(r){const n=Number(r.total),c=Number(r.right);if(!Number.isFinite(n)||!Number.isFinite(c)||n<=0||c<0||c>n)return 0;if(r.dailyV1===true)return Math.max(0,Math.min(500,Number(r.dailyDeltaXP)||0));const m=String(r.xpMode||r.mode||'');return Math.min(30,Math.floor(c)*(m==='textTyping'?7:m==='vocabTyping'?4:m==='vocab'?1:0))}
+function historicalSeasonXP(records,season){
+ // As in account.js syncXP, count attempts across the entire history before
+ // selecting the season. A season boundary does not reset the repeat policy.
+ const attempts=new Map();
+ const ordered=[...records].sort((a,b)=>(Number(a.createdAt)||0)-(Number(b.createdAt)||0));
+ const start=Date.parse(season.start),end=Date.parse(season.end);
+ let xp=0;
+ for(const r of ordered){
+  const n=Number(r.total),correct=Number(r.right);
+  if(!Number.isFinite(n)||!Number.isFinite(correct)||n<=0||correct<0||correct>n)continue;
+  const key=JSON.stringify([String(r.subject||''),String(r.lesson||''),String(r.part||''),String(r.xpMode||r.mode||'')]);
+  const previous=attempts.get(key)||0;
+  attempts.set(key,previous+1);
+  const earned=(r.repeatPolicyV1===true&&previous>=4&&r.completedSet!==true)?0:recordXP(r);
+  const ts=Number(r.createdAt);
+  if(ts>=start&&ts<=end)xp+=earned;
+ }
+ return Math.min(99999999,xp);
+}
+function renderHistory(records){const el=$('seasonHistory');el.replaceChildren();const seasons=window.YoshiAccount?.getSeasons?.()||[];const now=Date.now();const past=seasons.filter(s=>Date.parse(s.end)<now).reverse();if(!past.length){el.textContent='最初のシーズン終了後に、ここへ成績が残ります。';return}for(const s of past){const xp=historicalSeasonXP(records,s);const t=tiers[rankOf(xp,-1)];const card=document.createElement('div');card.className='history-card';const gem=document.createElement('span');gem.className='gem gem-'+rankOf(xp,-1);gem.append(document.createElement('i'));const body=document.createElement('div');const title=document.createElement('strong');title.textContent=(s.id==='2026-S1'||s.id==='2026-S2'?'2026年前期 '+s.label:s.label)+' · '+window.YoshiRanks.get(xp,-1).name;const desc=document.createElement('small');desc.textContent=xp.toLocaleString()+' XP ／ '+new Date(s.end).toLocaleDateString('ja-JP')+'終了';body.append(title,desc);card.append(gem,body);el.append(card)}const note=document.createElement('p');note.className='muted';note.textContent='過去の学習記録から再計算したXPランクです。レディアントの最終順位は保存されていないため表示しません。';el.append(note)}
 function render(){
  const uid=window.YoshiAccount?.user?.uid,week=xpWeekKey(Date.now()),season=window.YoshiAccount?.getSeason();
  $('seasonName').textContent=season?season.label:'シーズン期間外';$('seasonCard1').classList.toggle('selected',season?.label==='SEASON 1');$('seasonCard2').classList.toggle('selected',season?.label==='SEASON 2');$('modeDescription').textContent='レディアント＝学年マスター内上位10名（'+(season?.label==='SEASON 2'?'シーズン２':'シーズン１')+'）';$('seasonDates').textContent=season?new Date(season.start).toLocaleDateString('ja-JP')+' 〜 '+new Date(season.end).toLocaleDateString('ja-JP'):'次のシーズンの設定待ち';

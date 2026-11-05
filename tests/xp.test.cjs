@@ -60,18 +60,21 @@ test('weekly and season aggregates select by record timestamp; sync is repeatabl
   assert.deepEqual(await h.api.syncXP(), result);
 });
 
-test('teacher includes Daily XP; KNOWN DISCREPANCY: historical display omits it', async () => {
+test('teacher and historical display include Daily XP', async () => {
   const daily = row({ dailyV1: true, xpMode: 'daily', mode: 'daily', right: 10, dailyDeltaXP: 500 });
   const h = accountHarness({ records: records([daily]) });
   assert.equal((await h.api.syncXP()).totalXP, 500);
   assert.equal(functionFromLine('teacher.html', 'xpFromRecords')([daily]), 500);
-  assert.equal(functionFromLine('ranking.html', 'recordXP')(daily), 0);
+  assert.equal(functionFromLine('ranking.html', 'recordXP')(daily), 500);
 });
 
-test('teacher applies fifth-attempt restriction; KNOWN DISCREPANCY: history ignores it', async () => {
+test('teacher and history apply fifth-attempt restriction', async () => {
   const rows = Array.from({ length: 5 }, () => row());
   assert.equal((await accountHarness({ records: records(rows) }).api.syncXP()).totalXP, 12);
   assert.equal(functionFromLine('teacher.html', 'xpFromRecords')(rows), 12);
-  const historical = functionFromLine('ranking.html', 'recordXP');
-  assert.equal(rows.reduce((sum, r) => sum + historical(r), 0), 15);
+  const historical = functionFromLine('ranking.html', 'historicalSeasonXP', {
+    recordXP: functionFromLine('ranking.html', 'recordXP'),
+  });
+  const season = accountHarness().api.getSeason();
+  assert.equal(historical(rows, season), 12);
 });
