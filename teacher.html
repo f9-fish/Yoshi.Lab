@@ -194,7 +194,28 @@ html body:not(.unused-yoshilab-selector) {
 const $=id=>document.getElementById(id),norm=x=>String(x??'').trim().replace(/^(lesson|part)\s*/i,'').trim(),natural=(a,b)=>String(a).localeCompare(String(b),'ja',{numeric:true});let profiles={},allRecords={},lastAccess={},teacher=false,uidSelected=null,authSerial=0;const option=(value,label)=>{const o=new Option(label,value);return o};for(let i=1;i<=5;i++){$('classFilter').add(option(String(i),i+'組'));$('editClass').add(option(String(i),i+'組'))}for(let i=1;i<=45;i++)$('editNumber').add(option(String(i),i+'番'));
 function allEntries(uid){return Object.values(allRecords[uid]||{}).filter(r=>r&&typeof r==='object')}function entries(uid){return allEntries(uid).filter(r=>Number(r.total)>0)}function matches(r){return (!$('subjectFilter').value||r.subject===$('subjectFilter').value)&&(!$('lessonFilter').value||norm(r.lesson)===$('lessonFilter').value)&&(!$('partFilter').value||norm(r.part)===$('partFilter').value)&&(!$('modeFilter').value||r.mode===$('modeFilter').value)}function fill(id,values,prefix){const el=$(id),old=el.value;el.replaceChildren(option('',prefix));for(const v of [...new Set(values)].filter(Boolean).sort(natural))el.add(option(v,(id==='lessonFilter'?'Lesson ':id==='partFilter'?'Part ':'')+v));if([...el.options].some(o=>o.value===old))el.value=old}
 function refreshFilters(){const all=Object.values(allRecords).flatMap(o=>Object.values(o||{})).filter(r=>r&&typeof r==='object');fill('subjectFilter',all.map(r=>r.subject),'全科目');fill('lessonFilter',all.filter(r=>!$('subjectFilter').value||r.subject===$('subjectFilter').value).map(r=>norm(r.lesson)),'全Lesson');fill('partFilter',all.filter(r=>(!$('subjectFilter').value||r.subject===$('subjectFilter').value)&&(!$('lessonFilter').value||norm(r.lesson)===$('lessonFilter').value)).map(r=>norm(r.part)),'全Part')}
-function xpFromRecords(recs){let xp=0;for(const r of recs){const n=Number(r.total),right=Number(r.right);if(!Number.isFinite(n)||!Number.isFinite(right)||n<=0||right<0||right>n)continue;xp+=Math.min(30,Math.floor(right)*(String(r.xpMode||r.mode||'')==='textTyping'?7:String(r.xpMode||r.mode||'')==='vocabTyping'?4:String(r.xpMode||r.mode||'')==='vocab'?1:0));}return Math.min(99999999,xp)}
+function xpFromRecords(recs){
+ // Match account.js syncXP: count valid attempts chronologically, including
+ // legacy records, while applying the completion rule only to new-policy rows.
+ const attempts=new Map();
+ const ordered=[...recs].sort((a,b)=>(Number(a.createdAt)||0)-(Number(b.createdAt)||0));
+ let xp=0;
+ for(const r of ordered){
+  const n=Number(r.total),right=Number(r.right);
+  if(!Number.isFinite(n)||!Number.isFinite(right)||n<=0||right<0||right>n)continue;
+  const mode=String(r.xpMode||r.mode||'');
+  const key=JSON.stringify([String(r.subject||''),String(r.lesson||''),String(r.part||''),mode]);
+  const previous=attempts.get(key)||0;
+  attempts.set(key,previous+1);
+  if(r.repeatPolicyV1===true&&previous>=4&&r.completedSet!==true)continue;
+  if(r.dailyV1===true){xp+=Math.max(0,Math.min(500,Number(r.dailyDeltaXP)||0));}
+  else {
+   const rate=mode==='textTyping'?7:mode==='vocabTyping'?4:mode==='vocab'?1:0;
+   xp+=Math.min(30,Math.floor(right)*rate);
+  }
+ }
+ return Math.min(99999999,xp);
+}
 function levelFromXP(xp){let level=1,need=100;while(xp>=need&&level<10000){xp-=need;level++;need+=50}return level}
 function studySeconds(recs){return recs.reduce((n,r)=>n+(Number.isFinite(Number(r.durationSeconds))&&Number(r.durationSeconds)>=0?Number(r.durationSeconds):0),0)}
 function studyLabel(recs){if(!recs.some(r=>r.durationSeconds!=null&&Number.isFinite(Number(r.durationSeconds))&&Number(r.durationSeconds)>=0))return '—';const sec=Math.round(studySeconds(recs));if(sec>=3600)return Math.floor(sec/3600)+'時間'+Math.floor(sec%3600/60)+'分';if(sec>=60)return Math.floor(sec/60)+'分'+(sec%60?' '+sec%60+'秒':'');return sec+'秒'}

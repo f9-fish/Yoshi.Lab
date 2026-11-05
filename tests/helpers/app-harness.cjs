@@ -129,9 +129,15 @@ function dailyHarness(options) {
 }
 
 function functionFromLine(file, name) {
-  const lines = read(file).split(/\r?\n/).filter(line => line.startsWith(`function ${name}(`));
-  assert.equal(lines.length, 1, `Review extraction of ${name}`);
-  return vm.runInContext(`(${lines[0]})`, context(), { filename: file, timeout: 1000 });
+  const lines = read(file).split(/\r?\n/);
+  const starts = lines.flatMap((line, i) => line.startsWith(`function ${name}(`) ? [i] : []);
+  assert.equal(starts.length, 1, `Review extraction of ${name}`);
+  const start = starts[0];
+  // Support both legacy single-line functions and a top-level function whose
+  // closing brace is on its own unindented line. Never evaluate adjacent code.
+  const end = lines[start].endsWith('}') ? start : lines.findIndex((line, i) => i > start && line === '}');
+  assert.ok(end >= start, `Missing closing brace for ${name}`);
+  return vm.runInContext(`(${lines.slice(start, end + 1).join('\n')})`, context(), { filename: file, timeout: 1000 });
 }
 
 module.exports = { accountHarness, dailyHarness, functionFromLine, context, read, NOW };
