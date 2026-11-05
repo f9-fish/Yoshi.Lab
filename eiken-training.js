@@ -13,7 +13,25 @@ globalThis.YoshiEiken=(()=>{
   introduced:'紹介した／導入した',lent:'貸した（lendの過去形・過去分詞）',minimize:'最小限にする',open:'開ける／開いている',
   opposed:'反対した／反対している',preserve:'保護する／保存する',promote:'促進する／昇進させる',rain:'雨／雨が降る',
   reduce:'減らす',reject:'拒否する／却下する',save:'節約する／救う／保存する',submit:'提出する',
-  suggests:'提案する／示唆する',support:'支える／支持する',write:'書く'
+  suggests:'提案する／示唆する',support:'支える／支持する',write:'書く',
+  acknowledge:'認める／受け取ったことを知らせる',acquire:'身につける／獲得する',allocate:'割り当てる／配分する',allow:'許す／可能にする',
+  anticipate:'予期する／見越す',arrive:'到着する',assess:'評価する／査定する',attend:'出席する／通う',
+  avoid:'避ける',belong:'属する',borrow:'借りる',calculate:'計算する',
+  choose:'選ぶ',clarify:'明確にする／説明する',collect:'集める／回収する',compare:'比較する',
+  compensate:'補償する／埋め合わせる',consider:'よく考える／検討する',continue:'続ける／続く',contribute:'貢献する／寄付する',
+  decide:'決める／決心する',deliver:'届ける／配達する',demonstrate:'示す／実演する',depend:'頼る／左右される',
+  discover:'発見する',distinguish:'区別する／見分ける',eliminate:'取り除く／排除する',emphasize:'強調する',
+  enhance:'高める／向上させる',establish:'設立する／確立する',estimate:'見積もる／推定する',evaluate:'評価する',
+  expect:'予期する／期待する',facilitate:'容易にする／促進する',generate:'生み出す／発生させる',implement:'実施する／導入する',
+  introduce:'紹介する／導入する',investigate:'調査する',invite:'招待する／誘う',justify:'正当化する',
+  maintain:'維持する／保つ',negotiate:'交渉する',notice:'気づく／通知',offer:'申し出る／提供する',
+  organize:'企画する／整理する',participate:'参加する',persuade:'説得する',prepare:'準備する',
+  protect:'守る／保護する',provide:'提供する',receive:'受け取る',recognize:'認識する／見覚えがある',
+  refuse:'断る／拒否する',regulate:'規制する／調整する',remain:'残る／〜のままである',repair:'修理する',
+  replace:'取り替える／取って代わる',require:'必要とする／要求する',resolve:'解決する／決意する',respond:'返答する／対応する',
+  restrict:'制限する',retain:'保持する／維持する',return:'戻る／返す',reveal:'明らかにする',
+  share:'共有する／分け合う',strengthen:'強化する',suggest:'提案する／示唆する',sustain:'維持する／支える',
+  transform:'変える／一変させる',verify:'確認する／検証する',withdraw:'撤退する／辞退する／引き出す'
  });
  function meanings(question){
   return question.choices.map((choice,i)=>{
