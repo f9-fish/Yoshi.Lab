@@ -91,11 +91,11 @@ test('bonuses belong to the season of their milestone date, even when a week cro
 
 test('third completed day refreshes UI and shows the extra 100 XP separately', async () => {
   const h=dailyHarness({records:store([completed('2026-11-02'),completed('2026-11-03')])});
-  await h.ready();assert.equal(h.elements.get('dailyStreak').children[1].textContent,'🔥 2日 / 7日達成');
+  await h.ready();assert.equal(h.elements.get('dailyStreak').children[1].children[1].textContent,'2日');
   await h.evaluate('start()');
   h.evaluate("index=9;answers=Array.from({length:10},()=>({ok:true,type:'word',prompt:'fixture',selected:'x',correct:'x'}));");
   await h.evaluate('next()');
-  assert.equal(h.elements.get('dailyStreak').children[1].textContent,'🔥 3日 / 7日達成');
+  assert.equal(h.elements.get('dailyStreak').children[1].children[1].textContent,'3日');
   assert.match(h.elements.get('dailyResultXP').textContent,/週間ボーナス \+100 XP/);
   assert.equal((await h.api.syncXP()).totalXP,600);
 });

@@ -220,7 +220,10 @@ html body:not(.unused-yoshilab-selector) {
 .daily-streak small{display:block;margin-top:4px;color:#e3d3b8;font-size:.78rem;font-weight:500}
 
 .daily-streak-heading{font-size:.72rem;font-weight:800;letter-spacing:.16em;color:#f5cb75}
-.daily-streak-number{font-size:clamp(1.35rem,4vw,1.85rem);font-weight:900;color:#fff0bf;margin-top:4px}
+.daily-streak-number{display:flex;justify-content:center;align-items:baseline;gap:.3rem;font-size:clamp(1.35rem,4vw,1.85rem);font-weight:900;color:#fff0bf;margin-top:4px}
+.daily-streak-flame{font-size:.8em}
+.daily-streak-count{font-size:1.65em;line-height:1.2}
+.daily-streak-total{font-size:.65em;font-weight:700;white-space:nowrap}
 .daily-streak-note{font-size:.85rem;font-weight:600;color:#e3d3b8;margin-top:4px}
 .daily-streak-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;max-width:380px;margin:13px auto 0}
 .daily-streak-day{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
@@ -322,7 +325,11 @@ function renderDailyStreak(){
  const progress=YoshiWeeklyDaily.progress(dailyRows),today=jstDay();
  weeklyRenderedDay=today;
  const heading=document.createElement('div');heading.className='daily-streak-heading';heading.textContent='今週のデイリーチャレンジ（月〜日）';
- const number=document.createElement('div');number.className='daily-streak-number';number.textContent='🔥 '+progress.count+'日 / 7日達成';
+ const number=document.createElement('div');number.className='daily-streak-number';
+ const flame=document.createElement('span');flame.className='daily-streak-flame';flame.textContent='🔥 ';
+ const count=document.createElement('strong');count.className='daily-streak-count';count.textContent=progress.count+'日';
+ const total=document.createElement('span');total.className='daily-streak-total';total.textContent=' / 7日 達成';
+ number.append(flame,count,total);
  const note=document.createElement('div');note.className='daily-streak-note';note.textContent='英C・論表のどちらかを完了すると1日達成。同じ日は1回として数えます。';
  const week=document.createElement('div');week.className='daily-streak-week';week.setAttribute('aria-label','今週の月曜から日曜の達成状況（日本時間）');
  const labels=['月','火','水','木','金','土','日'];
