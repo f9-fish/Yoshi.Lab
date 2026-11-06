@@ -186,9 +186,9 @@ body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .subject-grid{
 body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice{height:240px!important;padding:20px 17px 38px!important}
 body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .growth-subject-name{font-size:36px!important}
 body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice small{font-size:10px!important;letter-spacing:.1em}
-body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{grid-column:1/-1;display:grid!important;grid-template-columns:minmax(0,1fr) 30px;grid-template-rows:auto auto;align-content:center;justify-content:normal;gap:9px 10px;height:128px!important;padding:17px 20px!important;transform:none!important;background-image:linear-gradient(90deg,#392708f5,#2b1e0bd9)!important;background-size:100% 100%!important}
-body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link>*{transform:none!important}
-body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link::before{content:'';position:absolute;right:0;top:0;bottom:0;width:48%;z-index:-1;pointer-events:none;background-image:linear-gradient(90deg,#392708,transparent 70%),url('./home-training-triptych.png');background-size:100% 100%,300% auto;background-position:center,right 30%;background-repeat:no-repeat;transform:none}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{grid-column:1/-1;display:grid!important;grid-template-columns:minmax(0,1fr) 30px;grid-template-rows:auto auto;align-content:center;justify-content:normal;gap:9px 10px;height:128px!important;padding:17px 20px!important;--eiken-mobile-angle:9deg;transform:skewX(calc(0deg - var(--eiken-mobile-angle)))!important;background-image:linear-gradient(90deg,#392708f5,#2b1e0bd9)!important;background-size:100% 100%!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link>*{transform:skewX(var(--eiken-mobile-angle))!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link::before{content:'';position:absolute;right:0;top:0;bottom:0;width:48%;z-index:-1;pointer-events:none;background-image:linear-gradient(90deg,#392708,transparent 70%),url('./home-training-triptych.png');background-size:100% 100%,300% auto;background-position:center,right 30%;background-repeat:no-repeat;transform:skewX(var(--eiken-mobile-angle))}
 body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link>span:nth-child(2){grid-column:1;grid-row:1;gap:4px}
 body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link strong{font-size:28px!important;letter-spacing:.07em}
 body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link small{font-size:10px;max-width:none;letter-spacing:.18em}
@@ -206,4 +206,9 @@ body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-li
 }
 @media(min-width:701px) and (max-width:800px){
 body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{--eiken-art-inset:39px}
+}
+
+/* Match the slightly steeper subject frames on larger mobile screens. */
+@media(min-width:541px) and (max-width:700px){
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{--eiken-mobile-angle:15deg}
 }
