@@ -2106,7 +2106,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
 })();
 </script>
 
-<script src="./yoshi-ranks-v14.js"></script>
+<script src="./yoshi-ranks-v14.js?v=2"></script>
 <script id="yoshi-v13-home-rank-script">
 (function(){
  const tiers=[['ブロンズ',0,'#c98c60'],['シルバー',500,'#c3d5ea'],['ゴールド',1500,'#f4c04d'],['プラチナ',3500,'#7ad5e8'],['ダイヤモンド',7000,'#7aafff'],['マスター',12000,'#bb89ff'],['レディアント',12000,'#ffd779']];
@@ -2118,15 +2118,10 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
  async function update(){
   const a=window.YoshiAccount;if(busy||!a?.user){name.textContent='ランク —';return;}busy=true;
   try{
-   const [board,season,grade,grades]=await Promise.all([a.leaderboard(),Promise.resolve(a.getSeason?.()),a.grade().catch(()=>null),a.grades().catch(()=>({}))]);
-   const uid=a.user.uid,entry=board?.[uid];if(!entry){name.textContent='ブロンズ Ⅲ';badge.style.setProperty('--rank-tone',tiers[0][2]);return;}
-   const xp=entry.seasonId===season?.id?Math.max(0,Number(entry.seasonXP)||0):0;
-   let index=0;for(let i=5;i>=0;i--){if(xp>=tiers[i][1]){index=i;break;}}
-   if(index===5&&Number(grade)>0){
-    const peers=Object.entries(board).filter(([id,r])=>Number(grades?.[id])===Number(grade)).map(([id,r])=>({id,xp:r.seasonId===season?.id?Math.max(0,Number(r.seasonXP)||0):0,name:String(r.name||r.nickname||'Player')})).sort((a,b)=>b.xp-a.xp||a.name.localeCompare(b.name));
-    const pos=peers.findIndex(r=>r.id===uid);if(pos>=0&&pos<10)index=6;
-   }
-   name.textContent=window.YoshiRanks.get(xp,index===6?0:-1).name;badge.style.setProperty('--rank-tone',tiers[index][2]);
+   const board=await a.leaderboard(),season=a.getSeason?.();
+   const uid=a.user.uid,peers=window.YoshiRanks.standings(board,season),pos=peers.findIndex(r=>r.id===uid);
+   const xp=pos>=0?peers[pos].seasonXP:0,info=window.YoshiRanks.get(xp,pos),index=info.tier;
+   name.textContent=info.name;badge.style.setProperty('--rank-tone',tiers[index][2]);
   }catch(err){console.warn('[Yoshi.Lab] ランク表示の取得失敗',err);name.textContent='ランク —';}
   finally{busy=false;}
  }

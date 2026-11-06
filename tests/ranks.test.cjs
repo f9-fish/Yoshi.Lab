@@ -34,3 +34,28 @@ test('master starts at 12000; radiant requires positions 0..9', () => {
   assert.equal(rank(12000).next, null);
   assert.equal(rank(-1).name, 'ブロンズ Ⅲ');
 });
+
+test('season standings exclude stale XP and do not require grade or class data', () => {
+  const board = { a: { name: 'A', seasonId: 'current', seasonXP: 12000 },
+    b: { name: 'B', seasonId: 'old', seasonXP: 90000, totalXP: 90000 },
+    c: { name: 'C', seasonId: 'current', seasonXP: '13000', grade: 3, classNumber: 9 } };
+  const before = structuredClone(board);
+  const sorted = sandbox.window.YoshiRanks.standings(board, { id: 'current' });
+  assert.deepEqual(Array.from(sorted, r => [r.id, r.seasonXP]), [['c', 13000], ['a', 12000], ['b', 0]]);
+  assert.deepEqual(board, before);
+});
+test('equal XP and names use the same UID order regardless of snapshot entry order', () => {
+  const a = { name: 'Same', seasonId: 'current', seasonXP: 12000 };
+  const standings = sandbox.window.YoshiRanks.standings;
+  for (const board of [{ b: a, a }, { a, b: a }]) {
+    assert.deepEqual(Array.from(standings(board, { id: 'current' }), r => r.id), ['a', 'b']);
+  }
+});
+test('missing active season and invalid leaderboard rows never produce radiant XP', () => {
+  const standings = sandbox.window.YoshiRanks.standings;
+  assert.equal(standings(null, null).length, 0);
+  const board = { a: { name: 'A', seasonXP: 13000 }, b: null,
+    c: { seasonId: 'current', seasonXP: Infinity }, d: { seasonId: 'current', seasonXP: -1 } };
+  assert.ok(standings(board, null).every(r => r.seasonXP === 0));
+  assert.ok(standings(board, { id: 'current' }).every(r => r.seasonXP === 0));
+});
