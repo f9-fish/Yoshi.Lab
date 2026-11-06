@@ -1,0 +1,165 @@
+/* HOME surfaces only. Existing page and Daily artwork are deliberately untouched. */
+.home-tagline,.home-header-actions,.home-bottom-nav,.pair-people,.pair-english{display:none}
+body.home-dashboard:not(.welcome-active):has(#subjects) .wrap{max-width:1150px;padding:22px 38px 110px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .wrap>header{gap:18px;padding-bottom:18px;border-bottom:1px solid #d7e5ed99;flex-wrap:nowrap}
+body.home-dashboard:not(.welcome-active):has(#subjects) .wrap>header .brand{font-style:normal;font-size:32px!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) .wrap>header .sub{font-size:9px;letter-spacing:.16em}
+body.home-dashboard:not(.welcome-active):has(#subjects) .header-account{margin-left:auto;flex:0 1 auto;max-width:260px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .header-account .account-msg{min-width:0;text-align:right}
+body.home-dashboard:not(.welcome-active):has(#subjects) .header-account .account-msg strong{font-size:11px;color:#c0d2e6}
+body.home-dashboard:not(.welcome-active):has(#subjects) .header-account .account-msg small,body.home-dashboard:not(.welcome-active):has(#subjects) .header-account .account-nav-links{display:none}
+body.home-dashboard:not(.welcome-active):has(#subjects) #googleLogin{padding:8px 12px;font-size:11px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-header-actions{display:flex;align-items:center;gap:26px;flex:none}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-header-actions>a{display:grid;place-items:center;width:34px;height:40px;color:#f6f8ff;text-decoration:none;font-size:32px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-header-actions svg{width:27px;height:32px;fill:currentColor}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-menu{position:relative;z-index:50}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-menu summary{display:flex;flex-direction:column;justify-content:center;gap:7px;width:38px;height:44px;cursor:pointer;list-style:none}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-menu summary::-webkit-details-marker{display:none}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-menu summary span{height:3px;width:30px;border-radius:3px;background:#fff}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-menu>div{position:absolute;right:0;top:48px;width:180px;padding:8px;background:#071a30f5;border:1px solid #b8cddf66;border-radius:12px;box-shadow:0 10px 30px #0008}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-menu a{display:block;color:#eef5ff;padding:12px;text-decoration:none;border-radius:8px;font-size:13px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-menu a:hover{background:#28496b}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-tagline{display:flex;align-items:center;justify-content:center;gap:22px;text-align:center;margin:24px 0 28px;font:italic clamp(15px,2.15vw,24px)/1.6 Georgia,'Times New Roman',serif;letter-spacing:.085em;color:#e4e8ef;text-shadow:0 2px 5px #000}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-tagline::before,body.home-dashboard:not(.welcome-active):has(#subjects) .home-tagline::after{content:'';height:1px;flex:1;max-width:64px;background:linear-gradient(90deg,transparent,#d2dae6)}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-tagline::after{transform:rotate(180deg)}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-hero-link{border-color:#ffdd91!important;border-radius:30px;padding:18px 28px;min-height:155px;box-shadow:0 0 7px #ffd67b88,inset 0 0 12px #ffd67b33!important;margin-top:0}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-hero-link .daily-hero-title{font-family:Georgia,'Noto Serif JP',serif;font-style:italic;font-size:30px;letter-spacing:.02em}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-hero-link .daily-hero-kicker{font-family:Georgia,serif;color:#ffe8a5;font-size:12px;letter-spacing:.12em}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-hero-link .daily-hero-limit{border-radius:99px;border-color:#f5d18a!important;background:#10223caa!important;color:#fff0bd!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-hero-footer{border:0;padding-left:20px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-home-summary{align-self:flex-start;border:1px solid #f4ce81;padding:3px 14px;border-radius:99px;font-size:12px;box-shadow:0 0 10px #f3bc6233}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-home-days{grid-template-columns:repeat(7,27px);gap:12px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-home-weekday{font-size:11px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-home-mark{width:25px;height:25px;border-color:#dbe6f35e;background:#152637a6;font-size:16px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-home-day.is-done .daily-home-mark{border:1.5px solid #ffe19b;color:#fff4ce;background:#c3983033;box-shadow:0 0 10px #fdd16c33}
+body.home-dashboard:not(.welcome-active):has(#subjects) .quest-progress.yoshi-rank-enabled{max-width:640px;min-height:96px;margin:18px 0 0;padding:12px 25px;border:2px solid #ffdc91;border-radius:30px;background:linear-gradient(110deg,#0c263de6,#13233fd9);box-shadow:0 0 10px #ffcd6f55;gap:22px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .yoshi-home-rank{display:grid;grid-template-columns:52px auto;grid-template-rows:auto auto;column-gap:14px;background:none;border:0;padding:0;flex:0 0 180px;text-align:left}
+body.home-dashboard:not(.welcome-active):has(#subjects) .yoshi-home-rank .yoshi-rank-gem{grid-column:1;grid-row:1/3;width:51px;height:62px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .yoshi-rank-label{grid-column:2;grid-row:1;font-size:11px;font-weight:500;align-self:end}
+body.home-dashboard:not(.welcome-active):has(#subjects) .yoshi-rank-name{grid-column:2;grid-row:2;font-family:Georgia,'Noto Serif JP',serif;font-size:20px;font-weight:600;align-self:start;white-space:nowrap}
+body.home-dashboard:not(.welcome-active):has(#subjects) .quest-progress-copy{border-left:1px solid #cfdae97a;padding-left:24px}
+body.home-dashboard:not(.welcome-active):has(#subjects) #questLevel{font-size:15px;line-height:1.3}
+body.home-dashboard:not(.welcome-active):has(#subjects) .quest-track{height:12px;margin:8px 0 4px;background:#52607199;border:0}
+body.home-dashboard:not(.welcome-active):has(#subjects) #questFill{background:linear-gradient(#fff0a0,#ffc537);box-shadow:0 0 8px #ffdc6066}
+body.home-dashboard:not(.welcome-active):has(#subjects) #questXP{font-size:10px;color:#e0e7ef;white-space:normal}
+body.home-dashboard:not(.welcome-active):has(#subjects) .quest-rank{display:none!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects{display:block!important;position:relative;padding:0!important;margin:70px 24px 0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:none!important;overflow:visible}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects>.growth-section-label,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects>h2,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects>.growth-subcopy{display:none!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .subject-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:24px!important;overflow:visible}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{--card-tone:#5ee7ff;display:flex!important;flex-direction:column;align-items:flex-start!important;justify-content:flex-end!important;position:relative;isolation:isolate;width:100%;max-width:none;height:385px!important;min-height:0!important;margin:0;padding:25px 20px 58px!important;gap:10px;border:2px solid var(--card-tone)!important;border-radius:0!important;transform:skewX(-15deg);box-shadow:0 0 12px color-mix(in srgb,var(--card-tone) 65%,transparent),inset 0 0 10px color-mix(in srgb,var(--card-tone) 45%,transparent)!important;text-decoration:none!important;color:#fff!important;text-align:left!important;overflow:hidden;background-image:linear-gradient(0deg,#004263cc,#00162722 70%),url('./home-training-triptych.png')!important;background-size:100% 100%,300% auto!important;background-position:center,left top!important;background-repeat:no-repeat!important;background-color:#052134!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice[data-subject="論表"]{--card-tone:#eeaaff;background-image:linear-gradient(0deg,#331449bb,#160d2622 70%),url('./home-training-triptych.png')!important;background-position:center,center top!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{--card-tone:#ffda72;background-image:linear-gradient(0deg,#493000cc,#22130811 70%),url('./home-training-triptych.png')!important;background-position:center,right top!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice::before,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice::after{content:none!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice>*,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link>*{transform:skewX(15deg)}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .growth-subject-emoji,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-icon{display:none!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .growth-subject-name,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link strong{font:italic 48px/1.3 Georgia,'Noto Serif JP','Yu Mincho',serif!important;letter-spacing:.1em;white-space:nowrap;text-shadow:0 2px 10px #0009}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice small{font:italic 11px/1.7 Georgia,serif!important;letter-spacing:.2em;color:#f1f4ff!important;min-height:43px}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice small::before{content:'';display:block;width:30px;height:2px;background:#fff;margin:0 0 11px}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link>span:nth-child(2){display:flex;flex-direction:column-reverse;gap:12px}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link strong{font-size:35px!important;letter-spacing:.045em}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link small{font:italic 12px/1.6 Georgia,serif;letter-spacing:.18em;color:#fff5d5;max-width:90px}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-grades{margin:0;padding:6px 8px;font-size:10px;white-space:normal;border:1px solid #ffe094;border-radius:99px;background:#2d2109aa;color:#fff5d9;line-height:1.6}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-grades>span{padding:0 5px}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .growth-subject-cta,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link>span:last-child{display:block!important;position:absolute;bottom:17px;right:22px;width:auto;height:auto;background:none;box-shadow:none;font:32px/1 Georgia,serif!important;color:#fff!important;border:0;padding:0!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice:hover,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link:hover{filter:brightness(1.15)}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice:focus-visible,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link:focus-visible{outline:3px solid white;outline-offset:5px}
+body.home-dashboard:not(.welcome-active):has(#subjects) #loadStatus{min-height:0;margin:14px 0 0;text-align:center;font-size:11px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-feature{padding:0!important;margin:24px 45px 0!important;border:0!important;background:none!important;box-shadow:none!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-feature h2,body.home-dashboard:not(.welcome-active):has(#subjects) .pair-feature>p{display:none}
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-feature .pair-start{display:flex;align-items:center;gap:25px;min-height:68px;margin:0!important;padding:12px 30px!important;border:2px solid #a8ffef!important;border-radius:0!important;transform:skewX(-15deg);background:linear-gradient(100deg,#00564edb,#00372ee8)!important;color:white!important;box-shadow:0 0 12px #31e6cf77,inset 0 0 12px #4affd933;text-align:left;font:28px/1.3 Georgia,'Yu Mincho',serif}
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-start>*{transform:skewX(15deg)}
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-people{display:block;font-size:26px;letter-spacing:-.25em;padding-right:9px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-english{display:block;font:italic 12px Georgia,serif;letter-spacing:.17em;border-left:1px solid #c9f5ef99;padding:8px 0 8px 22px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-arrow{margin-left:auto;font-size:30px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .quest-rewards{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:28px 0 0;padding:10px;border:0;background:#05162a88;border-radius:12px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .quest-rewards>strong{width:100%;font-size:11px;text-align:center;color:#b6cbdf}
+body.home-dashboard:not(.welcome-active):has(#subjects) .quest-rewards .quest-reward{border:0;background:none!important;box-shadow:none;padding:3px 7px;font-size:10px;display:flex;gap:5px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .quest-rewards .quest-reward b{font-size:12px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-bottom-nav{display:flex;position:fixed;z-index:200;left:0;right:0;bottom:0;justify-content:center;padding:12px max(16px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom));border-top:1px solid #d7e5f0a6;background:#04192de8;backdrop-filter:blur(16px);box-shadow:0 -4px 20px #02101f66}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-bottom-nav a{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:min(30%,280px);padding:0 15px 5px;color:#f3f7fb;text-decoration:none;font:16px Georgia,serif;letter-spacing:.03em}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-bottom-nav a+a{border-left:1px solid #b8ccde77}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-bottom-nav svg{width:25px;height:25px;fill:currentColor}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-bottom-nav [aria-current]::after{content:'';position:absolute;bottom:-5px;width:85px;max-width:80%;height:3px;border-radius:3px;background:#ffce50;box-shadow:0 0 8px #ffbf4d99}
+@media(max-width:800px){
+body.home-dashboard:not(.welcome-active):has(#subjects) .wrap{padding:16px 22px 105px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .header-account{max-width:180px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-header-actions{gap:17px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-home-days{gap:7px;grid-template-columns:repeat(7,23px)}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects{margin:45px 20px 0!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .subject-grid{gap:17px!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{height:290px!important;padding:22px 12px 42px!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .growth-subject-name{font-size:36px!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link strong{font-size:27px!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-grades{font-size:8px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-feature{margin:24px 26px 0!important}
+}
+@media(max-width:540px){
+body.home-dashboard:not(.welcome-active):has(#subjects) .wrap{padding:14px 14px 100px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .wrap>header{gap:8px;padding-bottom:12px;flex-wrap:wrap}
+body.home-dashboard:not(.welcome-active):has(#subjects) .wrap>header>div:first-child{flex:1}
+body.home-dashboard:not(.welcome-active):has(#subjects) .wrap>header .brand{font-size:26px!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) .header-account{order:3;flex:1 1 100%;max-width:none;margin:0;justify-content:space-between;flex-direction:row}
+body.home-dashboard:not(.welcome-active):has(#subjects) .header-account .account-msg{flex:auto;text-align:left}
+body.home-dashboard:not(.welcome-active):has(#subjects) .header-account .account-msg strong{font-size:10px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-header-actions{gap:17px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-header-actions>a{width:25px;height:32px;font-size:25px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-header-actions svg{width:23px;height:26px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-menu summary{width:26px;height:32px;gap:5px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-menu summary span{width:24px;height:2px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-tagline{margin:14px 0 17px;font-size:13px;letter-spacing:.035em;gap:8px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-tagline::before,body.home-dashboard:not(.welcome-active):has(#subjects) .home-tagline::after{max-width:18px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-hero-link{min-height:190px;padding:15px 16px;border-radius:23px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-hero-link .daily-hero-title{font-size:26px;grid-column:1/-1}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-hero-link .daily-hero-detail{grid-column:1/-1;font-size:11px;gap:4px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-hero-link .daily-hero-detail strong{font-size:25px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-hero-footer{grid-column:1/-1;grid-row:4;border:0;padding:4px 0 0;gap:8px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-home-week{gap:6px;flex:1}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-home-summary{font-size:10px;padding:2px 10px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-home-days{grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;max-width:265px;width:100%}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-home-weekday{font-size:10px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .daily-home-mark{width:22px;height:22px;font-size:14px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .quest-progress.yoshi-rank-enabled{min-height:83px;padding:10px 13px;border-radius:24px;gap:12px;width:100%;max-width:none;margin-top:15px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .yoshi-home-rank{grid-template-columns:34px auto;column-gap:9px;flex:0 0 128px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .yoshi-home-rank .yoshi-rank-gem{width:34px;height:44px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .yoshi-rank-label{font-size:9px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .yoshi-rank-name{font-size:15px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .quest-progress-copy{padding-left:12px}
+body.home-dashboard:not(.welcome-active):has(#subjects) #questLevel{font-size:13px}
+body.home-dashboard:not(.welcome-active):has(#subjects) #questXP{font-size:9px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .quest-track{height:9px;margin:6px 0 4px}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects{margin:35px 10px 0!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .subject-grid{gap:10px!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{height:222px!important;transform:skewX(-9deg);gap:9px;padding:15px 9px 35px!important;background-size:100% 100%,300% auto!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice>*,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link>*{transform:skewX(9deg)}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .growth-subject-name{font-size:30px!important;letter-spacing:.04em}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice small{font-size:8px!important;letter-spacing:.08em;line-height:1.7;min-height:32px;overflow-wrap:anywhere}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice small::before{width:20px;margin-bottom:8px}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link strong{font-size:18px!important;letter-spacing:0}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link small{font-size:8px;letter-spacing:.08em}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link>span:nth-child(2){gap:9px}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-grades{padding:3px 5px;font-size:8px;line-height:1.5;border-radius:8px}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-grades>span{display:none}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .growth-subject-cta,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link>span:last-child{font-size:24px!important;right:12px;bottom:10px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-feature{margin:20px 14px 0!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-feature .pair-start{min-height:58px;gap:15px;padding:10px 20px;font-size:22px;transform:skewX(-9deg)}
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-start>*{transform:skewX(9deg)}
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-english{font-size:9px;letter-spacing:.08em;padding-left:13px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-people{font-size:20px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .quest-rewards{margin-top:20px;gap:3px;padding:8px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .quest-rewards .quest-reward{font-size:9px;padding:3px 4px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-bottom-nav{padding-top:10px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-bottom-nav a{font-size:13px}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-bottom-nav svg{width:22px;height:22px}
+}
+@media(prefers-reduced-motion:reduce){body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{transition:none}}
+
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-start>span:nth-child(2){white-space:nowrap}
+body.home-dashboard:not(.welcome-active):has(#subjects) .pair-people svg{display:block;width:32px;height:29px;fill:currentColor}
+body.home-dashboard:not(.welcome-active):has(#subjects) .home-header-actions a svg,body.home-dashboard:not(.welcome-active):has(#subjects) .home-bottom-nav a svg{fill:#f5f8ff}
+@media(max-width:540px){body.home-dashboard:not(.welcome-active):has(#subjects) .pair-people svg{width:24px;height:24px}body.home-dashboard:not(.welcome-active):has(#subjects) .pair-feature .pair-start{padding:10px 16px!important;gap:12px}body.home-dashboard:not(.welcome-active):has(#subjects) .pair-people{padding:0;letter-spacing:0}body.home-dashboard:not(.welcome-active):has(#subjects) .pair-start>span:nth-child(2){font-size:21px}}
+@media(max-width:360px){body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link strong{font-size:15px!important}body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .growth-subject-name{font-size:26px!important}body.home-dashboard:not(.welcome-active):has(#subjects) .pair-english{display:none}body.home-dashboard:not(.welcome-active):has(#subjects) .yoshi-home-rank{flex-basis:114px;column-gap:6px}body.home-dashboard:not(.welcome-active):has(#subjects) .yoshi-rank-name{font-size:13px}}
+
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-grades>span{display:inline-block;padding:0 4px}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-grades>span+span{border-left:1px solid #e4cf9399}
+@media(min-width:801px){body.home-dashboard:not(.welcome-active):has(#subjects) .home-bottom-nav{position:static;margin-top:28px;padding-top:22px;padding-bottom:22px}body.home-dashboard:not(.welcome-active):has(#subjects) .wrap{padding-bottom:22px}body.home-dashboard:not(.welcome-active):has(#subjects) .footer{display:none}}
+@media(max-width:540px){body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-grades>span{display:block;padding:0;white-space:nowrap;font-size:7px}body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-grades>span+span{border:0;margin-top:2px}}
