@@ -197,3 +197,16 @@ body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-gr
 body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-grades>span+span{border-left:1px solid #e4cf9399;margin:0}
 body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link>span:last-child{grid-column:2;grid-row:1/3;position:static;align-self:center;font-size:30px!important}
 }
+
+/* Keep the EIKEN artwork upright on desktop as well as mobile. */
+@media(min-width:701px){
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link,
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link>*{transform:none!important}
+}
+
+@media(min-width:701px){
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{margin-left:52px;width:calc(100% - 52px)}
+}
+@media(min-width:701px) and (max-width:800px){
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{margin-left:39px;width:calc(100% - 39px)}
+}
