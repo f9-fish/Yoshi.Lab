@@ -198,15 +198,12 @@ body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-gr
 body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link>span:last-child{grid-column:2;grid-row:1/3;position:static;align-self:center;font-size:30px!important}
 }
 
-/* Keep the EIKEN artwork upright on desktop as well as mobile. */
+/* Keep the original slanted frame; cancel its skew only for the artwork. */
 @media(min-width:701px){
-body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link,
-body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link>*{transform:none!important}
-}
-
-@media(min-width:701px){
-body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{margin-left:52px;width:calc(100% - 52px)}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{--eiken-art-inset:52px;transform:skewX(-15deg)!important;background-image:none!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link>*{transform:skewX(15deg)!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link::before{content:'';position:absolute;inset:0 calc(0px - var(--eiken-art-inset));z-index:-1;pointer-events:none;background-image:linear-gradient(0deg,#493000cc,#22130811 70%),url('./home-training-triptych.png');background-size:100% 100%,300% auto;background-position:center,right top;background-repeat:no-repeat;transform:skewX(15deg)}
 }
 @media(min-width:701px) and (max-width:800px){
-body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{margin-left:39px;width:calc(100% - 39px)}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{--eiken-art-inset:39px}
 }
