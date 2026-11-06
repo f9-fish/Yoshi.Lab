@@ -11,6 +11,7 @@ function yoshiRecordXP(r){
  if(!Number.isFinite(n)||!Number.isFinite(correct)||n<=0||correct<0||correct>n)return 0;
  if(r.dailyV1===true)return Math.max(0,Math.min(500,Number(r.dailyDeltaXP)||0));
  const mode=String(r.xpMode||r.mode||'');
+ if(r.xpPolicyV2===true){const rate=r.subject==='英検'&&mode==='eikenChoice'?(r.lesson==='2級'?10:5):mode==='textTyping'?10:mode==='vocabTyping'?7:mode==='vocab'?1:0;return Math.floor(correct)*rate;}
  if(r.subject==='英検'&&mode==='eikenChoice')return Math.min(50,Math.floor(correct)*5);
  // Legacy records lack xpMode: award no XP to old cloze check records;
  // legacy vocab cannot be reliably separated into 4-choice and typing.
@@ -105,16 +106,16 @@ total=Math.min(99999999,total);weekly=Math.min(99999999,weekly);const item={clas
 async records(){if(!current)return [];const snap=await get(ref(db,'learningRecords/'+current.uid));return Object.values(snap.val()||{}).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))}};
 // A stable session key makes retries (including a lost acknowledgement) idempotent.
 // Keep the existing record shape; distinguish the new EIKEN rate from legacy vocab records.
-api.saveEikenResult=async function({sessionId,grade,right,total,bestStreak=0,durationSeconds=0,completedSet=true}){
+api.saveEikenResult=async function({sessionId,grade,right,total,bestStreak=0,durationSeconds=0,completedSet=true,xpPolicyV2=true}){
  if(!current)throw Error('Googleログインが必要です');
  const u=current,token=await u.getIdTokenResult();
  if(token.signInProvider!=='google.com'||!u.emailVerified)throw Error('確認済みのGoogleアカウントでログインしてください');
  if(current?.uid!==u.uid)throw Error('ログイン状態が変わりました');
  if(typeof sessionId!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(sessionId)||
-  typeof completedSet!=='boolean'||!['準2級','2級'].includes(grade)||!Number.isInteger(total)||total<1||total>10||!Number.isInteger(right)||right<0||right>total||
+  typeof xpPolicyV2!=='boolean'||typeof completedSet!=='boolean'||!['準2級','2級'].includes(grade)||!Number.isInteger(total)||total<1||total>10||!Number.isInteger(right)||right<0||right>total||
   !Number.isInteger(bestStreak)||bestStreak<0||bestStreak>right||!Number.isFinite(durationSeconds)||durationSeconds<0)throw Error('英検の保存内容が不正です');
  const row={subject:'英検',lesson:grade,part:'空所補充4択',mode:'vocab',xpMode:'eikenChoice',right,total,
-  repeatPolicyV1:true,completedSet,bestStreak,durationSeconds:Math.round(durationSeconds),createdAt:Date.now(),source:'solo'};
+  ...(xpPolicyV2?{xpPolicyV2:true}:{}),repeatPolicyV1:true,completedSet,bestStreak,durationSeconds:Math.round(durationSeconds),createdAt:Date.now(),source:'solo'};
  const result=await runTransaction(ref(db,'learningRecords/'+u.uid+'/eiken_'+sessionId),old=>old===null?row:undefined,{applyLocally:false});
  const saved=result.snapshot.val();
  if(!saved||saved.subject!==row.subject||saved.lesson!==grade||saved.part!==row.part||saved.mode!=='vocab'||!['vocab','eikenChoice'].includes(saved.xpMode)||

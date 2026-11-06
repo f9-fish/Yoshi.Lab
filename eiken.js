@@ -59,7 +59,7 @@
  $('backGrades').onclick=()=>{loading++;show('gradeScreen');authUI();};
  $('start').onclick=()=>{
   if(!pool.length||$('start').disabled)return;
-  session={id:crypto.randomUUID(),grade,questions:core.pick(pool),answers:[],uid:window.YoshiAccount?.user?.uid||null,startedAt:Date.now(),saved:false};
+  session={id:crypto.randomUUID(),xpPolicyV2:true,grade,questions:core.pick(pool),answers:[],uid:window.YoshiAccount?.user?.uid||null,startedAt:Date.now(),saved:false};
   index=0;show('quizScreen');renderQuestion();authUI();
  };
  function renderQuestion(){
@@ -141,9 +141,9 @@
   try{
    if(!currentSession.saved){
     const saved=await withTimeout(a.saveEikenResult({sessionId:currentSession.id,grade:core.grades[currentSession.grade].label,
-     right:result.right,total:result.total,bestStreak:result.bestStreak,completedSet:currentSession.completedSet!==false,
+     right:result.right,total:result.total,bestStreak:result.bestStreak,xpPolicyV2:currentSession.xpPolicyV2===true,completedSet:currentSession.completedSet!==false,
      durationSeconds:currentSession.durationSeconds||0}),12000);
-    currentSession.awardedXP=saved.xpMode==='eikenChoice'?Math.min(50,saved.right*5):Math.min(30,saved.right);
+    currentSession.awardedXP=saved.xpMode==='eikenChoice'?(saved.xpPolicyV2===true?saved.right*(saved.lesson==='2級'?10:5):Math.min(50,saved.right*5)):Math.min(30,saved.right);
     currentSession.saved=true;
    }
    if(a.user?.uid!==currentSession.uid)throw Error('ログイン状態が変わりました。開始時のアカウントで再試行してください。');
@@ -152,12 +152,27 @@
    $('resultXP').textContent=(updated?'獲得 +':'記録済み・反映予定 +')+(currentSession.awardedXP??result.xp)+' XP';
    $('saveStatus').textContent=updated?'記録・XPを保存しました。累計XP・ランキングに反映されます。':'記録は保存済みです。XP反映にはMY PAGEでプロフィール登録が必要です。';
    $('setupProfile').hidden=!!updated;$('retrySave').hidden=true;
+   if(!currentSession.celebrated){showXPResult(updated?(currentSession.awardedXP??result.xp):0,updated?.totalXP||0,updated?'今回の学習で獲得したXPです。累計XPに反映されました。':'記録は保存済みです。XP反映にはMY PAGEでプロフィール登録が必要です。');currentSession.celebrated=true;}
    try{const data=JSON.parse(sessionStorage.getItem(pendingKey(currentSession.uid))||'null');if(data?.id===currentSession.id)sessionStorage.removeItem(pendingKey(currentSession.uid));}catch{}
   }catch(e){
    keepPending();$('retrySave').hidden=false;
    $('saveStatus').textContent=(currentSession.saved?'記録は保存済みですが、XPの同期を確認できません。':'保存を確認できません。')+'再試行してください。'+e.message;
   }finally{saving=false;$('retrySave').disabled=false;}
  }
+ function showXPResult(earned,totalXP,message){
+  let level=1,need=100,remaining=Math.max(0,Number(totalXP)||0);
+  while(remaining>=need&&level<10000){remaining-=need;level++;need+=50;}
+  $('xpCelebrationEarned').textContent='+'+earned+' XP';$('xpCelebrationLevel').textContent='LEVEL '+level;
+  $('xpCelebrationMessage').textContent=message;$('xpCelebrationOverlay').classList.add('open');$('xpCelebrationClose').focus();
+ }
+ function closeXPResult(){$('xpCelebrationOverlay').classList.remove('open');$('again').focus();}
+ $('xpCelebrationClose').onclick=closeXPResult;
+ $('xpCelebrationOverlay').onclick=e=>{if(e.target===$('xpCelebrationOverlay'))closeXPResult();};
+ document.addEventListener('keydown',e=>{
+  if(!$('xpCelebrationOverlay').classList.contains('open'))return;
+  if(e.key==='Escape')closeXPResult();
+  if(e.key==='Tab'){e.preventDefault();$('xpCelebrationClose').focus();}
+ });
  $('retrySave').onclick=()=>void save();
  $('restorePending').onclick=()=>{const data=pending();if(!data)return;session=data;grade=data.grade;renderResult();void save();};
  function leaveResult(action){

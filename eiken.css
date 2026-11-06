@@ -2,3 +2,13 @@
 
 /* Meanings are inserted only after an answer, and in the final review. */
 .choice{flex-wrap:wrap;gap:8px 10px}.choice-word{overflow-wrap:anywhere}.choice-meaning{font-size:.78em;font-weight:500;color:#c4d8ed;line-height:1.6;overflow-wrap:anywhere}.choice .choice-meaning{flex:1 1 100px;min-width:0}.review-item li .choice-meaning{margin-left:.5em}
+
+/* Same XP celebration as normal practice. */
+
+#xpCelebrationOverlay{position:fixed;inset:0;z-index:99999;background:rgba(4,10,25,.77);display:none;align-items:center;justify-content:center;padding:20px}
+#xpCelebrationOverlay.open{display:flex}
+#xpCelebrationCard{width:min(100%,390px);background:linear-gradient(150deg,#1a315d,#101a33);border:2px solid #ffcb65;border-radius:25px;padding:28px 20px;text-align:center;color:white;box-shadow:0 0 55px #e4a83c66;animation:xpPop .35s ease-out}
+@keyframes xpPop{from{opacity:0;transform:scale(.78) translateY(25px)}to{opacity:1;transform:scale(1) translateY(0)}}
+#xpCelebrationEarned{font-size:clamp(42px,11vw,64px);font-weight:950;color:#ffca57;text-shadow:0 0 20px #ffa51e66}
+#xpCelebrationLevel{font-size:24px;font-weight:900;margin:8px}
+#xpCelebrationOverlay button{background:#ffc34e;color:#172039;border:0;border-radius:12px;padding:12px 25px;font-weight:900;margin-top:16px;cursor:pointer}
