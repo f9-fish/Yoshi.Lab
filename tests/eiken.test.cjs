@@ -87,7 +87,7 @@ test('EIKEN completed sets keep normal XP on fifth and later runs',async()=>{
 function ui({data=Array.from({length:10},(_,i)=>fixture(i,i%4+1)),account=accountHarness(),storage=new Map(),fetchError=false}={}){
   const nodes=new Map(),events=new Map();
   function node(){return {hidden:false,disabled:false,textContent:'',className:'',children:[],dataset:{},
-    classList:{add(){}},append(...v){this.children.push(...v)},replaceChildren(){this.children=[]},focus(){}};}
+    classList:{values:new Set(),add(x){this.values.add(x)},remove(x){this.values.delete(x)},contains(x){return this.values.has(x)}},append(...v){this.children.push(...v)},replaceChildren(){this.children=[]},focus(){}};}
   for(const [,id] of read('eiken.html').matchAll(/\bid="([^"]+)"/g))nodes.set(id,node());
   const grades=['pre2','2'].map(grade=>Object.assign(node(),{dataset:{grade}}));
   const window={YoshiAccount:account.api,addEventListener:(name,fn)=>events.set(name,fn)};
@@ -97,7 +97,7 @@ function ui({data=Array.from({length:10},(_,i)=>fixture(i,i%4+1)),account=accoun
     AbortController,setTimeout:()=>0,clearTimeout(){},confirm:()=>true,
     fetch:async url=>{assert.match(url,/^\.\/eiken_(pre2|2)\.json$/);if(fetchError)throw Error('fixture unavailable');return {ok:true,json:async()=>data};}});
   vm.runInContext(read('eiken-training.js'),local);vm.runInContext(read('eiken.js'),local,{timeout:1000});
-  return {nodes,grades,events,account,storage,async choose(){await grades[0].onclick();},
+  return {nodes,grades,events,account,storage,async choose(index=0){await grades[index].onclick();},
     async finish(){nodes.get('start').onclick();for(let i=0;i<Math.min(10,data.length);i++){
       const q=data.find(q=>q.sentence===nodes.get('sentence').textContent);
       nodes.get('choices').children[q.answer-1].onclick();nodes.get('choices').children[q.answer-1].onclick();
@@ -211,7 +211,8 @@ for(const [right,expected] of [[0,0],[1,5],[6,30],[7,35],[10,50]])test(`new EIKE
 test('legacy EIKEN keeps 1 XP, normal learning keeps 30 XP cap, and retry never upgrades an old record',async()=>{
   const h=accountHarness();const row=await h.api.saveEikenResult(payload({right:10}));
   h.data.learningRecords[h.uid]['eiken_'+id].xpMode='vocab';
-  h.data.learningRecords[h.uid].normal={...row,subject:'英C',xpMode:'vocabTyping',right:10};
+  delete h.data.learningRecords[h.uid]['eiken_'+id].xpPolicyV2;
+  h.data.learningRecords[h.uid].normal={...row,subject:'英C',xpMode:'vocabTyping',xpPolicyV2:undefined,right:10};
   const saved=await h.api.saveEikenResult(payload({right:10}));
   assert.equal(saved.xpMode,'vocab');assert.equal((await h.api.syncXP()).totalXP,40);
   assert.equal(functionFromLine('teacher.html','xpFromRecords')(await h.api.records()),40);
@@ -259,4 +260,49 @@ test('a failed partial save can be restored after reload without completing unat
   const restored=ui({account,storage:h.storage});restored.nodes.get('restorePending').onclick();await tick();await tick();
   assert.equal((await account.api.records()).length,1);assert.equal((await account.api.syncXP()).totalXP,5);
   assert.match(restored.nodes.get('completionStatus').textContent,/10問中1問/);assert.equal(h.storage.size,0);
+});
+
+for(const [selected,label,rate] of [[0,'準2級',5],[1,'2級',10]])test(`EIKEN ${label} completion popup matches saved XP and closes without awarding again`,async()=>{
+  const h=ui({data:Array.from({length:10},(_,i)=>({...fixture(i),grade:label}))});
+  await h.choose(selected);await h.finish();
+  assert.equal(h.nodes.get('resultXP').textContent,'獲得 +'+10*rate+' XP');
+  assert.equal(h.nodes.get('xpCelebrationEarned').textContent,'+'+10*rate+' XP');
+  assert.ok(h.nodes.get('xpCelebrationOverlay').classList.contains('open'));
+  h.nodes.get('xpCelebrationClose').onclick();
+  assert.equal(h.nodes.get('xpCelebrationOverlay').classList.contains('open'),false);
+  h.nodes.get('retrySave').onclick();await tick();await tick();
+  assert.equal(h.nodes.get('xpCelebrationOverlay').classList.contains('open'),false);
+  assert.equal((await h.account.api.records()).length,1);
+  assert.equal((await h.account.api.syncXP()).totalXP,10*rate);
+});
+test('EIKEN 2 partial exit celebrates only answered correct questions',async()=>{
+  const h=ui({data:Array.from({length:10},(_,i)=>({...fixture(i),grade:'2級'}))});
+  await h.choose(1);h.nodes.get('start').onclick();
+  h.nodes.get('choices').children[0].onclick();h.nodes.get('next').onclick();
+  h.nodes.get('choices').children[1].onclick();h.nodes.get('quit').onclick();await tick();await tick();
+  assert.equal(h.nodes.get('xpCelebrationEarned').textContent,'+10 XP');
+  const [row]=await h.account.api.records();assert.equal(row.right,1);assert.equal(row.total,2);
+});
+test('popup does not claim earned XP until synchronization succeeds',async()=>{
+  const h=ui(),sync=h.account.api.syncXP;let fail=true;
+  h.account.api.syncXP=async()=>{if(fail)throw Error('offline');return sync.call(h.account.api);};
+  await h.choose();await h.finish();
+  assert.equal(h.nodes.get('xpCelebrationOverlay').classList.contains('open'),false);
+  fail=false;h.nodes.get('retrySave').onclick();await tick();await tick();
+  assert.equal(h.nodes.get('xpCelebrationEarned').textContent,'+50 XP');
+  assert.ok(h.nodes.get('xpCelebrationOverlay').classList.contains('open'));
+});
+test('missing profile popup shows zero reflected XP and explains pending credit',async()=>{
+  const h=ui();h.account.api.syncXP=async()=>null;await h.choose();await h.finish();
+  assert.equal(h.nodes.get('xpCelebrationEarned').textContent,'+0 XP');
+  assert.match(h.nodes.get('xpCelebrationMessage').textContent,/プロフィール登録/);
+});
+test('pre-update pending EIKEN 2 session keeps its original rate on restore',async()=>{
+  const account=accountHarness(),storage=new Map();
+  storage.set('yoshiEikenPendingV1:'+account.uid,JSON.stringify({id,grade:'2',uid:account.uid,
+    questions:[{...fixture(),grade:'2級'}],answers:[1],completedSet:false,plannedTotal:10}));
+  const h=ui({account,storage});h.nodes.get('restorePending').onclick();await tick();await tick();
+  assert.equal(h.nodes.get('resultXP').textContent,'獲得 +5 XP');
+  assert.equal(h.nodes.get('xpCelebrationEarned').textContent,'+5 XP');
+  assert.notEqual((await account.api.records())[0].xpPolicyV2,true);
 });

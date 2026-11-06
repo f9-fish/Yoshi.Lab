@@ -31,7 +31,7 @@ globalThis.YoshiEiken=(()=>{
    !session.answers.every(n=>Number.isInteger(n)&&n>=1&&n<=4))throw Error('全問題に解答してください。');
   const right=session.questions.filter((q,i)=>q.answer===session.answers[i]).length;
   let streak=0,best=0;session.questions.forEach((q,i)=>{streak=q.answer===session.answers[i]?streak+1:0;best=Math.max(best,streak);});
-  return {right,total:session.questions.length,xp:Math.min(50,right*5),bestStreak:best};
+  return {right,total:session.questions.length,xp:right*(session.xpPolicyV2===true&&session.grade==='2'?10:5),bestStreak:best};
  }
  return Object.freeze({grades,questions,pick,score,meanings});
 })();

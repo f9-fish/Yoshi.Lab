@@ -209,6 +209,7 @@ function xpFromRecords(recs){
   attempts.set(key,previous+1);
   if(r.repeatPolicyV1===true&&previous>=4&&r.completedSet!==true&&!(r.subject==='英検'&&r.xpMode==='eikenChoice'))continue;
   if(r.dailyV1===true){xp+=Math.max(0,Math.min(500,Number(r.dailyDeltaXP)||0));}
+  else if(r.xpPolicyV2===true){const rate=r.subject==='英検'&&mode==='eikenChoice'?(r.lesson==='2級'?10:5):mode==='textTyping'?10:mode==='vocabTyping'?7:mode==='vocab'?1:0;xp+=Math.floor(right)*rate;}
   else if(r.subject==='英検'&&mode==='eikenChoice'){xp+=Math.min(50,Math.floor(right)*5);}
   else {
    const rate=mode==='textTyping'?7:mode==='vocabTyping'?4:mode==='vocab'?1:0;
