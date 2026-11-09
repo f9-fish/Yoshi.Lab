@@ -1,0 +1,12 @@
+/* One additional destination; existing HOME panels and artwork stay intact. */
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .writing-home-link{--card-tone:#ff8bdf;background-image:linear-gradient(0deg,#611347ed,#30132a22 70%),url('./home-training-triptych.png')!important;background-position:center,center top!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .writing-home-link .growth-subject-name{font-size:32px!important;letter-spacing:.02em;white-space:normal}
+@media(min-width:701px){
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .subject-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:20px!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .writing-home-link{grid-column:auto}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link strong{font-size:32px!important;white-space:normal!important}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .choice,body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-home-link{min-width:0;padding-left:16px!important;padding-right:16px!important}
+}
+@media(min-width:701px) and (max-width:950px){body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .subject-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:700px){body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .writing-home-link{--tile-wash:#551738;--tile-photo:center 40%}}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .writing-home-link .writing-card-icon{display:block!important;position:absolute;right:20px;top:16px;font-size:28px;color:#ffc9ed}
