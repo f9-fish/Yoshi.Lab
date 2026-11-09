@@ -37,14 +37,14 @@ body.learning-selection:not(.welcome-active) #selectionBadgeEnglish{font:italic 
 body.learning-selection:not(.welcome-active) #selectionBadgeXP{font-size:11px;margin-top:7px;color:#ffe09a}
 body.learning-selection:not(.welcome-active) .selection-summary-copy h2{font:italic 23px/1.5 Georgia,'Yu Mincho',serif;letter-spacing:.07em;margin:0 0 7px;color:#fff;text-shadow:0 2px 8px #0009}
 body.learning-selection:not(.welcome-active) .selection-summary-copy p{font-size:12px;line-height:1.7;color:#d0ddec;margin:0}
-body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] .selection-summary{grid-template-columns:1fr;gap:15px}
-body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] .selection-subject-badge{padding:17px 40px;min-height:112px}
-body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] .selection-subject-badge::before{left:auto;right:-13px;width:38%;background-image:linear-gradient(90deg,var(--selection-tone),transparent),url('./home-training-triptych.png')}
-body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] #selectionBadgeTitle{font-size:25px}
-body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] .selection-summary-copy{padding:0 10px}
-body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] .selection-summary-copy h2{font-size:18px;margin:0 0 4px}
-body.learning-selection:not(.welcome-active) #modePicker,body.learning-selection:not(.welcome-active) #units{margin:0!important;padding:0 18px!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important}
-body.learning-selection:not(.welcome-active) #modePicker>.growth-section-label,body.learning-selection:not(.welcome-active) #modeHeading,body.learning-selection:not(.welcome-active) #modePicker>.growth-subcopy,body.learning-selection:not(.welcome-active) #unitTitle{display:none!important}
+body.learning-selection:not(.welcome-active) .selection-context:is([data-step="units"],[data-step="parts"]) .selection-summary{grid-template-columns:1fr;gap:15px}
+body.learning-selection:not(.welcome-active) .selection-context:is([data-step="units"],[data-step="parts"]) .selection-subject-badge{padding:17px 40px;min-height:112px}
+body.learning-selection:not(.welcome-active) .selection-context:is([data-step="units"],[data-step="parts"]) .selection-subject-badge::before{left:auto;right:-13px;width:38%;background-image:linear-gradient(90deg,var(--selection-tone),transparent),url('./home-training-triptych.png')}
+body.learning-selection:not(.welcome-active) .selection-context:is([data-step="units"],[data-step="parts"]) #selectionBadgeTitle{font-size:25px}
+body.learning-selection:not(.welcome-active) .selection-context:is([data-step="units"],[data-step="parts"]) .selection-summary-copy{padding:0 10px}
+body.learning-selection:not(.welcome-active) .selection-context:is([data-step="units"],[data-step="parts"]) .selection-summary-copy h2{font-size:18px;margin:0 0 4px}
+body.learning-selection:not(.welcome-active) #modePicker,body.learning-selection:not(.welcome-active) :is(#units,#parts){margin:0!important;padding:0 18px!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important}
+body.learning-selection:not(.welcome-active) #modePicker>.growth-section-label,body.learning-selection:not(.welcome-active) #modeHeading,body.learning-selection:not(.welcome-active) #modePicker>.growth-subcopy,body.learning-selection:not(.welcome-active) :is(#unitTitle,#partTitle){display:none!important}
 body.learning-selection:not(.welcome-active) #modePicker .mode-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin:0 12px}
 body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping){display:flex!important;flex-direction:column;align-items:center!important;justify-content:center!important;gap:10px;width:100%;height:235px;min-height:0!important;padding:20px 12px!important;border:1px solid #c1d4e2dd!important;border-radius:0!important;background:linear-gradient(145deg,#071930c9,#1c3244d9)!important;color:#f6f8ff!important;box-shadow:inset 0 0 16px #a7c9e511,0 5px 18px #0004!important;transform:skewX(-12deg)!important;text-align:center;transition:filter .18s,border-color .18s,box-shadow .18s}
 body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping)>*{transform:skewX(12deg)}
@@ -59,10 +59,10 @@ body.learning-selection:not(.welcome-active) #modePicker .repeat-xp-notice{margi
 body.learning-selection:not(.welcome-active) #modePicker .repeat-xp-notice strong{font-size:13px}
 body.learning-selection:not(.welcome-active) #modePicker .repeat-xp-notice p,body.learning-selection:not(.welcome-active) #modePicker .repeat-xp-notice small{font-size:11px;line-height:1.7}
 body.learning-selection:not(.welcome-active) #modePicker .xp-mode-foot{font-size:11px;color:#bdcede}
-body.learning-selection:not(.welcome-active) #unitList{display:grid;gap:15px;margin:0 12px}
-body.learning-selection:not(.welcome-active) #units #unitList .unit{position:relative;margin:0;width:100%;min-height:62px;padding:15px 55px 15px 26px!important;border:1px solid #c6d8e4b8!important;border-radius:0!important;background:linear-gradient(110deg,#24364ed4,#081d31d9)!important;color:#fff!important;transform:skewX(-12deg);box-shadow:inset 0 0 12px #a7c8df12,0 4px 12px #0004;font:italic 20px/1.5 Georgia,'Yu Mincho',serif;text-align:left;overflow-wrap:anywhere}
-body.learning-selection:not(.welcome-active) #units #unitList .unit::after{content:'→';position:absolute;right:22px;top:50%;transform:translateY(-50%) skewX(12deg);font:26px Georgia,serif}
-body.learning-selection:not(.welcome-active) #units #unitList .unit:hover,body.learning-selection:not(.welcome-active) #units #unitList .unit:focus-visible{border-color:#8df0ff!important;background:linear-gradient(110deg,#146178d9,#073148dd)!important;box-shadow:inset 0 0 16px #71dfff33,0 0 12px #5de0ff66}
+body.learning-selection:not(.welcome-active) :is(#unitList,#partList){display:grid;gap:15px;margin:0 12px}
+body.learning-selection:not(.welcome-active) :is(#units #unitList,#parts #partList) .unit{position:relative;margin:0;width:100%;min-height:62px;padding:15px 55px 15px 26px!important;border:1px solid #c6d8e4b8!important;border-radius:0!important;background:linear-gradient(110deg,#24364ed4,#081d31d9)!important;color:#fff!important;transform:skewX(-12deg);box-shadow:inset 0 0 12px #a7c8df12,0 4px 12px #0004;font:italic 20px/1.5 Georgia,'Yu Mincho',serif;text-align:left;overflow-wrap:anywhere}
+body.learning-selection:not(.welcome-active) :is(#units #unitList,#parts #partList) .unit::after{content:'→';position:absolute;right:22px;top:50%;transform:translateY(-50%) skewX(12deg);font:26px Georgia,serif}
+body.learning-selection:not(.welcome-active) :is(#units #unitList,#parts #partList) .unit:hover,body.learning-selection:not(.welcome-active) :is(#units #unitList,#parts #partList) .unit:focus-visible{border-color:#8df0ff!important;background:linear-gradient(110deg,#146178d9,#073148dd)!important;box-shadow:inset 0 0 16px #71dfff33,0 0 12px #5de0ff66}
 body.learning-selection:not(.welcome-active) .pair-feature.pair-compact{margin:28px 24px 0;padding:12px 16px!important;border:1px solid #568f9c88;background:#072d34bb!important;box-shadow:none!important;border-radius:10px}
 body.learning-selection:not(.welcome-active) .footer{margin-top:35px}
 @media(max-width:800px){
@@ -95,10 +95,10 @@ body.learning-selection:not(.welcome-active) #selectionBadgeTitle{font-size:27px
 body.learning-selection:not(.welcome-active) .selection-summary-copy{padding:0 3px}
 body.learning-selection:not(.welcome-active) .selection-summary-copy h2{font-size:19px;margin-bottom:4px}
 body.learning-selection:not(.welcome-active) .selection-summary-copy p{font-size:11px}
-body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] .selection-subject-badge{padding:14px 20px;min-height:115px}
-body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] #selectionBadgeTitle{font-size:20px}
-body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] #selectionBadgeEnglish{font-size:10px;max-width:80%}
-body.learning-selection:not(.welcome-active) #modePicker,body.learning-selection:not(.welcome-active) #units{padding:0 9px!important}
+body.learning-selection:not(.welcome-active) .selection-context:is([data-step="units"],[data-step="parts"]) .selection-subject-badge{padding:14px 20px;min-height:115px}
+body.learning-selection:not(.welcome-active) .selection-context:is([data-step="units"],[data-step="parts"]) #selectionBadgeTitle{font-size:20px}
+body.learning-selection:not(.welcome-active) .selection-context:is([data-step="units"],[data-step="parts"]) #selectionBadgeEnglish{font-size:10px;max-width:80%}
+body.learning-selection:not(.welcome-active) #modePicker,body.learning-selection:not(.welcome-active) :is(#units,#parts){padding:0 9px!important}
 body.learning-selection:not(.welcome-active) #modePicker .mode-grid{gap:18px 16px;margin:0 8px}
 body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping){height:205px;padding:16px 8px!important;gap:8px;transform:skewX(-8deg)!important}
 body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping)>*{transform:skewX(8deg)}
@@ -108,12 +108,19 @@ body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTypi
 body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping) .mode-card-desc{font-size:9px;min-height:28px}
 body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping) .mode-card-xp{font-size:11px;padding:4px 6px}
 body.learning-selection:not(.welcome-active) #modePicker .repeat-xp-notice{margin:25px 0 0;padding:11px 13px}
-body.learning-selection:not(.welcome-active) #unitList{margin:0 6px;gap:13px}
-body.learning-selection:not(.welcome-active) #units #unitList .unit{min-height:59px;padding:13px 42px 13px 19px!important;font-size:18px;transform:skewX(-8deg)}
-body.learning-selection:not(.welcome-active) #units #unitList .unit::after{right:15px;font-size:24px;transform:translateY(-50%) skewX(8deg)}
+body.learning-selection:not(.welcome-active) :is(#unitList,#partList){margin:0 6px;gap:13px}
+body.learning-selection:not(.welcome-active) :is(#units #unitList,#parts #partList) .unit{min-height:59px;padding:13px 42px 13px 19px!important;font-size:18px;transform:skewX(-8deg)}
+body.learning-selection:not(.welcome-active) :is(#units #unitList,#parts #partList) .unit::after{right:15px;font-size:24px;transform:translateY(-50%) skewX(8deg)}
 body.learning-selection:not(.welcome-active) .pair-feature.pair-compact{margin:24px 10px 0}
 }
 @media(prefers-reduced-motion:reduce){body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping){transition:none}}
 
-body.learning-selection:not(.welcome-active) #units #unitList .unit>span{display:block;transform:skewX(12deg)}
-@media(max-width:540px){body.learning-selection:not(.welcome-active) #units #unitList .unit>span{transform:skewX(8deg)}}
+body.learning-selection:not(.welcome-active) :is(#units #unitList,#parts #partList) .unit>span{display:block;transform:skewX(12deg)}
+@media(max-width:540px){body.learning-selection:not(.welcome-active) :is(#units #unitList,#parts #partList) .unit>span{transform:skewX(8deg)}}
+
+/* Match the lesson rows while keeping Part labels and navigation intact. */
+body.learning-selection:not(.welcome-active) #parts #toLessons{display:inline-block!important;margin:0 12px 18px;padding:8px 12px;background:#102a40ed!important;border:1px solid #b7d7e599!important;border-radius:6px!important;color:#eef6ff!important;font-size:12px}
+@media(max-width:540px){
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping){background:linear-gradient(145deg,#071930f5,#1c3244f2)!important}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping):hover:not(:disabled),body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping):focus-visible{background:linear-gradient(145deg,#054056f5,#09273cf5)!important}
+}
