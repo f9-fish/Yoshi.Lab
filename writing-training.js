@@ -4,13 +4,21 @@
  const subjects=['英C','論表'];
  const text=v=>typeof v==='string'?v.trim():'';
  function normalize(value){return String(value??'').normalize('NFKC').replace(/[‘’]/g,"'").toLowerCase().trim().replace(/\s+/g,' ').replace(/[.!?。！？]+$/u,'').trim();}
- function list(value){return (Array.isArray(value)?value:typeof value==='string'?value.split(/\r?\n/):[]).map(text).filter(Boolean);}
+ function list(value){return (Array.isArray(value)?value:typeof value==='string'?value.split(/\r?\n|\|\|/):[]).map(text).filter(Boolean);}
+ function lessonKey(subject,unitId,unitName=''){
+  const id=String(unitId??'').trim(),name=text(unitName);
+  return subject==='論表'&&name&&!id.endsWith(' '+name)?id+' '+name:id;
+ }
  function questions(data){
   if(!Array.isArray(data))throw Error('英作文問題は配列形式で登録してください。');
   const seen=new Set();
   return data.filter(q=>q&&q.status==='公開').map(q=>{
-   const row={id:text(q.id),subject:text(q.subject),lesson:String(q.lesson??'').trim(),number:Number(q.number),japanese:text(q.japanese),requiredExpressions:list(q.requiredExpressions),modelAnswer:text(q.modelAnswer),acceptedAnswers:list(q.acceptedAnswers),hints:list(q.hints),explanation:text(q.explanation),status:'公開'};
-   if(!row.id||!subjects.includes(row.subject)||!row.lesson||!row.japanese||!row.modelAnswer||!row.explanation||!Number.isFinite(row.number)||row.number<1||seen.has(row.id))throw Error('公開問題の必須項目・問題番号・ID重複を確認してください。');
+   const hasUnit=q.unitId!==undefined;
+   const lesson=hasUnit?lessonKey(text(q.subject),q.unitId,q.unitName):String(q.lesson??'').trim();
+   const row={id:text(q.id),subject:text(q.subject),lesson,number:Number(q.number),japanese:text(q.japanese),requiredExpressions:list(q.requiredExpressions),modelAnswer:text(q.modelAnswer),acceptedAnswers:list(q.acceptedAnswers),hints:list(q.hints),explanation:text(q.explanation),status:'公開'};
+   if(hasUnit){row.unitId=String(q.unitId??'').trim();row.unitName=text(q.unitName);if(!row.unitId||!row.unitName)throw Error('単元ID・単元名を確認してください。');}
+   if(Array.isArray(q.hints)&&q.hints.some(h=>!text(h)))row.hintNumbers=q.hints.map((h,i)=>text(h)?i+1:null).filter(Boolean);
+   if(!row.id||!subjects.includes(row.subject)||!row.lesson||!row.japanese||!row.modelAnswer||!row.explanation||!Number.isInteger(row.number)||row.number<1||seen.has(row.id))throw Error('公開問題の必須項目・問題番号・ID重複を確認してください。');
    seen.add(row.id);return row;
   }).sort((a,b)=>a.number-b.number||a.id.localeCompare(b.id));
  }
@@ -33,9 +41,9 @@
   return [...ids].sort((a,b)=>a.localeCompare(b,'ja',{numeric:true})).map(id=>({id,label:lessonLabel(id),count:rows.filter(q=>q.subject===subject&&q.lesson===id).length}));
  }
  function record(q,answer,result,hints,studentId=null,at=new Date().toISOString()){
-  return {schemaVersion:1,mode:'writing',studentId,subject:q.subject,lesson:q.lesson,questionId:q.id,answer,status:result.status,registered:result.registered,expressions:result.expressions,hintsUsed:[...hints],answeredAt:at,xp:0};
+  return {schemaVersion:1,...(q.unitId!==undefined?{unitId:q.unitId,unitName:q.unitName}:{}),mode:'writing',studentId,subject:q.subject,lesson:q.lesson,questionId:q.id,answer,status:result.status,registered:result.registered,expressions:result.expressions,hintsUsed:[...hints],answeredAt:at,xp:0};
  }
- const api={normalize,questions,judge,lessons,record,lessonLabel};
+ const api={normalize,questions,judge,lessons,record,lessonLabel,lessonKey};
  if(typeof module==='object'&&module.exports)module.exports=api;
  root.YoshiWriting=api;
 })(typeof globalThis==='object'?globalThis:this);
