@@ -1240,7 +1240,7 @@ body:has(#subjects:not(.hidden)) #subjects .growth-subject-cta{grid-column:3;gri
 <section class="panel"><h2>🏆 スコアボード</h2><div class="grid2"><div class="stat"><strong id="scoreA">0 / 0</strong><span>生徒A（正解 / 回答）</span></div><div class="stat"><strong id="scoreB">0 / 0</strong><span>生徒B（正解 / 回答）</span></div></div><div class="space"></div><button class="outline" id="export">結果をCSV保存</button></section>
 <section class="panel hidden"><details id="editor"><summary>✏️ 先生用：熟語リストを編集する</summary><div><p class="muted">1行に「英語 | 日本語」を入力。タブ区切りもOK。保存した内容はこの端末のブラウザに記憶されます。生徒の端末へ共有する場合は、下の「共有用HTMLを保存」を使ってください。</p><textarea id="terms" spellcheck="false"></textarea><div class="space"></div><div class="controls"><button class="primary" id="save">この端末に保存</button><button id="restore">初期リストに戻す</button><button id="share">共有用HTMLを保存</button></div><p id="editMessage" class="notice"></p></div></details></section></div><div class="footer">Yoshi<span class="brand-accent">.Lab</span></div></div>
 <div id="streakCelebration" class="streak-celebration" hidden aria-live="polite"><div class="streak-celebration-card"><div class="streak-fire" id="streakFire">🔥</div><div class="streak-count"><b id="streakNumber">5</b> <span>STREAK!</span></div><div class="streak-praise" id="streakPraise">AWESOME!</div></div></div>
-<script src="./weekly-daily.js?v=1"></script><script type="module" src="./account.js"></script>
+<script src="./answer-variants.js?v=1"></script><script src="./weekly-daily.js?v=1"></script><script type="module" src="./account.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 let accountAttached=false;
@@ -1397,7 +1397,7 @@ function updateMode(){
 }
 function renderHighlightedParentheses(element,source,className){
  element.replaceChildren();
- const text=String(source??'');
+ const text=YoshiAnswers.display(source);
  const pattern=/[（(]([^（）()]+)[）)]/g;
  let last=0,match;
  while((match=pattern.exec(text))!==null){
@@ -1412,10 +1412,11 @@ function renderHighlightedParentheses(element,source,className){
 }
 
 function makeClozeInlineInputs(root,english,prefix){
+ root.dataset.answerSource=String(english);const multi=YoshiAnswers.lines(english).length>1;english=YoshiAnswers.primary(english);
  root.replaceChildren();const re=/\(([^()]+)\)/g;let pos=0,m,n=0;
  while((m=re.exec(english))){
   root.append(document.createTextNode(english.slice(pos,m.index)));
-  const parts=m[1].trim().split(/\s+/).filter(Boolean);
+  const parts=multi?[m[1].trim()]:m[1].trim().split(/\s+/).filter(Boolean);
   parts.forEach((part,j)=>{
    if(j)root.append(document.createTextNode(' '));
    const field=document.createElement('input');field.type='text';field.className='cloze-inline-input';
@@ -1471,11 +1472,13 @@ function yoshiClozeEquivalent(field,english){
 function checkClozeInlineInputs(root){
  const inputs=[...root.querySelectorAll('.cloze-inline-input')];
  const normalize=normalizeYoshiAnswer;
+ if(YoshiAnswers.lines(root.dataset.answerSource).length>1)return YoshiAnswers.clozeMatch(inputs.map(x=>x.value),root.dataset.answerSource,normalize);
  if(!inputs.length||inputs.some(x=>!x.value.trim()))return null;
  return inputs.every(x=>normalize(x.value)===normalize(x.dataset.expected));
 }
 
 function renderClozeQuestion(english,japanese){
+ const source=english;english=YoshiAnswers.primary(english);
  const root=$('question');root.replaceChildren();
  const line=document.createElement('div');line.className='cloze-english';
  if(english.length>105)line.classList.add('long');else if(english.length>65)line.classList.add('medium');
@@ -1487,7 +1490,7 @@ function renderClozeQuestion(english,japanese){
  }
  line.appendChild(document.createTextNode(english.slice(lastIndex)));
  const translation=document.createElement('div');translation.className='cloze-japanese';renderHighlightedParentheses(translation,japanese,'japanese-highlight');
- if(selectedStudyMode==='textTyping')makeClozeInlineInputs(line,english,'solo');
+ if(selectedStudyMode==='textTyping')makeClozeInlineInputs(line,source,'solo');
  root.append(line,translation);
 }
 // SE is enabled by default; audio starts on a user gesture when permitted.
@@ -1518,7 +1521,7 @@ function stopClozeSpeech(){
 }
 function speakClozeSentence(onFinished){
  if(!('speechSynthesis' in window)||!('SpeechSynthesisUtterance' in window)||current<0||!terms[current])return;
- const sentence=String(terms[current][0]||'').replace(/\(([^()]*)\)/g,'$1').replace(/[～〜~＿_]+/g,' ').replace(/\.{2,}|…+/g,' ').replace(/\s+/g,' ').trim();
+ const sentence=YoshiAnswers.primary(terms[current][0]).replace(/\(([^()]*)\)/g,'$1').replace(/[～〜~＿_]+/g,' ').replace(/\.{2,}|…+/g,' ').replace(/\s+/g,' ').trim();
  if(!sentence)return;
  try{
   stopClozeSpeech();
@@ -1550,7 +1553,7 @@ function next(){
    renderClozeQuestion(terms[current][0],terms[current][1]);
    renderHighlightedParentheses($('answer'),terms[current][0],'cloze-answer-highlight');
  }else{
-   $('question').textContent=terms[current][dir==='en'?0:1];
+   $('question').textContent=dir==='en'?YoshiAnswers.primary(terms[current][0]):terms[current][1];
    $('answer').textContent=terms[current][dir==='en'?1:0];
  }
  show('answer',false);$('cardLabel').textContent='ROUND '+round+' • QUESTION '+seen;
@@ -1624,12 +1627,14 @@ $('soloTypingSubmit').onclick=()=>{
  if(!running||paused||soloNextPending||flipped||selectedStudyMode!=='textTyping')return;
  const inputs=[...$('question').querySelectorAll('.cloze-inline-input')];
  if(!inputs.length){$('soloTypingFeedback').textContent='この問題には入力欄がありません。';return;}
- if(inputs.some(x=>!x.value.trim())){$('soloTypingFeedback').textContent='すべての空欄に入力してね。';return;}
+ const multi=YoshiAnswers.lines(terms[current][0]).length>1;
+ const variantOK=multi?YoshiAnswers.clozeMatch(inputs.map(x=>x.value),terms[current][0],yoshiAnswerKey):null;
+ if(inputs.some(x=>!x.value.trim())&&variantOK!==true){$('soloTypingFeedback').textContent='すべての空欄に入力してね。';return;}
  const normalize=s=>normalizeYoshiAnswer(s).replace(/[.,!?;:。！？、，．]+$/g,'').trim();
  let correctCount=0;
  inputs.forEach((field)=>{
   const expected=field.dataset.expected||'';
-  const ok=normalize(field.value)===normalize(expected)||yoshiClozeEquivalent(field,terms[current][0]);
+  const ok=multi?(variantOK===true||normalize(field.value)===normalize(expected)):normalize(field.value)===normalize(expected)||yoshiClozeEquivalent(field,terms[current][0]);
   if(ok)correctCount++;
   field.classList.add(ok?'cloze-typed-correct':'cloze-typed-wrong');
   field.disabled=true;
@@ -1643,7 +1648,7 @@ $('soloTypingSubmit').onclick=()=>{
    field.parentElement.style.minWidth=Math.max(field.offsetWidth,Math.ceil(expected.length*18+12))+'px';
   }
  });
- const ok=correctCount===inputs.length;
+ const ok=multi?variantOK===true:correctCount===inputs.length;
  $('soloTypingFeedback').textContent=ok
   ?'○ 全部正解！'
   :'× '+inputs.length+'か所中'+correctCount+'か所正解。赤い欄が間違いで、空欄の上に正解を表示しているよ。';
@@ -1805,7 +1810,7 @@ function stopVocabSpeech(){
 function speakVocabWord(){
  if(!vocabSpeechAvailable)return;
  // Display the original entry, but omit notation such as ～ / ~ / ... from speech.
- const word=$('vocabPronunciationWord').textContent
+ const word=YoshiAnswers.primary(vocabDeck[vocabIndex]?.word||$('vocabPronunciationWord').textContent)
   .replace(/[～〜~＿_]+/g,' ')
   .replace(/\.{2,}|…+/g,' ')
   .replace(/[（(]\s*[～〜~＿_\.…]*\s*[）)]/g,' ')
@@ -1877,7 +1882,7 @@ function vocabQuestion(){
  $('vocabProgress').textContent=(vocabIndex+1)+' / '+vocabDeck.length;
  $('vocabScore').textContent=vocabCorrect;$('vocabStreak').textContent=vocabStreak;$('vocabPoints').textContent=vocabPoints;$('vocabStreakChip').textContent='🔥 '+vocabStreak+' STREAK';
  $('vocabPrompt').textContent=typing?'日本語に合う英単語を入力':'英単語の意味を選ぼう';
- $('vocabWord').textContent=typing?w.meaning:w.word;
+ $('vocabWord').textContent=typing?w.meaning:YoshiAnswers.primary(w.word);
  const reading=String(w.reading||w.katakana||'').trim();
  $('vocabReadingText').textContent=reading||'読み方が未登録です';
  $('vocabReadingText').classList.add('hidden');
@@ -1915,10 +1920,10 @@ function vocabAnswer(ok,clicked){
  if(vocabAnswered)return;vocabAnswered=true;
  const w=vocabDeck[vocabIndex];
  if(ok){vocabCorrect++;vocabStreak++;vocabBestStreak=Math.max(vocabBestStreak,vocabStreak);vocabPoints+=10+Math.min(vocabStreak-1,5)*2;showStreakCelebration(vocabStreak)}else vocabStreak=0;
- $('vocabFeedback').textContent=ok?'○ 正解！':'× 不正解　正解：'+($('vocabType').value==='typing'?w.word:w.meaning);
+ $('vocabFeedback').textContent=ok?'○ 正解！':'× 不正解　正解：'+($('vocabType').value==='typing'?YoshiAnswers.lines(w.word).join(' / '):w.meaning);
  $('vocabFeedback').style.color=ok?'#61dbb3':'#ff9fa5';
  $('vocabHint').textContent=w.hint?'💡 '+w.hint:'';
- $('vocabPronunciationWord').textContent=w.word;
+ $('vocabPronunciationWord').textContent=YoshiAnswers.lines(w.word).join(' / ');
  show('vocabPronunciation',true);
  playSoloJudgment(ok,()=>{if(vocabAnswered)speakVocabWord()});
  [...$('vocabOptions').children].forEach(b=>{b.disabled=true;if(b.textContent===w.meaning)b.classList.add('good');else if(b===clicked&&!ok)b.classList.add('bad')});
@@ -1938,7 +1943,7 @@ $('vocabSubmit').onclick=()=>{
  if(vocabAnswered)return;
  const answer=$('vocabInput').value.trim();if(!answer)return;
  const expected=vocabDeck[vocabIndex].word.trim();
- vocabAnswer(yoshiVocabEquivalent(answer,expected),null);
+ vocabAnswer(YoshiAnswers.wordMatches(answer,expected,yoshiVocabEquivalent),null);
 };
 $('vocabInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('vocabSubmit').click()});
 $('vocabNext').onclick=()=>{vocabIndex++;vocabQuestion()};
