@@ -1,0 +1,64 @@
+/* Align standalone training pages with the existing English/Logic screens.
+   Presentation only: question IDs, authentication and scoring stay untouched. */
+.training-page{--training-accent:#73eaff;--training-glow:#4ee5ff66;--training-hero:#083849;--training-photo:url('./home-training-triptych.png');--training-photo-size:300% auto;--training-photo-position:right 30%;background-color:#04132e;background-image:linear-gradient(180deg,rgba(3,14,34,.15),rgba(3,14,34,.30)),url('./mountain-desktop-v7.jpg');background-position:center top;background-size:cover;background-repeat:no-repeat;background-attachment:fixed}
+.writing-page{--training-accent:#f3a1dd;--training-glow:#ed68c955;--training-hero:#421735;--training-photo:url('./writing-art.svg');--training-photo-size:cover;--training-photo-position:center 35%}
+.eiken-page{--training-accent:#ffda72;--training-glow:#f4c65d55;--training-hero:#3b290c}
+.training-page .wrap{max-width:1100px;padding:20px 35px 45px}
+.training-page .training-header{display:flex;align-items:center;justify-content:space-between;gap:18px;padding-bottom:14px;border-bottom:1px solid #d2e2ef8c;margin:0;flex-wrap:nowrap}
+.training-page .brand{font-size:28px;font-style:normal;font-weight:950;line-height:1.15;letter-spacing:-1px;text-decoration:none}
+.training-page .brand small{font-size:9px;font-weight:400;letter-spacing:.16em;margin-top:4px}
+.training-page .training-header-actions{display:flex;align-items:center;gap:24px;flex:none}
+.training-header-actions>a{display:grid;place-items:center;width:32px;height:36px;font-size:27px;color:#fff;text-decoration:none}
+.training-header-actions svg{width:24px;height:28px;fill:#fff}
+.training-menu{position:relative;z-index:50}.training-menu summary{display:flex;flex-direction:column;justify-content:center;gap:6px;width:32px;height:38px;cursor:pointer;list-style:none}.training-menu summary::-webkit-details-marker{display:none}.training-menu summary span{height:2px;width:28px;border-radius:3px;background:#fff}.training-menu>div{position:absolute;right:0;top:44px;width:180px;padding:8px;background:#071a30f5;border:1px solid #b8cddf66;border-radius:12px;box-shadow:0 10px 30px #0008}.training-menu a{display:block;color:#eef5ff;padding:12px;border-radius:8px;text-decoration:none;font-size:13px}.training-menu a:hover{background:#28496b}
+.training-tagline{display:flex;align-items:center;justify-content:center;gap:20px;text-align:center;margin:15px 0 20px;font:italic clamp(14px,1.9vw,21px)/1.5 Georgia,serif;letter-spacing:.07em;color:#e4e8ef;text-shadow:0 2px 5px #000}.training-tagline::before,.training-tagline::after{content:'';height:1px;flex:1;max-width:55px;background:linear-gradient(90deg,transparent,#d2dae6)}.training-tagline::after{transform:rotate(180deg)}
+.training-breadcrumb{display:flex;align-items:center;gap:10px;font-size:12px;color:#e1ebf8;margin:8px 0 24px}.training-breadcrumb a{font-size:25px;color:#eef4fc;line-height:1;text-decoration:none}
+.training-page .intro{position:relative;isolation:isolate;padding:22px 38px;margin:0 18px 30px;min-height:140px}
+.training-page .intro::before{content:'';position:absolute;inset:0;z-index:-2;transform:skewX(-12deg);border:1px solid var(--training-accent);background:linear-gradient(100deg,var(--training-hero),#071c30ed);box-shadow:0 0 12px var(--training-glow)}
+.training-page .intro::after{content:'';position:absolute;inset:1px 0 1px 60%;z-index:-1;pointer-events:none;clip-path:polygon(10% 0,100% 0,90% 100%,0 100%);background-image:linear-gradient(90deg,var(--training-hero),#0b1e3066),var(--training-photo);background-size:100% 100%,var(--training-photo-size);background-position:center,var(--training-photo-position);background-repeat:no-repeat}
+.training-page .intro h1{font:italic clamp(26px,3.4vw,36px)/1.4 Georgia,'Yu Mincho',serif;letter-spacing:.035em;color:#fff;text-shadow:0 2px 8px #0008;margin:7px 0}
+.training-page .eyebrow,.training-page .section-label{color:var(--training-accent);font-size:11px;letter-spacing:.12em}
+.training-page .intro>p{font-size:12px;line-height:1.8;color:#d0ddec;margin:7px 0}
+.training-page .intro .storage-note{font-size:11px;color:#c3cde0}
+.training-page .account{font-size:11px;margin-top:12px}
+.training-page h2{font:italic 22px/1.5 Georgia,'Yu Mincho',serif;letter-spacing:.035em;color:#fff}
+.training-page #subjectScreen,.training-page #gradeScreen,.training-page #lessonScreen{padding:0 18px}
+.training-page .grade-grid{gap:28px;margin:25px 12px}
+.training-page .grade-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-width:0;min-height:215px;padding:24px 20px;border:1px solid #c1d4e2dd;border-radius:0;background:linear-gradient(145deg,#071930ed,#1c3244f2);box-shadow:inset 0 0 16px #a7c9e511,0 5px 18px #0004;transform:skewX(-12deg);text-align:center;color:#f6f8ff}
+.training-page .grade-card>*{transform:skewX(12deg)}
+.training-page .grade-card strong{font:italic 30px/1.4 Georgia,'Yu Mincho',serif;letter-spacing:.04em}
+.training-page .grade-card .grade-icon,.training-page .subject-english>span:first-child,.training-page .subject-logic>span:first-child{font-size:32px;line-height:1.3}
+.training-page .grade-card small{width:auto;border:0;padding-top:4px;color:var(--training-accent);font-size:10px;letter-spacing:.1em}
+.training-page .grade-card:hover:not(:disabled),.training-page .grade-card:focus-visible{transform:skewX(-12deg);border-color:var(--training-accent);background:linear-gradient(145deg,#0e3a50f5,#13283cf5);box-shadow:inset 0 0 16px #5fd7ff22,0 0 14px var(--training-glow)}
+.training-page .subject-english{border-color:#73eaff;background:linear-gradient(145deg,#073e53f5,#11263bf5)}
+.training-page .subject-logic{border-color:#dfb4ff;background:linear-gradient(145deg,#352047f5,#1e213cf5)}
+.training-page #lessonList{gap:15px;margin:24px 12px}
+.training-page .lesson-row{min-height:62px;padding:15px 26px;border:1px solid #c6d8e4b8;border-radius:0;background:linear-gradient(110deg,#24364ef2,#081d31f5);transform:skewX(-12deg);box-shadow:inset 0 0 12px #a7c8df12,0 4px 12px #0004;font:italic 20px/1.5 Georgia,'Yu Mincho',serif;color:#fff}
+.training-page .lesson-row>span{transform:skewX(12deg)}.training-page .lesson-row small{font:12px/1.6 system-ui,sans-serif}
+.training-page .lesson-row:hover:not(:disabled),.training-page .lesson-row:focus-visible{border-color:var(--training-accent);box-shadow:0 0 12px var(--training-glow)}
+.training-page .panel,.training-page .review-item{border:1px solid #5a7da6;border-radius:20px;background:linear-gradient(135deg,#182d4ff5,#101f39f5);box-shadow:0 8px 28px #0004;padding:26px}
+.training-page .panel{border-top-color:var(--training-accent)}
+.training-page button{background:#1b3557;border-color:#647d9f;border-radius:11px;min-height:44px;line-height:1.5;overflow-wrap:anywhere}
+.training-page button.primary{background:linear-gradient(130deg,#137eaf,#165dcc);border-color:#6ed9ff;box-shadow:0 0 12px #42b6ff33}
+.writing-page button.primary{background:linear-gradient(130deg,#ab298b,#703aa0);border-color:#f3a1dd;box-shadow:0 0 12px #ed68c933}
+.eiken-page button.primary{background:linear-gradient(130deg,#7d571e,#493111);border-color:#ffda72;box-shadow:0 0 12px #f4c65d33}
+/* Reassert destination-card geometry after the shared button defaults. */
+.training-page button.grade-card,.training-page button.lesson-row{border-radius:0}
+.training-page .choices .choice{background:#0e2340f5;border-color:#647d9f;min-width:0;border-radius:12px;box-shadow:inset 0 0 12px #7ca7d011}
+.training-page .choices .choice.correct{border-color:#60d9ac;background:#123f37}.training-page .choices .choice.wrong{border-color:#ee9297;background:#4c283c}
+.training-page .feedback,.training-page #hintContent{background:#0b1c34f5;border:1px solid #6685aa;border-left:3px solid var(--training-accent);border-radius:12px}
+.training-page .feedback h2,.training-page #judgment{color:var(--training-accent)}
+.training-page textarea{background:#0a1931;border-color:#647d9f;border-radius:12px}.training-page progress{accent-color:var(--training-accent)}
+.training-page .actions{gap:12px}.training-page .sentence{font-family:system-ui,-apple-system,'Noto Sans JP',sans-serif;font-style:normal;line-height:1.8}
+.training-page .muted{font-size:12px;line-height:1.8;color:#bdcee5}.training-page footer{margin-top:35px;color:#99b6d8;font-size:11px}.training-page :focus-visible{outline:3px solid var(--training-accent);outline-offset:4px}
+@media(max-width:700px){.training-page{background-image:linear-gradient(180deg,rgba(3,14,34,.10),rgba(3,14,34,.23)),url('./mountain-mobile-v7.jpg');background-size:100% 100%,100% auto;background-position:center top;background-repeat:no-repeat;background-attachment:scroll}}
+@media(max-width:540px){
+.training-page .wrap{padding:14px 16px 30px}.training-page .training-header{gap:8px;padding-bottom:12px}.training-page .brand{font-size:25px}.training-page .training-header-actions{gap:15px}.training-header-actions>a{width:25px;height:30px;font-size:24px}.training-header-actions svg{width:21px;height:24px}.training-menu summary{width:25px;height:30px;gap:5px}.training-menu summary span{width:24px}
+.training-tagline{margin:12px 0 16px;font-size:12px;gap:8px;letter-spacing:.025em}.training-tagline::before,.training-tagline::after{max-width:20px}.training-breadcrumb{font-size:10px;gap:7px;margin:0 0 18px}
+.training-page .intro{padding:16px 20px;margin:0 13px 24px;min-height:115px}.training-page .intro::before{transform:skewX(-8deg)}.training-page .intro::after{inset:1px 0 1px 48%;opacity:.65}.training-page .intro h1{font-size:27px}.training-page .intro>p{font-size:11px}.training-page .account{gap:8px;flex-direction:column}.training-page .account button{font-size:11px;padding:8px 12px}
+.training-page h2{font-size:19px}.training-page #subjectScreen,.training-page #gradeScreen,.training-page #lessonScreen{padding:0 9px}
+.training-page .grade-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:24px 8px}
+.training-page .grade-card{min-height:190px;padding:16px 8px;gap:10px;transform:skewX(-8deg)}.training-page .grade-card>*{transform:skewX(8deg)}.training-page .grade-card:hover:not(:disabled),.training-page .grade-card:focus-visible{transform:skewX(-8deg)}.training-page .grade-card strong{font-size:22px}.training-page .grade-card>span:not(.grade-icon){font-size:11px}.training-page .grade-card small{font-size:9px;letter-spacing:.04em}
+.training-page .panel,.training-page .review-item{padding:20px 16px}.training-page #lessonList{margin:24px 6px;gap:13px}.training-page .lesson-row{min-height:59px;padding:13px 19px;font-size:18px;transform:skewX(-8deg)}.training-page .lesson-row>span{transform:skewX(8deg)}.training-page .lesson-row small{font-size:11px}.training-page .actions{gap:10px}.training-page .actions>button{font-size:12px}.training-page .sentence{font-size:23px}
+}
+@media(prefers-reduced-motion:reduce){.training-page .grade-card{transition:none}}
