@@ -18,6 +18,7 @@ function context(extra = {}) {
     codeGeneration: { strings: false, wasm: false },
   });
   if(!extra.YoshiWeeklyDaily)vm.runInContext(read('weekly-daily.js'), sandbox, { filename: 'weekly-daily.js', timeout: 1000 });
+  vm.runInContext(read('answer-variants.js'), sandbox, { filename: 'answer-variants.js', timeout: 1000 });
   return sandbox;
 }
 

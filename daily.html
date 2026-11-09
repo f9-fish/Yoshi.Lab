@@ -241,7 +241,7 @@ html body:not(.unused-yoshilab-selector) {
   <button type="button" id="dailyExitStay" class="daily-exit-stay">チャレンジを続ける</button>
   <button type="button" id="dailyExitLeave" class="daily-exit-leave">終了して移動する</button>
  </div>
-</div><script src="./weekly-daily.js?v=1"></script><script type="module" src="./account.js?v=auth-restore-20261102-2"></script>
+</div><script src="./answer-variants.js?v=1"></script><script src="./weekly-daily.js?v=1"></script><script type="module" src="./account.js?v=auth-restore-20261102-2"></script>
 <script>
 
 const $=id=>document.getElementById(id);
@@ -382,17 +382,17 @@ function applySubjectData(){
     if(i<2){
      for(const w of group.words||[]){
       const word=String(w.word||'').trim(),meaning=String(w.meaning||'').trim();
-      if(word&&meaning&&/^[a-zA-Z][a-zA-Z\s'-]*$/.test(word))wordMap.set(word+'\u0000'+meaning,{word,meaning,sourceGroup});
+      if(word&&meaning&&YoshiAnswers.lines(word).length&&YoshiAnswers.lines(word).every(v=>/^[a-zA-Z][a-zA-Z\s'-]*$/.test(v)))wordMap.set(word+'\u0000'+meaning,{word,meaning,sourceGroup});
      }
     }else{
      for(const card of group.cards||[]){
       if(!Array.isArray(card))continue;
       const english=String(card[0]||'').trim(),japanese=String(card[1]||'').trim();
-      const gaps=[...english.matchAll(/\(([^()]+)\)/g)].map(m=>m[1].trim());
+      const gaps=YoshiAnswers.clozeRows(english)[0]?.answers||[];
       const valid=gaps.filter(g=>/^[a-zA-Z][a-zA-Z\s'-]*$/.test(g));
-      if(english&&japanese&&gaps.length&&valid.length===gaps.length){
+      if(english&&japanese&&gaps.length&&valid.length===gaps.length&&YoshiAnswers.clozeRows(english).every(r=>r.answers.every(g=>/^[a-zA-Z][a-zA-Z\s'-]*$/.test(g)))){
        // Preserve every original blank; each sentence counts as one quiz question.
-       const key=normalize(english.replace(/[()]/g,''));
+       const key=normalize(YoshiAnswers.primary(english).replace(/[()]/g,''));
        if(!sentenceMap.has(key))sentenceMap.set(key,{english,japanese,gaps:valid,sourceGroup});
       }
      }
@@ -417,11 +417,11 @@ function diversePick(items,count,seed){
 function makeQuestion(type, item, seed){
  if(type==='choice'){
   const distractors=seededShuffle([...new Set(words.filter(x=>x.meaning!==item.meaning).map(x=>x.meaning))],seed+"|distractors").slice(0,3);
-  return {type,prompt:item.word,correct:item.meaning,options:seededShuffle([item.meaning,...distractors],seed+"|options")};
+  return {type,prompt:YoshiAnswers.primary(item.word),correct:item.meaning,options:seededShuffle([item.meaning,...distractors],seed+"|options")};
  }
  if(type==='word')return {type,prompt:item.meaning,correct:item.word};
- const gaps=[...item.english.matchAll(/\(([^()]+)\)/g)].map(m=>m[1].trim());
- return {type,prompt:item.english,translation:item.japanese,correct:gaps,blankCount:gaps.length};
+ const gaps=YoshiAnswers.clozeRows(item.english)[0]?.answers||[];
+ return {type,prompt:YoshiAnswers.primary(item.english),translation:item.japanese,correct:gaps,blankCount:gaps.length,...(YoshiAnswers.lines(item.english).length>1?{answerSource:item.english}:{})};
 }
 async function start(){
  if(running||!dailyUser||!selectedSubject||(dailyRowsFor(selectedSubject).length>=2&&!dailyIsTeacher))return;
@@ -430,8 +430,8 @@ async function start(){
  // Fixed sequence: 3 vocabulary choices, 3 vocabulary typing, 4 sentence typing.
  // Each question is drawn without replacement, including across word formats.
  const seed=dailyUser.uid+'|'+jstDay()+'|'+selectedSubject;
- const uniqueWords=[...new Map(words.map(w=>[normalize(w.word),w])).values()];
- const uniqueSentences=[...new Map(sentences.map(s=>[normalize(s.english.replace(/[()]/g,'')),s])).values()];
+ const uniqueWords=[...new Map(words.map(w=>[normalize(YoshiAnswers.primary(w.word)),w])).values()];
+ const uniqueSentences=[...new Map(sentences.map(s=>[normalize(YoshiAnswers.primary(s.english).replace(/[()]/g,'')),s])).values()];
  if(uniqueWords.length<6||uniqueSentences.length<4){
   $('status').textContent='この出題構成には、異なる単語6語と本文穴埋め4問が必要です（現在：単語'+uniqueWords.length+'語、本文'+uniqueSentences.length+'問）。';
   running=false;return;
@@ -531,12 +531,13 @@ function submitTyping(){
 function select(value){
  if(chosen)return;
  const q=deck[index];
- if(q.type==='sentence'&&(!Array.isArray(value)||value.length!==q.correct.length||value.some(v=>!String(v).trim())))return;
+ const variantOK=q.answerSource?YoshiAnswers.clozeMatch(value,q.answerSource,normalize):null;
+ if(q.type==='sentence'&&(!Array.isArray(value)||value.length!==q.correct.length||value.some(v=>!String(v).trim()))&&variantOK!==true)return;
  if(q.type==='word'&&!String(value).trim())return;
  chosen=true;
- const ok=q.type==='sentence'?value.every((v,i)=>normalize(v)===normalize(q.correct[i])):
-  q.type==='choice'?value===q.correct:normalize(value)===normalize(q.correct);
- const expected=Array.isArray(q.correct)?q.correct.join(' / '):q.correct;
+ const ok=q.type==='sentence'?(q.answerSource?variantOK===true:value.every((v,i)=>normalize(v)===normalize(q.correct[i]))):
+  q.type==='choice'?value===q.correct:YoshiAnswers.wordMatches(value,q.correct,(a,b)=>normalize(a)===normalize(b));
+ const expected=q.answerSource?YoshiAnswers.clozeRows(q.answerSource).map(r=>r.answers.join(' ')).join(' / '):Array.isArray(q.correct)?q.correct.join(' / '):q.type==='word'?YoshiAnswers.lines(q.correct).join(' / '):q.correct;
  const response=Array.isArray(value)?value.join(' / '):value;
  answers.push({type:q.type,prompt:q.prompt,translation:q.translation||'',correct:expected,selected:response,ok});
  if(q.type==='choice')for(const b of $('options').children){
@@ -546,7 +547,7 @@ function select(value){
   $('typingInput').disabled=true;$('typingSubmit').disabled=true;
   document.querySelectorAll('.sentence-input').forEach((field,i)=>{
    field.disabled=true;
-   field.classList.add(normalize(value[i])===normalize(q.correct[i])?'input-correct':'input-wrong');
+   field.classList.add((ok||normalize(value[i])===normalize(q.correct[i]))?'input-correct':'input-wrong');
   });
  }
  if(q.type==='sentence'&&!ok){
