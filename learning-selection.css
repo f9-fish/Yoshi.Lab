@@ -124,3 +124,14 @@ body.learning-selection:not(.welcome-active) #parts #toLessons{display:inline-bl
 body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping){background:linear-gradient(145deg,#071930f5,#1c3244f2)!important}
 body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping):hover:not(:disabled),body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping):focus-visible{background:linear-gradient(145deg,#054056f5,#09273cf5)!important}
 }
+
+/* Subtle mode colors shared by English Communication and Logic/Expression. */
+#modePicker #pickText{--mode-tone:#b8cde9;--mode-surface:#22334af2;--mode-edge:#7189a9}
+#modePicker #pickTyping{--mode-tone:#f4d28e;--mode-surface:#392e24f2;--mode-edge:#b29461}
+#modePicker #pickVocab{--mode-tone:#87dcea;--mode-surface:#143743f2;--mode-edge:#549cae}
+#modePicker #pickVocabTyping{--mode-tone:#d6b2f4;--mode-surface:#302844f2;--mode-edge:#9474b2}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping){background:linear-gradient(145deg,var(--mode-surface),#101e34f5)!important;border-color:var(--mode-edge)!important;box-shadow:inset 0 1px 0 #ffffff0d,0 5px 18px #0004!important}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping):hover:not(:disabled),body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping):focus-visible{background:linear-gradient(145deg,var(--mode-surface),#182b44f5)!important;border-color:var(--mode-tone)!important;box-shadow:inset 0 0 16px #ffffff0a,0 0 14px color-mix(in srgb,var(--mode-tone) 35%,transparent)!important}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping) .mode-card-icon{display:grid;place-items:center;filter:none;color:var(--mode-tone);line-height:1;flex:none}
+body.learning-selection:not(.welcome-active) #modePicker .mode-card-icon svg{display:block;width:38px;height:38px}
+@media(max-width:540px){body.learning-selection:not(.welcome-active) #modePicker .mode-card-icon svg{width:32px;height:32px}}
