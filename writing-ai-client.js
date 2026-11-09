@@ -1,12 +1,12 @@
 /* Lazy Firebase callable bridge: no additional SDK/network setup while disabled. */
 (()=>{
  'use strict';
- let setup;
+ let setup,appCheck;
  const sdk='https://www.gstatic.com/firebasejs/13.1.0/';
  async function connect(config){
   const [apps,functions,check]=await Promise.all([import(sdk+'firebase-app.js'),import(sdk+'firebase-functions.js'),import(sdk+'firebase-app-check.js')]);
   const app=apps.getApp();
-  try{check.getAppCheck(app);}catch{check.initializeAppCheck(app,{provider:new check.ReCaptchaEnterpriseProvider(config.appCheckSiteKey),isTokenAutoRefreshEnabled:true});}
+  if(!appCheck)appCheck=check.initializeAppCheck(app,{provider:new check.ReCaptchaEnterpriseProvider(config.appCheckSiteKey),isTokenAutoRefreshEnabled:true});
   return functions.httpsCallable(functions.getFunctions(app,config.region),'reviewWriting',{timeout:24000,limitedUseAppCheckTokens:true});
  }
  async function review({question,answer,requestId}){
