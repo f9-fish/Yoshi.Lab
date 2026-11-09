@@ -1195,7 +1195,7 @@ body:has(#subjects:not(.hidden)) #subjects .growth-subject-cta{grid-column:3;gri
  #subjects .eiken-home-link>span:last-child{font-size:23px}
  #subjects+.quest-rewards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 }
-</style><link rel="stylesheet" href="./home-neon.css?v=8"><link rel="stylesheet" href="./learning-selection.css?v=1"></head><body><div id="welcomeCover" aria-label="Yoshi.Lab オープニング"><div class="welcome-inner">
+</style><link rel="stylesheet" href="./home-neon.css?v=8"><link rel="stylesheet" href="./learning-selection.css?v=2"></head><body><div id="welcomeCover" aria-label="Yoshi.Lab オープニング"><div class="welcome-inner">
   <div class="welcome-hero"><a class="welcome-hero-link welcome-hero-link-mypage" href="mypage.html" aria-label="MY PAGE"></a><a class="welcome-hero-link welcome-hero-link-home" href="./" aria-label="HOME"></a><div class="welcome-crown" aria-hidden="true">♕</div><div class="welcome-logo">Yoshi<span>.Lab</span></div><div class="welcome-tagline">YOUR ENGLISH<br>PRACTICE SPACE</div><div class="welcome-motto">LEARN × LEVEL UP</div><div class="welcome-line"></div></div>
   <section aria-label="使い方"><h2 class="welcome-how">🎮 HOW TO USE <span>学び方を選ぼう！</span></h2><div class="welcome-steps">
     <div class="welcome-step"><div class="welcome-symbol welcome-symbol-word" aria-hidden="true"></div><div class="welcome-step-content"><div class="welcome-step-title">単語を勉強したい</div><div class="welcome-desc">重要単語を覚えて英語の土台をつくろう！</div><div class="welcome-path"><span class="welcome-chip">科目</span><span class="welcome-chevron">›</span><span class="welcome-chip">Lesson</span><span class="welcome-chevron">›</span><span class="welcome-chip">Part</span><span class="welcome-chevron">›</span><span class="welcome-chip end">単語チェック</span></div></div></div>
@@ -1379,7 +1379,7 @@ function syncPairPlacement(){
   if(placement&&placement.nextElementSibling!==pairFeature)placement.after(pairFeature);
 }
 function syncLearningSelection(screen){
- const visible=screen==='modePicker'||screen==='units';
+ const visible=['modePicker','units','parts'].includes(screen);
  document.body.classList.toggle('learning-selection',visible);show('selectionContext',visible);
  if(!visible)return;
  const ids={text:'pickText',textTyping:'pickTyping',vocab:'pickVocab',vocabTyping:'pickVocabTyping'};
@@ -1399,8 +1399,8 @@ function syncLearningSelection(screen){
  $('selectionBadgeEnglish').textContent=choosingMode?(subject==='英C'?'English Communication':'Logic & Expression'):description;
  $('selectionBadgeXP').textContent=choosingMode?'':xp;
  $('selectionBadgeXP').hidden=choosingMode;
- $('selectionScreenTitle').textContent=choosingMode?'挑戦する問題形式を選ぼう':'Lessonを選ぼう';
- $('selectionScreenDesc').textContent=choosingMode?'学びたい内容と形式を選択できます。':'レッスンを選んで、問題に挑戦しよう。';
+ $('selectionScreenTitle').textContent=choosingMode?'挑戦する問題形式を選ぼう':screen==='parts'?$('partTitle').textContent:'Lessonを選ぼう';
+ $('selectionScreenDesc').textContent=choosingMode?'学びたい内容と形式を選択できます。':screen==='parts'?'学習したいPartを選んで、問題に挑戦しよう。':'レッスンを選んで、問題に挑戦しよう。';
 }
 $('selectionHome').onclick=()=>$('goHomeLink').click();
 $('selectionSubjectBack').onclick=()=>{if(selectedStudyMode)$('toSubjects').click();};
@@ -1752,12 +1752,12 @@ function chooseLesson(id){
  if(unique.length>1){
   const all=document.createElement('button');all.className='unit';
   // 全パートをまとめる。実際に存在するパートだけが対象。
-  all.textContent='全部（'+(unique.length===4?'Part1～Part4':'全'+unique.length+'パート')+'）';
+  const label=document.createElement('span');label.textContent='全部（'+(unique.length===4?'Part1～Part4':'全'+unique.length+'パート')+'）';all.append(label);
   all.onclick=()=>chooseMode('__ALL_PARTS__');list.appendChild(all);
  }
  unique.forEach(name=>{
   const b=document.createElement('button');b.className='unit';
-  b.textContent=partLabel(name);
+  const label=document.createElement('span');label.textContent=partLabel(name);b.append(label);
   b.onclick=()=>chooseMode(name);list.appendChild(b);
  });
 }
