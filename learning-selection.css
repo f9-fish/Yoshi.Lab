@@ -1,0 +1,119 @@
+/* Mode and lesson selection only. No page-background or scoring changes. */
+.selection-context{display:none}
+body.learning-selection:not(.welcome-active) .wrap{max-width:1100px;padding:20px 35px 45px}
+body.learning-selection:not(.welcome-active) .wrap>header{padding-bottom:14px;border-bottom:1px solid #d2e2ef8c;gap:18px;flex-wrap:nowrap}
+body.learning-selection:not(.welcome-active) .wrap>header .brand{font-style:normal;font-size:28px!important}
+body.learning-selection:not(.welcome-active) .header-account{margin-left:auto;max-width:230px;flex:0 1 auto}
+body.learning-selection:not(.welcome-active) .header-account .account-msg{min-width:0;text-align:right}
+body.learning-selection:not(.welcome-active) .header-account .account-msg strong{font-size:10px;color:#c2d3e7}
+body.learning-selection:not(.welcome-active) .header-account .account-msg small,body.learning-selection:not(.welcome-active) .header-account .account-nav-links{display:none}
+body.learning-selection:not(.welcome-active) #googleLogin{padding:8px 12px;font-size:11px}
+body.learning-selection:not(.welcome-active) .home-header-actions{display:flex;align-items:center;gap:24px;flex:none}
+body.learning-selection:not(.welcome-active) .home-header-actions>a{display:grid;place-items:center;width:32px;height:36px;color:white;text-decoration:none;font-size:27px}
+body.learning-selection:not(.welcome-active) .home-header-actions svg{width:24px;height:28px;fill:#fff}
+body.learning-selection:not(.welcome-active) .home-menu{position:relative;z-index:50}
+body.learning-selection:not(.welcome-active) .home-menu summary{display:flex;flex-direction:column;justify-content:center;gap:6px;width:32px;height:38px;cursor:pointer;list-style:none}
+body.learning-selection:not(.welcome-active) .home-menu summary::-webkit-details-marker{display:none}
+body.learning-selection:not(.welcome-active) .home-menu summary span{height:2px;width:28px;background:#fff;border-radius:3px}
+body.learning-selection:not(.welcome-active) .home-menu>div{position:absolute;right:0;top:44px;width:180px;padding:8px;background:#071a30f5;border:1px solid #b8cddf66;border-radius:12px;box-shadow:0 10px 30px #0008}
+body.learning-selection:not(.welcome-active) .home-menu a{display:block;color:#eef5ff;padding:12px;text-decoration:none;border-radius:8px;font-size:13px}
+body.learning-selection:not(.welcome-active) .home-menu a:hover{background:#28496b}
+body.learning-selection:not(.welcome-active) .home-tagline{display:flex;align-items:center;justify-content:center;gap:20px;text-align:center;margin:15px 0 20px;font:italic clamp(14px,1.9vw,21px)/1.5 Georgia,serif;letter-spacing:.07em;color:#e4e8ef;text-shadow:0 2px 5px #000}
+body.learning-selection:not(.welcome-active) .home-tagline::before,body.learning-selection:not(.welcome-active) .home-tagline::after{content:'';height:1px;flex:1;max-width:55px;background:linear-gradient(90deg,transparent,#d2dae6)}
+body.learning-selection:not(.welcome-active) .home-tagline::after{transform:rotate(180deg)}
+body.learning-selection:not(.welcome-active) .daily-hero-link,body.learning-selection:not(.welcome-active) .quest-progress,body.learning-selection:not(.welcome-active) .quest-rank{display:none!important}
+body.learning-selection:not(.welcome-active) .selection-context{display:block;margin:0 0 32px;--selection-accent:#6eeaff;--selection-photo:left 28%;--selection-tone:#083849}
+body.learning-selection:not(.welcome-active) .selection-context[data-selection-subject="論表"]{--selection-accent:#dfb4ff;--selection-photo:center 30%;--selection-tone:#291844}
+body.learning-selection:not(.welcome-active) .selection-breadcrumb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;line-height:1.6;color:#e1ebf8;margin:8px 0 24px}
+body.learning-selection:not(.welcome-active) .selection-breadcrumb button{padding:4px 0;background:none;border:0;border-radius:2px;color:#eef4fc;font-size:12px;text-align:left;font-weight:600}
+body.learning-selection:not(.welcome-active) .selection-breadcrumb button:disabled{opacity:1;cursor:default}
+body.learning-selection:not(.welcome-active) #selectionHome{font-size:25px;padding-right:4px;line-height:1}
+body.learning-selection:not(.welcome-active) .selection-summary{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,1.15fr);align-items:center;gap:38px;margin:0 18px}
+body.learning-selection:not(.welcome-active) .selection-subject-badge{position:relative;isolation:isolate;overflow:hidden;min-height:105px;display:flex;flex-direction:column;justify-content:center;padding:16px 25px 16px 42%;border:1px solid var(--selection-accent);background:var(--selection-tone);transform:skewX(-12deg);box-shadow:0 0 12px #53d7f74d}
+body.learning-selection:not(.welcome-active) .selection-subject-badge::before{content:'';position:absolute;inset:0 auto 0 -12px;width:50%;z-index:-1;transform:skewX(12deg);background-image:linear-gradient(90deg,transparent,var(--selection-tone)),url('./home-training-triptych.png');background-size:100% 100%,300% auto;background-position:center,var(--selection-photo);background-repeat:no-repeat}
+body.learning-selection:not(.welcome-active) .selection-subject-badge>*{position:relative;transform:skewX(12deg)}
+body.learning-selection:not(.welcome-active) #selectionBadgeTitle{font:italic 30px/1.4 Georgia,'Yu Mincho',serif;letter-spacing:.035em;color:#fff}
+body.learning-selection:not(.welcome-active) #selectionBadgeEnglish{font:italic 11px/1.6 Georgia,serif;letter-spacing:.07em;color:#dbe9f5}
+body.learning-selection:not(.welcome-active) #selectionBadgeXP{font-size:11px;margin-top:7px;color:#ffe09a}
+body.learning-selection:not(.welcome-active) .selection-summary-copy h2{font:italic 23px/1.5 Georgia,'Yu Mincho',serif;letter-spacing:.07em;margin:0 0 7px;color:#fff;text-shadow:0 2px 8px #0009}
+body.learning-selection:not(.welcome-active) .selection-summary-copy p{font-size:12px;line-height:1.7;color:#d0ddec;margin:0}
+body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] .selection-summary{grid-template-columns:1fr;gap:15px}
+body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] .selection-subject-badge{padding:17px 40px;min-height:112px}
+body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] .selection-subject-badge::before{left:auto;right:-13px;width:38%;background-image:linear-gradient(90deg,var(--selection-tone),transparent),url('./home-training-triptych.png')}
+body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] #selectionBadgeTitle{font-size:25px}
+body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] .selection-summary-copy{padding:0 10px}
+body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] .selection-summary-copy h2{font-size:18px;margin:0 0 4px}
+body.learning-selection:not(.welcome-active) #modePicker,body.learning-selection:not(.welcome-active) #units{margin:0!important;padding:0 18px!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important}
+body.learning-selection:not(.welcome-active) #modePicker>.growth-section-label,body.learning-selection:not(.welcome-active) #modeHeading,body.learning-selection:not(.welcome-active) #modePicker>.growth-subcopy,body.learning-selection:not(.welcome-active) #unitTitle{display:none!important}
+body.learning-selection:not(.welcome-active) #modePicker .mode-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin:0 12px}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping){display:flex!important;flex-direction:column;align-items:center!important;justify-content:center!important;gap:10px;width:100%;height:235px;min-height:0!important;padding:20px 12px!important;border:1px solid #c1d4e2dd!important;border-radius:0!important;background:linear-gradient(145deg,#071930c9,#1c3244d9)!important;color:#f6f8ff!important;box-shadow:inset 0 0 16px #a7c9e511,0 5px 18px #0004!important;transform:skewX(-12deg)!important;text-align:center;transition:filter .18s,border-color .18s,box-shadow .18s}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping)>*{transform:skewX(12deg)}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping):hover:not(:disabled),body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping):focus-visible{border-color:#73eaff!important;background:linear-gradient(145deg,#054056dd,#09273cdd)!important;box-shadow:inset 0 0 16px #5fd7ff33,0 0 14px #4ee5ff88!important;filter:brightness(1.08)}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping):disabled{opacity:.4;cursor:not-allowed}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping) .mode-card-icon{font-size:30px;filter:grayscale(1) brightness(1.8);line-height:1.3}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping) .mode-card-name{font-family:Georgia,'Yu Mincho',serif;font-size:20px;font-weight:700;line-height:1.45;white-space:normal;overflow-wrap:anywhere}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping) .mode-typing-line{display:block!important;font-size:13px!important;margin-top:3px;line-height:1.5;white-space:normal!important}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping) .mode-card-desc{font-size:10px;line-height:1.5;min-height:30px;display:flex;align-items:center;justify-content:center;color:#d3e1f0}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping) .mode-card-xp{font-size:13px;padding:4px 7px;margin:0;line-height:1.4;border-radius:99px;white-space:nowrap}
+body.learning-selection:not(.welcome-active) #modePicker .repeat-xp-notice{margin:28px 8px 0;padding:12px 16px;border:1px solid #8aa8c766;border-left:2px solid #e5c579;background:#061b30c9;border-radius:10px;box-shadow:none}
+body.learning-selection:not(.welcome-active) #modePicker .repeat-xp-notice strong{font-size:13px}
+body.learning-selection:not(.welcome-active) #modePicker .repeat-xp-notice p,body.learning-selection:not(.welcome-active) #modePicker .repeat-xp-notice small{font-size:11px;line-height:1.7}
+body.learning-selection:not(.welcome-active) #modePicker .xp-mode-foot{font-size:11px;color:#bdcede}
+body.learning-selection:not(.welcome-active) #unitList{display:grid;gap:15px;margin:0 12px}
+body.learning-selection:not(.welcome-active) #units #unitList .unit{position:relative;margin:0;width:100%;min-height:62px;padding:15px 55px 15px 26px!important;border:1px solid #c6d8e4b8!important;border-radius:0!important;background:linear-gradient(110deg,#24364ed4,#081d31d9)!important;color:#fff!important;transform:skewX(-12deg);box-shadow:inset 0 0 12px #a7c8df12,0 4px 12px #0004;font:italic 20px/1.5 Georgia,'Yu Mincho',serif;text-align:left;overflow-wrap:anywhere}
+body.learning-selection:not(.welcome-active) #units #unitList .unit::after{content:'→';position:absolute;right:22px;top:50%;transform:translateY(-50%) skewX(12deg);font:26px Georgia,serif}
+body.learning-selection:not(.welcome-active) #units #unitList .unit:hover,body.learning-selection:not(.welcome-active) #units #unitList .unit:focus-visible{border-color:#8df0ff!important;background:linear-gradient(110deg,#146178d9,#073148dd)!important;box-shadow:inset 0 0 16px #71dfff33,0 0 12px #5de0ff66}
+body.learning-selection:not(.welcome-active) .pair-feature.pair-compact{margin:28px 24px 0;padding:12px 16px!important;border:1px solid #568f9c88;background:#072d34bb!important;box-shadow:none!important;border-radius:10px}
+body.learning-selection:not(.welcome-active) .footer{margin-top:35px}
+@media(max-width:800px){
+body.learning-selection:not(.welcome-active) .wrap{padding:16px 24px 35px}
+body.learning-selection:not(.welcome-active) .selection-summary{grid-template-columns:minmax(230px,1fr) minmax(0,1fr);gap:24px;margin:0 12px}
+body.learning-selection:not(.welcome-active) .selection-summary-copy h2{font-size:19px}
+body.learning-selection:not(.welcome-active) #modePicker .mode-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping){height:210px}
+}
+@media(max-width:540px){
+body.learning-selection:not(.welcome-active) .wrap{padding:14px 16px 30px}
+body.learning-selection:not(.welcome-active) .wrap>header{gap:8px;flex-wrap:wrap;padding-bottom:12px}
+body.learning-selection:not(.welcome-active) .wrap>header>div:first-child{flex:1}
+body.learning-selection:not(.welcome-active) .wrap>header .brand{font-size:25px!important}
+body.learning-selection:not(.welcome-active) .header-account{order:3;flex:1 1 100%;max-width:none;margin:0}
+body.learning-selection:not(.welcome-active) .header-account .account-msg{flex:1;text-align:left}
+body.learning-selection:not(.welcome-active) .home-header-actions{gap:15px}
+body.learning-selection:not(.welcome-active) .home-header-actions>a{width:25px;height:30px;font-size:24px}
+body.learning-selection:not(.welcome-active) .home-header-actions svg{width:21px;height:24px}
+body.learning-selection:not(.welcome-active) .home-menu summary{width:25px;height:30px;gap:5px}
+body.learning-selection:not(.welcome-active) .home-menu summary span{width:24px}
+body.learning-selection:not(.welcome-active) .home-tagline{margin:12px 0 16px;font-size:12px;gap:8px;letter-spacing:.025em}
+body.learning-selection:not(.welcome-active) .home-tagline::before,body.learning-selection:not(.welcome-active) .home-tagline::after{max-width:20px}
+body.learning-selection:not(.welcome-active) .selection-context{margin-bottom:24px}
+body.learning-selection:not(.welcome-active) .selection-breadcrumb{gap:7px;margin:0 0 18px;font-size:10px}
+body.learning-selection:not(.welcome-active) .selection-breadcrumb button{font-size:10px}
+body.learning-selection:not(.welcome-active) .selection-summary{grid-template-columns:1fr;gap:18px;margin:0 13px}
+body.learning-selection:not(.welcome-active) .selection-subject-badge{min-height:88px;padding:13px 20px 13px 42%}
+body.learning-selection:not(.welcome-active) #selectionBadgeTitle{font-size:27px}
+body.learning-selection:not(.welcome-active) .selection-summary-copy{padding:0 3px}
+body.learning-selection:not(.welcome-active) .selection-summary-copy h2{font-size:19px;margin-bottom:4px}
+body.learning-selection:not(.welcome-active) .selection-summary-copy p{font-size:11px}
+body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] .selection-subject-badge{padding:14px 20px;min-height:115px}
+body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] #selectionBadgeTitle{font-size:20px}
+body.learning-selection:not(.welcome-active) .selection-context[data-step="units"] #selectionBadgeEnglish{font-size:10px;max-width:80%}
+body.learning-selection:not(.welcome-active) #modePicker,body.learning-selection:not(.welcome-active) #units{padding:0 9px!important}
+body.learning-selection:not(.welcome-active) #modePicker .mode-grid{gap:18px 16px;margin:0 8px}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping){height:205px;padding:16px 8px!important;gap:8px;transform:skewX(-8deg)!important}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping)>*{transform:skewX(8deg)}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping) .mode-card-name{font-size:16px;line-height:1.45}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping) .mode-typing-line{font-size:11px!important}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping) .mode-card-icon{font-size:27px}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping) .mode-card-desc{font-size:9px;min-height:28px}
+body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping) .mode-card-xp{font-size:11px;padding:4px 6px}
+body.learning-selection:not(.welcome-active) #modePicker .repeat-xp-notice{margin:25px 0 0;padding:11px 13px}
+body.learning-selection:not(.welcome-active) #unitList{margin:0 6px;gap:13px}
+body.learning-selection:not(.welcome-active) #units #unitList .unit{min-height:59px;padding:13px 42px 13px 19px!important;font-size:18px;transform:skewX(-8deg)}
+body.learning-selection:not(.welcome-active) #units #unitList .unit::after{right:15px;font-size:24px;transform:translateY(-50%) skewX(8deg)}
+body.learning-selection:not(.welcome-active) .pair-feature.pair-compact{margin:24px 10px 0}
+}
+@media(prefers-reduced-motion:reduce){body.learning-selection:not(.welcome-active) #modePicker :is(#pickText,#pickTyping,#pickVocab,#pickVocabTyping){transition:none}}
+
+body.learning-selection:not(.welcome-active) #units #unitList .unit>span{display:block;transform:skewX(12deg)}
+@media(max-width:540px){body.learning-selection:not(.welcome-active) #units #unitList .unit>span{transform:skewX(8deg)}}
