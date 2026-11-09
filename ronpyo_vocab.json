@@ -77,5 +77,60 @@
         "reading": "ノットゥ メンション"
       }
     ]
+  },
+  {
+    "subject": "論表",
+    "id": "16 動名詞の慣用表現",
+    "name": "1",
+    "words": [
+      {
+        "word": "be looking forward to ~ing",
+        "meaning": "～するのを楽しみにしている",
+        "hint": "",
+        "reading": ""
+      },
+      {
+        "word": "be used to ~ing",
+        "meaning": "～することに慣れている",
+        "hint": "",
+        "reading": ""
+      },
+      {
+        "word": "How about ~ing\nWhat about ~ing",
+        "meaning": "～するのはどう？",
+        "hint": "",
+        "reading": ""
+      },
+      {
+        "word": "feel like ~ing",
+        "meaning": "～したい気がする（～したいかも）",
+        "hint": "",
+        "reading": ""
+      },
+      {
+        "word": "be worth ~ing",
+        "meaning": "～する価値がある",
+        "hint": "",
+        "reading": ""
+      },
+      {
+        "word": "can't help ~ing",
+        "meaning": "～せずにはいられない",
+        "hint": "",
+        "reading": ""
+      },
+      {
+        "word": "S prevent(s) ～ from …",
+        "meaning": "Sが..～を…するのを妨げる。\nＳのせいで～が…できない.",
+        "hint": "",
+        "reading": ""
+      },
+      {
+        "word": "It is no use regretting ～",
+        "meaning": "～しても無駄である",
+        "hint": "",
+        "reading": ""
+      }
+    ]
   }
 ]
