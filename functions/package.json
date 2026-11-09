@@ -1,0 +1,9 @@
+{
+  "name": "yoshi-writing-ai",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.cjs",
+  "engines": {"node": "22"},
+  "scripts": {"prepare:data": "node scripts/snapshot.cjs", "test": "node --test ../tests/writing-ai*.test.cjs"},
+  "dependencies": {"firebase-admin": "14.5.0", "firebase-functions": "7.4.0"}
+}

@@ -1,0 +1,442 @@
+[
+  {
+    "id": "WC-001",
+    "subject": "英C",
+    "lesson": "7",
+    "number": 1,
+    "japanese": "弟は昨日、飛行機の写真を撮ることを楽しみました。",
+    "requiredExpressions": [
+      "enjoyed"
+    ],
+    "modelAnswer": "My brother enjoyed taking pictures of airplanes yesterday.",
+    "acceptedAnswers": [
+      "Yesterday, my brother enjoyed taking pictures of airplanes."
+    ],
+    "hints": [
+      "enjoy + 動詞の-ing形",
+      "take pictures of ～：～の写真を撮る"
+    ],
+    "explanation": "enjoy の後には動名詞を置く。",
+    "status": "公開",
+    "unitId": "7",
+    "unitName": "1"
+  },
+  {
+    "id": "WC-006",
+    "subject": "英C",
+    "lesson": "7",
+    "number": 1,
+    "japanese": "このチームは12人の選手で構成されています。",
+    "requiredExpressions": [
+      "consists of"
+    ],
+    "modelAnswer": "This team consists of twelve players.",
+    "acceptedAnswers": [
+      "The team consists of twelve players."
+    ],
+    "hints": [
+      "主語が三人称単数なら consists",
+      "twelve players"
+    ],
+    "explanation": "consist of ～ は「～から成る」。",
+    "status": "公開",
+    "unitId": "7",
+    "unitName": "2"
+  },
+  {
+    "id": "WC-002",
+    "subject": "英C",
+    "lesson": "7",
+    "number": 2,
+    "japanese": "そのレストランはとても豪華な内装でした。",
+    "requiredExpressions": [
+      "gorgeous"
+    ],
+    "modelAnswer": "The restaurant had a gorgeous interior.",
+    "acceptedAnswers": [
+      "That restaurant had a gorgeous interior."
+    ],
+    "hints": [
+      "have + 形容詞 + 名詞",
+      "interior：内装"
+    ],
+    "explanation": "gorgeous は「豪華な・華やかな」。",
+    "status": "公開",
+    "unitId": "7",
+    "unitName": "1"
+  },
+  {
+    "id": "WC-007",
+    "subject": "英C",
+    "lesson": "7",
+    "number": 2,
+    "japanese": "新しい図書館は市役所の隣にあります。",
+    "requiredExpressions": [
+      "is located"
+    ],
+    "modelAnswer": "The new library is located next to the city hall.",
+    "acceptedAnswers": [
+      "The new library is located beside the city hall."
+    ],
+    "hints": [
+      "be located + 場所",
+      "next to ～：～の隣に"
+    ],
+    "explanation": "be located は「位置している」。",
+    "status": "公開",
+    "unitId": "7",
+    "unitName": "2"
+  },
+  {
+    "id": "WC-003",
+    "subject": "英C",
+    "lesson": "7",
+    "number": 3,
+    "japanese": "その試合の一番の見どころは最後のゴールでした。",
+    "requiredExpressions": [
+      "highlight"
+    ],
+    "modelAnswer": "The highlight of the game was the final goal.",
+    "acceptedAnswers": [
+      "The final goal was the highlight of the game."
+    ],
+    "hints": [
+      "The highlight of ～ was ...",
+      "the game / the final goal"
+    ],
+    "explanation": "highlight は「最も印象的な場面・見どころ」。",
+    "status": "公開",
+    "unitId": "7",
+    "unitName": "1"
+  },
+  {
+    "id": "WC-008",
+    "subject": "英C",
+    "lesson": "7",
+    "number": 3,
+    "japanese": "その町の人口は約3万人です。",
+    "requiredExpressions": [
+      "population"
+    ],
+    "modelAnswer": "The town has a population of about 30,000.",
+    "acceptedAnswers": [
+      "The population of the town is about 30,000."
+    ],
+    "hints": [
+      "have a population of ～",
+      "about 30,000"
+    ],
+    "explanation": "population は「人口」。",
+    "status": "公開",
+    "unitId": "7",
+    "unitName": "2"
+  },
+  {
+    "id": "WC-004",
+    "subject": "英C",
+    "lesson": "7",
+    "number": 4,
+    "japanese": "私は来年、絶対にこの大会に参加したいです。",
+    "requiredExpressions": [
+      "definitely"
+    ],
+    "modelAnswer": "I definitely want to participate in this tournament next year.",
+    "acceptedAnswers": [
+      "Next year, I definitely want to participate in this tournament."
+    ],
+    "hints": [
+      "want to + 動詞の原形",
+      "participate in ～ / next year"
+    ],
+    "explanation": "definitely は「絶対に・間違いなく」。",
+    "status": "公開",
+    "unitId": "7",
+    "unitName": "1"
+  },
+  {
+    "id": "WC-009",
+    "subject": "英C",
+    "lesson": "7",
+    "number": 4,
+    "japanese": "留学生と交流することは私にとって大切です。",
+    "requiredExpressions": [
+      "interact with"
+    ],
+    "modelAnswer": "It is important for me to interact with exchange students.",
+    "acceptedAnswers": [
+      "For me, it is important to interact with exchange students."
+    ],
+    "hints": [
+      "It is + 形容詞 + for 人 + to不定詞",
+      "exchange students：留学生"
+    ],
+    "explanation": "interact with ～ は「～と交流する」。",
+    "status": "公開",
+    "unitId": "7",
+    "unitName": "2"
+  },
+  {
+    "id": "WC-005",
+    "subject": "英C",
+    "lesson": "7",
+    "number": 5,
+    "japanese": "この静かな部屋は勉強するのに理想的です。",
+    "requiredExpressions": [
+      "ideal"
+    ],
+    "modelAnswer": "This quiet room is ideal for studying.",
+    "acceptedAnswers": [
+      "This quiet room is an ideal place to study."
+    ],
+    "hints": [
+      "be ideal for + 動名詞",
+      "quiet room / study"
+    ],
+    "explanation": "ideal for ～ は「～に理想的」。",
+    "status": "公開",
+    "unitId": "7",
+    "unitName": "1"
+  },
+  {
+    "id": "WC-010",
+    "subject": "英C",
+    "lesson": "7",
+    "number": 5,
+    "japanese": "その映画は私に子どもの頃の思い出を忘れさせました。",
+    "requiredExpressions": [
+      "made"
+    ],
+    "modelAnswer": "The movie made me forget my childhood memories.",
+    "acceptedAnswers": [
+      "That movie made me forget my childhood memories."
+    ],
+    "hints": [
+      "make + 人 + 動詞の原形",
+      "childhood memories：子どもの頃の思い出"
+    ],
+    "explanation": "使役の make の後には動詞の原形を置く。",
+    "status": "公開",
+    "unitId": "7",
+    "unitName": "2"
+  },
+  {
+    "id": "WC-011",
+    "subject": "論表",
+    "lesson": "12 不定詞(1)",
+    "number": 1,
+    "japanese": "私は将来、外国の会社で働きたいと思っています。",
+    "requiredExpressions": [
+      "hope to"
+    ],
+    "modelAnswer": "I hope to work for a foreign company in the future.",
+    "acceptedAnswers": [
+      "In the future, I hope to work for a foreign company."
+    ],
+    "hints": [
+      "hope to + 動詞の原形",
+      "work for a foreign company"
+    ],
+    "explanation": "hope to ～ は「～したいと思う」。",
+    "status": "公開",
+    "unitId": "12",
+    "unitName": "不定詞(1)"
+  },
+  {
+    "id": "WC-012",
+    "subject": "論表",
+    "lesson": "12 不定詞(1)",
+    "number": 2,
+    "japanese": "毎日早起きすることは私にとって簡単ではありません。",
+    "requiredExpressions": [
+      "easy for me to"
+    ],
+    "modelAnswer": "It is not easy for me to get up early every day.",
+    "acceptedAnswers": [
+      "It's not easy for me to get up early every day."
+    ],
+    "hints": [
+      "It is + 形容詞 + for 人 + to不定詞",
+      "get up early / every day"
+    ],
+    "explanation": "形式主語 It を使う構文。",
+    "status": "公開",
+    "unitId": "12",
+    "unitName": "不定詞(1)"
+  },
+  {
+    "id": "WC-013",
+    "subject": "論表",
+    "lesson": "12 不定詞(1)",
+    "number": 3,
+    "japanese": "私は新しい友達を作ることが大切だと気づきました。",
+    "requiredExpressions": [
+      "found it important to"
+    ],
+    "modelAnswer": "I found it important to make new friends.",
+    "acceptedAnswers": [
+      "I found it important to make some new friends."
+    ],
+    "hints": [
+      "find + it + 形容詞 + to不定詞",
+      "make new friends"
+    ],
+    "explanation": "it は形式目的語。",
+    "status": "公開",
+    "unitId": "12",
+    "unitName": "不定詞(1)"
+  },
+  {
+    "id": "WC-014",
+    "subject": "論表",
+    "lesson": "12 不定詞(1)",
+    "number": 4,
+    "japanese": "彼は妹を迎えに行くために駅へ走りました。",
+    "requiredExpressions": [
+      "to pick up"
+    ],
+    "modelAnswer": "He ran to the station to pick up his sister.",
+    "acceptedAnswers": [
+      "He ran to the station to pick up his younger sister."
+    ],
+    "hints": [
+      "目的を表す to不定詞",
+      "run to the station / pick up"
+    ],
+    "explanation": "to pick up ～ は「～を迎えに行くために」。",
+    "status": "公開",
+    "unitId": "12",
+    "unitName": "不定詞(1)"
+  },
+  {
+    "id": "WC-015",
+    "subject": "論表",
+    "lesson": "12 不定詞(1)",
+    "number": 5,
+    "japanese": "私はその知らせを聞いて驚きました。",
+    "requiredExpressions": [
+      "surprised to hear"
+    ],
+    "modelAnswer": "I was surprised to hear the news.",
+    "acceptedAnswers": [
+      "I was surprised to hear that news."
+    ],
+    "hints": [
+      "感情の原因を表す to不定詞",
+      "the news"
+    ],
+    "explanation": "be surprised to hear ～ は「～を聞いて驚く」。",
+    "status": "公開",
+    "unitId": "12",
+    "unitName": "不定詞(1)"
+  },
+  {
+    "id": "WC-016",
+    "subject": "論表",
+    "lesson": "13 不定詞(2)",
+    "number": 1,
+    "japanese": "先生は私たちに教室を掃除するように頼みました。",
+    "requiredExpressions": [
+      "asked"
+    ],
+    "modelAnswer": "The teacher asked us to clean the classroom.",
+    "acceptedAnswers": [
+      "Our teacher asked us to clean the classroom."
+    ],
+    "hints": [
+      "ask + 人 + to不定詞",
+      "us / clean the classroom"
+    ],
+    "explanation": "ask someone to do は「人に～するよう頼む」。",
+    "status": "公開",
+    "unitId": "13",
+    "unitName": "不定詞(2)"
+  },
+  {
+    "id": "WC-017",
+    "subject": "論表",
+    "lesson": "13 不定詞(2)",
+    "number": 2,
+    "japanese": "父は私が一人で旅行することを許してくれました。",
+    "requiredExpressions": [
+      "allowed"
+    ],
+    "modelAnswer": "My father allowed me to travel alone.",
+    "acceptedAnswers": [
+      "My dad allowed me to travel alone."
+    ],
+    "hints": [
+      "allow + 人 + to不定詞",
+      "travel alone：一人で旅行する"
+    ],
+    "explanation": "allow someone to do は「人が～するのを許す」。",
+    "status": "公開",
+    "unitId": "13",
+    "unitName": "不定詞(2)"
+  },
+  {
+    "id": "WC-018",
+    "subject": "論表",
+    "lesson": "13 不定詞(2)",
+    "number": 3,
+    "japanese": "私は隣の部屋で誰かが笑っているのを聞きました。",
+    "requiredExpressions": [
+      "heard"
+    ],
+    "modelAnswer": "I heard someone laughing in the next room.",
+    "acceptedAnswers": [
+      "I heard someone laugh in the next room."
+    ],
+    "hints": [
+      "hear + 人 + 動詞の-ing形 / 原形",
+      "someone / in the next room"
+    ],
+    "explanation": "知覚動詞 hear は動詞の-ing形と原形の両方を取れるが、捉える場面のニュアンスが異なる。",
+    "status": "公開",
+    "unitId": "13",
+    "unitName": "不定詞(2)"
+  },
+  {
+    "id": "WC-019",
+    "subject": "論表",
+    "lesson": "13 不定詞(2)",
+    "number": 4,
+    "japanese": "コーチは私たちに練習後、自由に休ませてくれました。",
+    "requiredExpressions": [
+      "let"
+    ],
+    "modelAnswer": "The coach let us rest after practice.",
+    "acceptedAnswers": [
+      "Our coach let us rest after practice."
+    ],
+    "hints": [
+      "let + 人 + 動詞の原形",
+      "rest / after practice"
+    ],
+    "explanation": "let の後は to を付けない。",
+    "status": "公開",
+    "unitId": "13",
+    "unitName": "不定詞(2)"
+  },
+  {
+    "id": "WC-020",
+    "subject": "論表",
+    "lesson": "13 不定詞(2)",
+    "number": 5,
+    "japanese": "私は弟に荷物を運んでもらいました。",
+    "requiredExpressions": [
+      "had"
+    ],
+    "modelAnswer": "I had my brother carry my bags.",
+    "acceptedAnswers": [
+      "I had my younger brother carry my bags."
+    ],
+    "hints": [
+      "have + 人 + 動詞の原形",
+      "carry my bags"
+    ],
+    "explanation": "使役の have の後は動詞の原形。",
+    "status": "公開",
+    "unitId": "13",
+    "unitName": "不定詞(2)"
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "functions": [{
+    "source": "functions",
+    "codebase": "writing-ai",
+    "runtime": "nodejs22",
+    "predeploy": ["node functions/scripts/snapshot.cjs"],
+    "ignore": ["node_modules", ".git", "*-debug.log", ".env.local", ".secret.local"]
+  }],
+  "firestore": [{"database": "writing-ai", "rules": "firestore.writing-ai.rules"}],
+  "emulators": {"functions": {"port": 5001}, "firestore": {"port": 8080}, "ui": {"enabled": false}, "singleProjectMode": true}
+}
