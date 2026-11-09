@@ -1372,7 +1372,7 @@ function syncPairPlacement(){
   const active=selectionScreens.map(id=>$(id)).find(el=>!el.classList.contains('hidden'));
   document.body.classList.toggle('home-dashboard',active?.id==='subjects');
   syncLearningSelection(active?.id);
-  const showPair=!!active;
+  const showPair=active?.id==='subjects';
   pairFeature.classList.toggle('hidden',!showPair);
   pairFeature.classList.toggle('pair-compact',!!active&&active.id!=='subjects');
   const placement=active;
