@@ -213,56 +213,76 @@
   },
   {
     "subject": "論表",
-    "id": "Extra 1",
-    "name": "不定詞の慣用表現",
+    "id": "16 動名詞(2)",
+    "name": "1",
     "cards": [
       [
-        "to tell the truth",
-        "実を言うと"
+        "We (are) (proud) (of) (cleaning) the park every weekend.​",
+        "私たちは，毎週末公園の(清掃をしていることを誇りに思っている)。​"
       ],
       [
-        "to be honest",
-        "正直に言うと"
+        "We (are) (proud) (of) (our) (students) (cleaning) the park every weekend.​",
+        "私たちは，(生徒たちが)毎週末公園の(清掃をしていることを誇りに思っている)。​"
       ],
       [
-        "to be sure",
-        "確かに"
+        "Would you (mind) (turning) (off) the air conditioner?​",
+        "エアコン(を消していただいてもよろしい)でしょうか。​"
       ],
       [
-        "to say the least",
-        "控えめに言っても"
+        "Would you (mind) (me) (turning) (off) the air conditioner?​",
+        "エアコンを、(私が消してもよろしい)でしょうか。​"
       ],
       [
-        "to begin with",
-        "まず第一に"
+        "​I’m sorry for (not) (calling) you these days.​",
+        "最近(電話をしなくて)ごめんなさい。"
       ],
       [
-        "strange to say",
-        "奇妙なことに"
+        "We appreciate (being) (invited) to the party.​",
+        "私たちはそのパーティーに(招待されたこと)を感謝している。​"
       ],
       [
-        "needless to say",
-        "言うまでもなく"
+        "My sister is proud of (having)(studied) at this high school.​",
+        "姉はこの高校で(学んだこと)を誇りに思っている。​"
       ],
       [
-        "so to speak",
-        "いわば"
+        "I’m (looking) (forward) (to) (going) to  South Korea this weekend.​",
+        "今週末，韓国に(行くのを楽しみにしています)。​"
       ],
       [
-        "to make matters worse",
-        "さらに悪いことに"
+        "I’m not so hungry.  I don’t (feel) (like) (having) the steak.​\nI’m not so hungry.  I don’t (feel) (like) (eating) the steak.​",
+        "そんなにおなかがすいていない。ステーキを食べる(気にならないな)。​"
       ],
       [
-        "to be frank",
-        "率直に言うと"
+        "It’s (no) (use) (waiting) (for) Mayu.   She’s gone out.​\nIt’s (no) (good) (waiting) (for) Mayu.   She’s gone out.​",
+        "マユ(を待ってもむだ)です。彼女は出かけてしまいました。​"
       ],
       [
-        "to sum up",
-        "要約すると"
+        "Every Japanese (can’t) (help) (worrying) (about) the possibility of a huge earthquake.",
+        "すべての日本人は巨大地震の可能性(を心配せずにはいられない)。"
       ],
       [
-        "not to mention",
-        "〜は言うまでもなく"
+        "Emily (is) (not) (used) (to) (cooking) fish.",
+        "エミリーは魚(を調理することに慣れていない)。"
+      ],
+      [
+        "The heavy (rain) (prevented) (us) (from) (going) on the trip.",
+        "大(雨のせいで)，私たちは旅行(に行けなかった)。"
+      ],
+      [
+        "We can protect the environment (by) (not) (using) plastic bags.",
+        "ビニール袋を使わないことで，私たちは環境を守ることができます。"
+      ],
+      [
+        "At first, Tom (denied) (having) (broken) the window.\nAt first, Tom (denied) (breaking) the window.",
+        "初め，トムは窓を割ったことを否定した。"
+      ],
+      [
+        "(How) (about) (planting) (trees) for more green space?\n(What) (about) (planting) (trees) for more green space?",
+        "緑地を増やすために植樹するのはどうですか。"
+      ],
+      [
+        "This job (is) (worth) (doing).\nThis job (is) (worth) (trying).",
+        "この仕事はやってみる価値がある。"
       ]
     ]
   }
