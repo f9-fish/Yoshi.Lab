@@ -17,6 +17,7 @@
    const missing=sources.some(s=>s.status==='rejected'||!Array.isArray(s.value));
    $('dataStatus').textContent=(rows.length?'公開中の英作文：'+rows.length+'問':'公開中の問題がありません。')+(missing?' 一部の既存Lesson情報を取得できませんでした。':'');
    document.querySelectorAll('[data-writing-subject]').forEach(b=>b.disabled=false);
+   if(!$('lessonScreen').hidden&&subject)chooseSubject(subject);
    $('reload').hidden=false;
   }catch(e){$('dataStatus').textContent='英作文問題を読み込めませんでした。データと通信を確認して再読み込みしてください。';$('reload').hidden=false;}
   finally{loading=false;}
@@ -30,12 +31,12 @@
  function start(id){lesson=id;set=rows.filter(q=>q.subject===subject&&q.lesson===lesson);if(!set.length)return;index=0;records=[];screen('quizScreen');renderQuestion();}
  function renderQuestion(){
   answered=false;hints=new Set();hintCount=0;const q=set[index];
-  $('quizLesson').textContent=subject+' / '+W.lessonLabel(lesson);$('questionCount').textContent=(index+1)+' / '+set.length+'問';$('quizProgress').max=set.length;$('quizProgress').value=index;
+  $('quizLesson').textContent=subject+' / '+W.lessonLabel(lesson)+(q.unitName&&subject==='英C'?' / '+q.unitName:'');$('questionCount').textContent=(index+1)+' / '+set.length+'問';$('quizProgress').max=set.length;$('quizProgress').value=index;
   $('prompt').textContent=q.japanese;$('required').textContent=q.requiredExpressions.length?'指定語・指定表現（すべて使用）：'+q.requiredExpressions.join(' ／ '):'指定語なし';
   $('hintContent').hidden=true;$('hintToggle').setAttribute('aria-expanded','false');$('hintToggle').disabled=!q.hints.length;$('hintToggle').textContent=q.hints.length?'💡 ヒント':'ヒント未登録';$('hintList').replaceChildren();$('moreHint').hidden=false;
   $('answer').value='';$('answer').readOnly=false;$('submitAnswer').disabled=true;$('submitAnswer').hidden=false;$('feedback').hidden=true;$('prompt').focus();
  }
- function revealHint(){const q=set[index];if(hintCount>=q.hints.length)return;const p=document.createElement('p');p.textContent='ヒント'+(hintCount+1)+'：'+q.hints[hintCount];$('hintList').append(p);hints.add(hintCount+1);hintCount++;$('moreHint').hidden=hintCount>=q.hints.length;}
+ function revealHint(){const q=set[index];if(hintCount>=q.hints.length)return;const p=document.createElement('p');const stage=q.hintNumbers?.[hintCount]||hintCount+1;p.textContent='ヒント'+stage+'：'+q.hints[hintCount];$('hintList').append(p);hints.add(stage);hintCount++;$('moreHint').hidden=hintCount>=q.hints.length;}
  function details(target,q,row){
   target.replaceChildren();
   const add=(label,value)=>{const p=document.createElement('p'),b=document.createElement('strong');b.textContent=label+'：';p.append(b,document.createTextNode('\n'+value));target.append(p);};
