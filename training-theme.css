@@ -1,7 +1,7 @@
 /* Align standalone training pages with the existing English/Logic screens.
    Presentation only: question IDs, authentication and scoring stay untouched. */
-.training-page{--training-accent:#73eaff;--training-glow:#4ee5ff66;--training-hero:#083849;--training-photo:url('./home-training-triptych.png');--training-photo-size:300% auto;--training-photo-position:right 30%;background-color:#04132e;background-image:linear-gradient(180deg,rgba(3,14,34,.15),rgba(3,14,34,.30)),url('./mountain-desktop-v7.jpg');background-position:center top;background-size:cover;background-repeat:no-repeat;background-attachment:fixed}
-.writing-page{--training-accent:#f3a1dd;--training-glow:#ed68c955;--training-hero:#421735;--training-photo:url('./writing-art.svg');--training-photo-size:cover;--training-photo-position:center 35%}
+.training-page{--training-accent:#73eaff;--training-glow:#4ee5ff66;--training-hero:#083849;--training-photo:url('./home-training-triptych.png');--training-photo-size:300% auto;--training-photo-position:right 30%;background-color:#04132e;background-image:linear-gradient(rgba(0,8,24,.25),rgba(0,8,24,.25)),url('./yoshilab-unified-mountain.png');background-position:center center;background-size:cover;background-repeat:no-repeat;background-attachment:fixed}
+.writing-page{--training-accent:#f3a1dd;--training-glow:#ed68c955;--training-hero:#421735;--training-photo:url('./writing-card-photo.png');--training-photo-size:cover;--training-photo-position:center 35%}
 .eiken-page{--training-accent:#ffda72;--training-glow:#f4c65d55;--training-hero:#3b290c}
 .training-page .wrap{max-width:1100px;padding:20px 35px 45px}
 .training-page .training-header{display:flex;align-items:center;justify-content:space-between;gap:18px;padding-bottom:14px;border-bottom:1px solid #d2e2ef8c;margin:0;flex-wrap:nowrap}
@@ -51,7 +51,7 @@
 .training-page textarea{background:#0a1931;border-color:#647d9f;border-radius:12px}.training-page progress{accent-color:var(--training-accent)}
 .training-page .actions{gap:12px}.training-page .sentence{font-family:system-ui,-apple-system,'Noto Sans JP',sans-serif;font-style:normal;line-height:1.8}
 .training-page .muted{font-size:12px;line-height:1.8;color:#bdcee5}.training-page footer{margin-top:35px;color:#99b6d8;font-size:11px}.training-page :focus-visible{outline:3px solid var(--training-accent);outline-offset:4px}
-@media(max-width:700px){.training-page{background-image:linear-gradient(180deg,rgba(3,14,34,.10),rgba(3,14,34,.23)),url('./mountain-mobile-v7.jpg');background-size:100% 100%,100% auto;background-position:center top;background-repeat:no-repeat;background-attachment:scroll}}
+@media(max-width:700px){.training-page{background-image:linear-gradient(rgba(0,8,24,.25),rgba(0,8,24,.25)),url('./yoshilab-mobile-mountain-v11.png');background-size:100% 100%,100% auto;background-position:center center,center top;background-repeat:no-repeat;background-attachment:fixed}.training-page.yoshi-daytime{background-image:linear-gradient(rgba(0,8,24,.25),rgba(0,8,24,.25)),url('./yoshilab-mobile-day-v13.png')}}
 @media(max-width:540px){
 .training-page .wrap{padding:14px 16px 30px}.training-page .training-header{gap:8px;padding-bottom:12px}.training-page .brand{font-size:25px}.training-page .training-header-actions{gap:15px}.training-header-actions>a{width:25px;height:30px;font-size:24px}.training-header-actions svg{width:21px;height:24px}.training-menu summary{width:25px;height:30px;gap:5px}.training-menu summary span{width:24px}
 .training-tagline{margin:12px 0 16px;font-size:12px;gap:8px;letter-spacing:.025em}.training-tagline::before,.training-tagline::after{max-width:20px}.training-breadcrumb{font-size:10px;gap:7px;margin:0 0 18px}
@@ -62,3 +62,6 @@
 .training-page .panel,.training-page .review-item{padding:20px 16px}.training-page #lessonList{margin:24px 6px;gap:13px}.training-page .lesson-row{min-height:59px;padding:13px 19px;font-size:18px;transform:skewX(-8deg)}.training-page .lesson-row>span{transform:skewX(8deg)}.training-page .lesson-row small{font-size:11px}.training-page .actions{gap:10px}.training-page .actions>button{font-size:12px}.training-page .sentence{font-size:23px}
 }
 @media(prefers-reduced-motion:reduce){.training-page .grade-card{transition:none}}
+
+/* The root exposed below a short page has the HOME base color too. */
+html:has(body.training-page){background-color:#04132e}
