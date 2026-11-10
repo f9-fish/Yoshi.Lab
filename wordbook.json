@@ -1,0 +1,286 @@
+{
+  "schemaVersion": 1,
+  "scope": "STAGE1:Unit1",
+  "words": [
+    {
+      "id": "wb-stage1-unit1-195",
+      "stage": "STAGE1",
+      "unit": "Unit1",
+      "number": 195,
+      "word": "elementary",
+      "meaning": "【形】小学校の，初歩的な\n〈英〉primary",
+      "practiceMeaning": "小学校の，初歩的な",
+      "acceptedAnswers": [],
+      "phrase": "elementary school",
+      "phraseJapanese": "小学校",
+      "inflections": "",
+      "status": "公開",
+      "examples": [
+        {
+          "id": "wb-stage1-unit1-195-ex1",
+          "english": "English is now taught at elementary school.",
+          "japanese": "英語は今小学校で教えられている。",
+          "phrase": "elementary school",
+          "phraseJapanese": "小学校",
+          "reorder": true,
+          "acceptedOrders": []
+        }
+      ]
+    },
+    {
+      "id": "wb-stage1-unit1-196",
+      "stage": "STAGE1",
+      "unit": "Unit1",
+      "number": 196,
+      "word": "junior",
+      "meaning": "【形】地位が下の",
+      "practiceMeaning": "地位が下の",
+      "acceptedAnswers": [],
+      "phrase": "junior high school",
+      "phraseJapanese": "中学校",
+      "inflections": "",
+      "status": "公開",
+      "examples": [
+        {
+          "id": "wb-stage1-unit1-196-ex1",
+          "english": "There are three junior high schools in my town.",
+          "japanese": "私の町には中学校が3校あります。",
+          "phrase": "junior high school",
+          "phraseJapanese": "中学校",
+          "reorder": true,
+          "acceptedOrders": []
+        }
+      ]
+    },
+    {
+      "id": "wb-stage1-unit1-197",
+      "stage": "STAGE1",
+      "unit": "Unit1",
+      "number": 197,
+      "word": "senior",
+      "meaning": "【形】地位が上の",
+      "practiceMeaning": "地位が上の",
+      "acceptedAnswers": [],
+      "phrase": "senior high school",
+      "phraseJapanese": "高校",
+      "inflections": "",
+      "status": "公開",
+      "examples": [
+        {
+          "id": "wb-stage1-unit1-197-ex1",
+          "english": "Our senior high school opened two years ago.",
+          "japanese": "私たちの高校は2年前に開校した。",
+          "phrase": "senior high school",
+          "phraseJapanese": "高校",
+          "reorder": true,
+          "acceptedOrders": []
+        }
+      ]
+    },
+    {
+      "id": "wb-stage1-unit1-198",
+      "stage": "STAGE1",
+      "unit": "Unit1",
+      "number": 198,
+      "word": "university",
+      "meaning": "【名】(総合)大学\n(類) college (単科)大学",
+      "practiceMeaning": "(総合)大学",
+      "acceptedAnswers": [],
+      "phrase": "enter university",
+      "phraseJapanese": "大学に入る",
+      "inflections": "",
+      "status": "公開",
+      "examples": [
+        {
+          "id": "wb-stage1-unit1-198-ex1",
+          "english": "My father entered university in 1990.",
+          "japanese": "私の父は1990年に大学に入った。",
+          "phrase": "enter university",
+          "phraseJapanese": "大学に入る",
+          "reorder": true,
+          "acceptedOrders": []
+        }
+      ]
+    },
+    {
+      "id": "wb-stage1-unit1-199",
+      "stage": "STAGE1",
+      "unit": "Unit1",
+      "number": 199,
+      "word": "good",
+      "meaning": "【形】良い，上手な",
+      "practiceMeaning": "良い，上手な",
+      "acceptedAnswers": [],
+      "phrase": "a good friend",
+      "phraseJapanese": "良い友達",
+      "inflections": "",
+      "status": "公開",
+      "examples": [
+        {
+          "id": "wb-stage1-unit1-199-ex1",
+          "english": "He is a good friend of mine.",
+          "japanese": "彼は私の良い友達です。",
+          "phrase": "a good friend",
+          "phraseJapanese": "良い友達",
+          "reorder": true,
+          "acceptedOrders": []
+        }
+      ]
+    },
+    {
+      "id": "wb-stage1-unit1-200",
+      "stage": "STAGE1",
+      "unit": "Unit1",
+      "number": 200,
+      "word": "well",
+      "meaning": "【副】良く，上手に",
+      "practiceMeaning": "良く，上手に",
+      "acceptedAnswers": [],
+      "phrase": "play the piano well",
+      "phraseJapanese": "ピアノを上手に弾く",
+      "inflections": "",
+      "status": "公開",
+      "examples": [
+        {
+          "id": "wb-stage1-unit1-200-ex1",
+          "english": "He plays the piano very well.",
+          "japanese": "彼はピアノをとても上手に弾く。",
+          "phrase": "play the piano well",
+          "phraseJapanese": "ピアノを上手に弾く",
+          "reorder": true,
+          "acceptedOrders": []
+        }
+      ]
+    },
+    {
+      "id": "wb-stage1-unit1-201",
+      "stage": "STAGE1",
+      "unit": "Unit1",
+      "number": 201,
+      "word": "interesting",
+      "meaning": "【形】面白い，興味深い→ interest【名】興味，関心",
+      "practiceMeaning": "面白い，興味深い",
+      "acceptedAnswers": [],
+      "phrase": "the book is interesting",
+      "phraseJapanese": "その本は面白い",
+      "inflections": "",
+      "status": "公開",
+      "examples": [
+        {
+          "id": "wb-stage1-unit1-201-ex1",
+          "english": "The book was very interesting.",
+          "japanese": "その本はとても面白かった。",
+          "phrase": "the book is interesting",
+          "phraseJapanese": "その本は面白い",
+          "reorder": true,
+          "acceptedOrders": []
+        }
+      ]
+    },
+    {
+      "id": "wb-stage1-unit1-202",
+      "stage": "STAGE1",
+      "unit": "Unit1",
+      "number": 202,
+      "word": "fun",
+      "meaning": "【名】楽しみ，面白み\n→ funny【形】おかしい，笑える",
+      "practiceMeaning": "楽しみ，面白み",
+      "acceptedAnswers": [],
+      "phrase": "be great fun",
+      "phraseJapanese": "すごく楽しい",
+      "inflections": "",
+      "status": "公開",
+      "examples": [
+        {
+          "id": "wb-stage1-unit1-202-ex1",
+          "english": "The party was great fun.",
+          "japanese": "そのパーティーはすごく楽しかった。",
+          "phrase": "be great fun",
+          "phraseJapanese": "すごく楽しい",
+          "reorder": true,
+          "acceptedOrders": []
+        }
+      ]
+    },
+    {
+      "id": "wb-stage1-unit1-203",
+      "stage": "STAGE1",
+      "unit": "Unit1",
+      "number": 203,
+      "word": "choose",
+      "meaning": "【動】…を選ぶ→ choice【名】選択",
+      "practiceMeaning": "…を選ぶ",
+      "acceptedAnswers": [],
+      "phrase": "choose a book",
+      "phraseJapanese": "本を選ぶ",
+      "inflections": "",
+      "status": "公開",
+      "examples": [
+        {
+          "id": "wb-stage1-unit1-203-ex1",
+          "english": "Go to the library and choose a book to read.",
+          "japanese": "図書館へ行って読む本を選びなさい。",
+          "phrase": "choose a book",
+          "phraseJapanese": "本を選ぶ",
+          "reorder": true,
+          "acceptedOrders": []
+        }
+      ]
+    },
+    {
+      "id": "wb-stage1-unit1-204",
+      "stage": "STAGE1",
+      "unit": "Unit1",
+      "number": 204,
+      "word": "select",
+      "meaning": "【名】…を(慎重に)選ぶ→ selection【名】選択",
+      "practiceMeaning": "…を(慎重に)選ぶ",
+      "acceptedAnswers": [],
+      "phrase": "select subjects",
+      "phraseJapanese": "教科を選ぶ",
+      "inflections": "",
+      "status": "公開",
+      "examples": [
+        {
+          "id": "wb-stage1-unit1-204-ex1",
+          "english": "We have to select some subjects for the next year.",
+          "japanese": "私たちは来年に向けていくつか教科を選ばなければならない。",
+          "phrase": "select subjects",
+          "phraseJapanese": "教科を選ぶ",
+          "reorder": true,
+          "acceptedOrders": []
+        }
+      ]
+    },
+    {
+      "id": "wb-stage1-unit1-205",
+      "stage": "STAGE1",
+      "unit": "Unit1",
+      "number": 205,
+      "word": "elect",
+      "meaning": "【動】…を(投票で)選ぶ\n→ election【名】選挙",
+      "practiceMeaning": "…を(投票で)選ぶ",
+      "acceptedAnswers": [],
+      "phrase": "elect her",
+      "phraseJapanese": "彼女を(投票で)選ぶ",
+      "inflections": "",
+      "status": "公開",
+      "examples": [
+        {
+          "id": "wb-stage1-unit1-205-ex1",
+          "english": "We elected Yuki as class leader for this year.",
+          "japanese": "私たちは今年の学級長として由紀を選んだ。",
+          "phrase": "elect her",
+          "phraseJapanese": "彼女を(投票で)選ぶ",
+          "reorder": true,
+          "acceptedOrders": []
+        }
+      ]
+    }
+  ],
+  "source": {
+    "type": "google-sheets",
+    "label": "WORDBOX Essential 2nd",
+    "sheetVerified": true
+  }
+}
