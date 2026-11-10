@@ -16,7 +16,7 @@
   if(window.YoshiPairQAConfig?.backend==='spark')return window.YoshiPairQASpark.watch(app,code,accept,error);
   let stopped=false,timer=null,failures=0;
   async function poll(){
-   try{const value=await call(app,{action:'get',code});if(!stopped){failures=0;accept(value);if(value.state?.started&&value.state.index>=value.count)stopped=true;}}
+   try{const value=await call(app,{action:'get',code});if(!stopped){failures=0;accept(value);if(value.ended||value.state?.started&&value.state.index>=value.count)stopped=true;}}
    catch(e){if(!stopped){failures++;const terminal=['not-found','permission-denied','unauthenticated','failed-precondition'].some(code=>String(e?.code||'').endsWith(code));if(terminal||failures>=8)stopped=true;error(e,{stopped});}}
    finally{if(!stopped)timer=setTimeout(poll,failures?Math.min(30000,1500*2**failures):1500);}
   }

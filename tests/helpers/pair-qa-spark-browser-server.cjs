@@ -6,6 +6,7 @@ http.createServer(async(req,res)=>{let body='';for await(const c of req)body+=c;
  const room=read('pairQaSpark/rooms/'+p?.split('/')[2]);
  if(op==='get'&&p.startsWith('pairQaSpark/')){
   if(!room||![room.hostUid,room.guestUid].includes(uid))throw Error('permission-denied');
+  if(room.endedAt&&(p.startsWith('pairQaSpark/hints/')||p.startsWith('pairQaSpark/questions/')))throw Error('permission-denied');
   if(p.startsWith('pairQaSpark/hints/')&&(Number(p.split('/')[3])!==room.state.index||Number(p.split('/')[4])>room.hintStage))throw Error('permission-denied');
   if(p.startsWith('pairQaSpark/questions/')){const i=room.state.index,n=room.rotation==='one'?1:room.rotation==='two'?2:Math.ceil(room.count/2),asker=Math.floor(i/n)%2===0?room.hostUid:room.guestUid;if(Number(p.split('/')[3])!==i||!room.state.started||uid!==asker&&!room.reveal)throw Error('permission-denied');}
  }

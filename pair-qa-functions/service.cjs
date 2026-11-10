@@ -11,7 +11,7 @@ function createService({db,questions,enabled=()=>false,now=()=>Date.now(),random
   const data=request.data;
   if(!data||typeof data!=='object'||Array.isArray(data)||Buffer.byteLength(JSON.stringify(data))>1500||Object.keys(data).some(k=>!['action','code','lesson','part','duration','version','rotation','index','ok'].includes(k)))throw new core.QAError('invalid-argument','操作を確認してください');
   const action=data.action,time=now();
-  if(!['create','join','get','rotation','start','answer-open','hint-request','hint-next','grade','next'].includes(action))throw new core.QAError('invalid-argument','操作を確認してください');
+  if(!['create','join','get','rotation','start','answer-open','hint-request','hint-next','grade','next','end'].includes(action))throw new core.QAError('invalid-argument','操作を確認してください');
   if(action!=='create'&&(typeof data.code!=='string'||!/^0\d{5}$/.test(data.code)))throw new core.QAError('invalid-argument','6桁コードを確認してください');
   // Count all calls atomically; rotating anonymous UIDs cannot bypass global caps.
   const bucket=Math.floor(time/60000),userKey=createHash('sha256').update(uid).digest('hex');
