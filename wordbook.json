@@ -279,8 +279,8 @@
     }
   ],
   "source": {
-    "type": "uploaded-excel",
-    "label": "WORDBOX Essential 2nd・STAGE1 Unit1 試作",
-    "sheetVerified": false
+    "type": "google-sheets",
+    "label": "WORDBOX Essential 2nd",
+    "sheetVerified": true
   }
 }
