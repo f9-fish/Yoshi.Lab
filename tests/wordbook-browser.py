@@ -68,10 +68,20 @@ with sync_playwright() as p:
      sentence=examples[prompt]['english'];tokens=sentence.split();assert page.locator('#wbSubmit').is_disabled()
      if index==0:
       page.locator('#wbTokens button').first.click();page.locator('#wbSelected button').first.click();assert page.locator('#wbSelected button').count()==0
-      page.locator('#wbTokens button').first.click();page.locator('#wbUndo').click();assert page.locator('#wbSelected button').count()==0
+      assert page.locator('#wbUndoLast').is_disabled()
+      page.locator('#wbTokens button:enabled').first.click();first=page.locator('#wbSelected button').first.inner_text()
+      page.locator('#wbTokens button:enabled').first.click();enabled=page.locator('#wbTokens button:enabled').count()
+      page.locator('#wbUndoLast').click();assert page.locator('#wbSelected button').count()==1
+      assert page.locator('#wbSelected button').first.inner_text()==first
+      assert page.locator('#wbTokens button:enabled').count()==enabled+1
+      assert page.locator('#wbSubmit').is_disabled()
+      page.locator('#wbUndoLast').click();assert page.locator('#wbSelected button').count()==0
+      assert page.locator('#wbUndoLast').is_disabled()
+      page.locator('#wbTokens button:enabled').first.click();page.locator('#wbUndo').click();assert page.locator('#wbSelected button').count()==0
      else:tokens[0],tokens[1]=tokens[1],tokens[0]
      for token in tokens:page.locator('#wbTokens button:enabled').filter(has_text=re.compile('^'+re.escape(token)+'$')).first.click()
      page.locator('#wbSubmit').click()
+    if mode=='reorder':assert page.locator('#wbUndoLast').is_disabled()
     page.locator('#wbFeedback').wait_for(state='visible');assert page.locator('#wbJudgment').inner_text()==('正解！' if index==0 else '不正解');assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
     if index==0:page.screenshot(path=f'/tmp/wordbook-{mode}-{width}.png',full_page=True);page.locator('#wbNext').click()
    page.locator('#wbFinish').click();page.locator('#wbResult').wait_for(state='visible');assert '2問解答 / 正解 1問' in page.locator('#wbSummary').inner_text();assert page.locator('#wbReview article').count()==2;page.locator('#wbChoose').click()
