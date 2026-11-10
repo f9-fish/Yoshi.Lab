@@ -13,6 +13,7 @@ function view(room,uid,now){
  expire(room,now);const side=member(room,uid),i=room.state.index,current=room.questions[i],isAsker=side===asker(room),revealed=!!room.reveal;
  const visibleHints=current?(current.hints||[]).map((value,index)=>({stage:index+1,text:value})).filter(h=>h.text&&h.stage<=room.hintStage):[];
  const result={code:room.code,subject:'英C',lesson:room.lesson,part:room.part,mode:'textQA',side,guestJoined:!!room.guestUid,count:room.questions.length,rotation:room.rotation||'',duration:room.duration,state:{...room.state},revision:room.revision,reveal:room.reveal?{...room.reveal}:null,hints:visibleHints,hintRequested:!!room.hintRequested,answerOpen:isAsker&&!!room.answerOpen,serverNow:now,asker:asker(room)};
+ if(room.endedAt){const graded=room.reveal?.index===i;return {...result,ended:true,endedBy:room.endedBy===room.hostUid?'A':'B',summary:{right:room.state.right+(graded&&room.reveal.ok?1:0),total:room.state.total+(graded?1:0)},hints:[],hasNextHint:false,answerOpen:false,reveal:null};}
  // No full snapshot, identities, future questions or model answer on the answerer before grading.
  if(current&&(isAsker||revealed||room.hintStage>0))result.question=current.question;
  if(current&&(revealed||isAsker&&room.answerOpen)){result.modelAnswer=current.modelAnswer;result.acceptedAnswers=[...current.acceptedAnswers];}
@@ -22,12 +23,19 @@ function view(room,uid,now){
 }
 function act(source,uid,action,data,now){
  const room=structuredClone(source);expire(room,now);
+ if(room.endedAt){member(room,uid);if(action==='get'||action==='end')return room;fail('failed-precondition','このペアワークは終了しました');}
  if(action==='join'){
   if(uid===room.hostUid)return room;
   if(room.guestUid&&room.guestUid!==uid)fail('permission-denied','この部屋は2人が参加済みです');
   room.guestUid=uid;room.revision++;return room;
  }
- const side=member(room,uid);timeout(room,now);
+ const side=member(room,uid);
+ if(action==='end'){
+  if(!room.state.started)fail('failed-precondition','開始後に終了できます');
+  if(room.state.index>=room.questions.length)return room;
+  room.endedAt=now;room.endedBy=uid;room.revision++;return room;
+ }
+ timeout(room,now);
  if(action==='get')return room;
  if(action==='rotation'){
   if(side!=='A'||!room.guestUid||room.rotation||room.state.started)fail('permission-denied','交代設定は生徒Aが開始前に行います');

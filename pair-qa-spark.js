@@ -20,6 +20,7 @@
   async function read(code){const r=(await api.get(path('rooms',code))).val();if(!r)fail('not-found','部屋がありません');if(!member(r))fail('permission-denied','参加者ではありません');return r;}
   async function display(raw){
    const room=inflate(raw),value=core.view(room,uid,now()),i=room.state.index;
+   if(value.ended)return value;
    // Only the current asker, or both participants after grading, may read this snapshot row.
    if(room.state.started&&i<room.count&&(value.side===value.asker||room.reveal)){
     const q=(await api.get(path('questions',room.code,'/'+i))).val();
@@ -63,27 +64,31 @@
     await api.set(path('rooms',data.code,'/guestUid'),uid);return safeDisplay(await read(data.code));
    }
    let raw=await read(data.code);
+   if(raw.endedAt&&(data.action==='get'||data.action==='end'))return safeDisplay(raw);
    if(data.action!=='get'||raw.state.started&&raw.duration&&!raw.reveal&&raw.state.index<raw.count&&now()>=raw.state.startedAt+raw.duration*1000){
     const expected=raw.revision;
     const result=await api.runTransaction(path('rooms',data.code),old=>{
-     if(!old||old.revision!==expected)return;
+     if(!old||data.action!=='end'&&old.revision!==expected)return;
      const r=inflate(old),time=now(),timedOut=r.state.started&&r.duration&&!r.reveal&&r.state.index<r.count&&time>=r.state.startedAt+r.duration*1000;
-     const action=timedOut?'get':data.action,changed=core.act(r,uid,action,data,time);
+     const action=timedOut&&data.action!=='end'?'get':data.action,changed=core.act(r,uid,action,data,time);
      if(changed.revision===r.revision)return;
-     const next=pack(changed,action);if(action==='start'||action==='next')next.state.startedAt=api.serverTimestamp();return next;
+     const next=pack(changed,action);if(action==='start'||action==='next')next.state.startedAt=api.serverTimestamp();if(action==='end')next.endedAt=api.serverTimestamp();return next;
     },{applyLocally:false});
-    if(!result.committed)fail('failed-precondition','状態が更新されました。最新の画面で操作してください');raw=result.snapshot.val();
+    if(!result.committed){
+     if(data.action==='end'){const current=await read(data.code);if(current.endedAt||current.state.index>=current.count)return safeDisplay(current);}
+     fail('failed-precondition','状態が更新されました。最新の画面で操作してください');
+    }raw=result.snapshot.val();
    }
    return safeDisplay(raw);
   }
   function watch(code,accept,error){
    let stopped=false,serial=Promise.resolve(),timer,latest,ticking=false;
    const stop=api.onValue(path('rooms',code),snap=>{
-    const raw=snap.val();latest=raw;serial=serial.catch(()=>{}).then(async()=>{if(stopped)return;if(!raw)fail('not-found','部屋がありません');const value=await safeDisplay(raw);if(!stopped&&latest===raw)accept(value);}).catch(e=>{if(!stopped&&latest===raw)error(e,{stopped:false});});
+    const raw=snap.val();latest=raw;serial=serial.catch(()=>{}).then(async()=>{if(stopped)return;if(!raw)fail('not-found','部屋がありません');const value=await safeDisplay(raw);if(!stopped&&latest===raw){accept(value);if(value.ended){stopped=true;stop();clearInterval(timer);}}}).catch(e=>{if(!stopped&&latest===raw)error(e,{stopped:false});});
    },e=>{if(!stopped){stopped=true;clearInterval(timer);error(e,{stopped:true});}});
    // A get applies an expired question's server-checked timeout, even without button presses.
    timer=setInterval(()=>{
-    if(stopped||!latest||ticking)return;
+    if(stopped||!latest||latest.endedAt||ticking)return;
     if(now()>=latest.expiresAt||!latest.guestUid&&now()>=latest.createdAt+300000){stopped=true;stop();clearInterval(timer);error(Object.assign(Error('部屋の有効期限が切れました'),{code:'not-found'}),{stopped:true});return;}
     if(latest.state.started&&latest.duration&&!latest.reveal&&latest.state.index<latest.count&&now()>=latest.state.startedAt+latest.duration*1000){ticking=true;void call({action:'get',code}).then(v=>{if(!stopped)accept(v);}).catch(e=>{if(!stopped&&!String(e.code).endsWith('failed-precondition'))error(e,{stopped:false});}).finally(()=>{ticking=false;});}
    },1000);

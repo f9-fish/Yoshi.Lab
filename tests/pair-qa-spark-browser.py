@@ -57,7 +57,27 @@ with sync_playwright() as p:
    if index==1:
     resynced=True;A.reload();A.locator('#game').wait_for(state='visible')
   for page in pages:
-   page.locator('#done').wait_for(state='visible');assert page.locator('#result').inner_text()=='4 / 5 問正解'
+   page.locator('#done').wait_for(state='visible');assert page.locator('#result').inner_text()=='4 / 5 問正解';assert page.locator('#qaExit').is_hidden()
+  # Start a second room and verify a cancelled/confirmed exit from either role.
+  resynced=False
+  for page in pages:page.locator('#back').click();page.locator('#lobby').wait_for(state='visible');assert page.locator('#qaExit').is_hidden()
+  A.locator('#stepChoices button').filter(has_text='英C').click();A.locator('#stepChoices button').filter(has_text='本文Q&A').click();A.locator('#stepChoices button').filter(has_text='Lesson 7').click();A.locator('#stepChoices button').filter(has_text='Part 1').click();A.locator('#stepChoices button').filter(has_text='10秒' if width==320 else '無制限').click();A.locator('#waiting').wait_for(state='visible')
+  code=A.locator('#roomCode').inner_text();B.locator('#joinCode').fill(code);B.locator('#join').click();A.locator('#rotationSetup').wait_for(state='visible');A.locator('#rotationOptions button').filter(has_text='1問ずつ交代する').click();A.locator('#briefing').wait_for(state='visible');A.locator('#startPair').click()
+  for page in pages:
+   page.locator('#game').wait_for(state='visible');page.locator('#qaExit').wait_for(state='visible')
+   box=page.locator('#qaExit').bounding_box();assert box['width']<=100 and box['height']<=48;assert box['x']+box['width']<=width and box['y']+box['height']<=950
+  if width==390:
+   A.locator('#qaAnswerOpen').click();A.locator('#qaModel').wait_for(state='visible');A.locator('#correct').click();B.locator('#feedback').wait_for(state='visible')
+  quitter=A if width==1280 else B
+  quitter.once('dialog',lambda dialog:dialog.dismiss());quitter.locator('#qaExit').click();assert quitter.locator('#game').is_visible()
+  A.screenshot(path=f'/tmp/qa-exit-button-{width}.png',full_page=True)
+  quitter.once('dialog',lambda dialog:dialog.accept());quitter.locator('#qaExit').click()
+  for page in pages:
+   page.locator('#done').wait_for(state='visible');assert '途中で終了' in page.locator('#detail').inner_text();assert page.locator('#qaExit').is_hidden();assert page.locator('#result').inner_text()==('1 / 1 問正解' if width==390 else '0 / 0 問正解')
+  # Reconnection preserves the shared ended result and cannot restart the room.
+  if width==320:B.wait_for_timeout(11000)
+  B.reload();B.locator('#done').wait_for(state='visible');assert B.locator('#qaExit').is_hidden();assert '途中で終了' in B.locator('#detail').inner_text()
+  print('PASS',width,'compact exit, cancel, A/B shared finish, summary, ended reconnect')
   assert not errors,errors
   for context in contexts:context.close()
   print('PASS',width,rotation,'A/B, hints, reveal, rotation, reconnect, 5 answers, layout')
@@ -69,7 +89,7 @@ with sync_playwright() as p:
    if path=='/pair-qa-config.js':r.fulfill(body='window.YoshiPairQAConfig={enabled:false,backend:"spark"};',content_type='text/javascript');return
    base(r)
   page.route('**/*',stalled);page.goto('https://local.test/pair.html');page.locator('#lobby').wait_for(state='visible',timeout=3000)
-  page.locator('#stepChoices button').filter(has_text='英C').click();assert page.locator('#stepChoices button').filter(has_text='本文Q&A').is_disabled()
+  page.locator('#stepChoices button').filter(has_text='英C').click();assert page.locator('#stepChoices button').filter(has_text='本文Q&A').is_disabled();assert page.locator('#qaExit').is_hidden()
   for label in ['本文穴埋め','単語チェック']:
    page.locator('#stepChoices button').filter(has_text=label).click();page.locator('#stepChoices button').first.click();page.locator('#stepChoices button:enabled').first.click();assert page.locator('#stepTitle').inner_text()=='制限時間を選ぼう'
    for _ in range(3):page.locator('#stepBack').click()
