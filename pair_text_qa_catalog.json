@@ -4,27 +4,34 @@
     "lesson": "7",
     "part": "1",
     "count": 5,
-    "version": "8feab2807787064c532c92eca0a16fd515c07a05dd71277ba03ed8ca3ecd4bda"
+    "version": "e169e976020fa125011f1bdb828a29e7bbdc7531ebe6649ce0609ce1b2e0c037"
   },
   {
     "subject": "英C",
     "lesson": "7",
     "part": "2",
     "count": 5,
-    "version": "f4701691c4431f7b3e3234f43b93e92b18b8281bf77aa5e0836a07c5f3f60dd5"
+    "version": "2315c55b851112bd90b062a240586a29802df70cd3ab3e83373de4b1aad33f0c"
   },
   {
     "subject": "英C",
     "lesson": "7",
     "part": "3",
     "count": 5,
-    "version": "f0e9bd7582f15d42154551913eff89068c7ef695a6a1ae859527a1428caa6231"
+    "version": "b18eca252a3eaa664ef8ade798a9f10f2eb48dc2a02562caeaddee593355af13"
   },
   {
     "subject": "英C",
     "lesson": "7",
     "part": "PUS",
     "count": 6,
-    "version": "726e09f5d219a45cec200d48e834dd20ac9291bc77ea20b2b0327b56fd931db5"
+    "version": "e0348e21bd22edc1696fa3da00884e31b44e9c8ff347e8c53cc7bc4ad9f77895"
+  },
+  {
+    "subject": "英C",
+    "lesson": "8",
+    "part": "1",
+    "count": 4,
+    "version": "f6763a6fc3701f58f5ed617e88b3af9c7c2b87dafbb04b5a05243619409b1ad7"
   }
 ]
