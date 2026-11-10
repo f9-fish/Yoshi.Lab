@@ -29,8 +29,8 @@ with sync_playwright() as p:
   home=page.locator('#subjects .subject-grid>.wordbook-home-link');home.scroll_into_view_if_needed();assert home.is_visible();assert page.evaluate('document.documentElement.scrollWidth<=innerWidth');home.screenshot(path=f'/tmp/wordbook-home-{width}.png');page.locator('#subjects .subject-grid').screenshot(path=f'/tmp/wordbook-home-grid-{width}.png');
   if width>1100:
    boxes=page.locator('#subjects .subject-grid>.choice,#subjects .subject-grid>.eiken-home-link').evaluate_all('(nodes)=>nodes.map(n=>({top:n.getBoundingClientRect().top,height:n.getBoundingClientRect().height}))');assert max(b['top'] for b in boxes)-min(b['top'] for b in boxes)<2;assert max(b['height'] for b in boxes)-min(b['height'] for b in boxes)<2
-  assert 'wordbook-card.svg' in home.evaluate('el=>getComputedStyle(el).backgroundImage')
-  if width<=700:assert 'wordbook-card.svg' in home.evaluate("el=>getComputedStyle(el,'::before').backgroundImage")
+  assert 'wordbook-card-photo.webp' in home.evaluate('el=>getComputedStyle(el).backgroundImage')
+  if width<=700:assert 'wordbook-card-photo.webp' in home.evaluate("el=>getComputedStyle(el,'::before').backgroundImage")
   home.click()
   page.locator('#wbStageList button').filter(has_text='STAGE1').wait_for();assert page.locator('#wbStageList button:disabled').count()==sum(not any(w['stage']==s for w in data['words']) for s in ['STAGE0','STAGE1','STAGE2','STAGE3'])
   assert page.locator('#wbReload,#wbBack').count()==0
