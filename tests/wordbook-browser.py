@@ -37,6 +37,7 @@ with sync_playwright() as p:
   home.click()
   page.locator('#wbStageList button').filter(has_text='STAGE1').wait_for();assert page.locator('#wbStageList button:disabled').count()==sum(not any(w['stage']==s for w in data['words']) for s in ['STAGE0','STAGE1','STAGE2','STAGE3'])
   assert page.locator('#wbReload,#wbBack').count()==0
+  assert page.locator('#wbStages>h2').evaluate('el=>getComputedStyle(el).outlineStyle')=='none'
   assert page.locator('#wbStages').evaluate('el=>getComputedStyle(el).borderTopStyle')=='solid'
   page.wait_for_function('window.YoshiAccount?.authReady')
   page.locator('#wbStages').screenshot(path=f'/tmp/wordbook-stages-{width}.png')
@@ -84,7 +85,17 @@ with sync_playwright() as p:
      page.locator('#wbSubmit').click()
     page.locator('#wbFeedback').wait_for(state='visible');assert page.locator('#wbJudgment').inner_text()==('正解！' if index==0 else '不正解');assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
     if index==0:page.screenshot(path=f'/tmp/wordbook-{mode}-{width}.png',full_page=True);page.locator('#wbNext').click()
-   page.locator('#wbFinish').click();page.locator('#wbResult').wait_for(state='visible');assert '2問解答 / 正解 1問' in page.locator('#wbSummary').inner_text();assert page.locator('#wbReview article').count()==2;page.wait_for_function("document.getElementById('wbSaveStatus').textContent.includes('保存しました')");assert page.locator('#wbEarnedXP').inner_text()=='獲得 +'+str({'choice':3,'spelling':6,'reorder':10}[mode])+' XP';page.locator('#wbChoose').click()
+   page.locator('#wbFinish').click();page.locator('#wbResult').wait_for(state='visible');assert '2問解答 / 正解 1問' in page.locator('#wbSummary').inner_text();assert page.locator('#wbReview article').count()==2;page.wait_for_function("document.getElementById('wbSaveStatus').textContent.includes('保存しました')");assert page.locator('#wbEarnedXP').inner_text()=='獲得 +'+str({'choice':3,'spelling':6,'reorder':10}[mode])+' XP'
+   popup=page.locator('#xpCelebrationOverlay');popup.wait_for(state='visible');assert page.locator('#xpCelebrationEarned').inner_text()=='+'+str({'choice':3,'spelling':6,'reorder':10}[mode])+' XP'
+   assert page.locator('main').evaluate('el=>el.inert');page.keyboard.press('Tab');assert page.locator('#xpCelebrationClose').evaluate('el=>el===document.activeElement')
+   if mode=='choice':page.screenshot(path=f'/tmp/wordbook-xp-popup-{width}.png',full_page=False);page.locator('#xpCelebrationClose').click()
+   elif mode=='spelling':page.keyboard.press('Escape')
+   else:popup.click(position={'x':5,'y':5})
+   assert not popup.is_visible();assert not page.locator('main').evaluate('el=>el.inert')
+   page.evaluate("document.getElementById('wbRetrySave').onclick()")
+   page.wait_for_function("!document.getElementById('wbRetry').disabled")
+   assert not popup.is_visible()
+   page.locator('#wbChoose').click()
   assert not errors,errors;context.close();print('PASS',width,'HOME, three modes, correct/wrong, duplicate-safe reorder, undo, partial results, no overflow',flush=True)
  # Auth/save flows use a local account mock, never a live Firebase SDK.
  def begin(page):
@@ -94,33 +105,45 @@ with sync_playwright() as p:
   page.locator('#wbModeList button').filter(has_text='単語4択').click()
  def answer_one(page):
   word=words[page.locator('#wbPrompt').inner_text()]['word'];page.locator('#wbChoices').get_by_role('button',name=word,exact=True).click()
- for case in ['guest','empty','lost-ack','changed-login','sync-failure','missing-profile']:
+ for case in ['guest','empty','zero-xp','lost-ack','changed-login','sync-failure','missing-profile']:
   ctx=browser.new_context(viewport={'width':390,'height':950});page=ctx.new_page();page.route('**/*',routes(auth=case!='guest',lose_ack=case=='lost-ack'));begin(page)
-  if case!='empty':answer_one(page)
+  if case=='zero-xp':
+   correct=words[page.locator('#wbPrompt').inner_text()]['word'];buttons=page.locator('#wbChoices button');next(buttons.nth(i) for i in range(4) if buttons.nth(i).locator('span').first.inner_text()!=correct).click()
+  elif case!='empty':answer_one(page)
   if case=='changed-login':page.evaluate("window.YoshiAccount.user={uid:'other-user'}")
   if case=='sync-failure':page.evaluate('window.__wbFailSync=true')
   if case=='missing-profile':page.evaluate('()=>{window.YoshiAccount.syncXP=async()=>null;}')
   page.locator('#wbFinish').click()
   if case in ['guest','empty']:
    assert '保存されません' in page.locator('#wbSaveStatus').inner_text();assert page.evaluate('window.__wbMock.calls')==0
+   assert not page.locator('#xpCelebrationOverlay').is_visible()
+  elif case=='zero-xp':
+   page.wait_for_function("document.getElementById('wbSaveStatus').textContent.includes('保存しました')");assert not page.locator('#xpCelebrationOverlay').is_visible()
   elif case=='lost-ack':
-   page.locator('#wbRetrySave').wait_for(state='visible');assert page.evaluate("Object.keys(JSON.parse(localStorage.getItem('wbMockRecords'))).length")==1
+   page.locator('#wbRetrySave').wait_for(state='visible');assert not page.locator('#xpCelebrationOverlay').is_visible();assert page.evaluate("Object.keys(JSON.parse(localStorage.getItem('wbMockRecords'))).length")==1
    page.reload();page.locator('#wbRestorePending').wait_for(state='visible');page.locator('#wbRestorePending').click()
    page.wait_for_function("document.getElementById('wbSaveStatus').textContent.includes('保存しました')")
-   assert page.locator('#wbEarnedXP').inner_text()=='獲得 +3 XP';assert page.evaluate("Object.keys(JSON.parse(localStorage.getItem('wbMockRecords'))).length")==1
+   assert page.locator('#wbEarnedXP').inner_text()=='獲得 +3 XP';assert page.locator('#xpCelebrationOverlay').is_visible();assert page.evaluate("Object.keys(JSON.parse(localStorage.getItem('wbMockRecords'))).length")==1
    assert page.evaluate("sessionStorage.getItem('yoshiWordbookPendingV1:mock-student')") is None
   elif case=='changed-login':
-   page.locator('#wbRetrySave').wait_for(state='visible');assert page.evaluate('window.__wbMock.calls')==0
+   page.locator('#wbRetrySave').wait_for(state='visible');assert not page.locator('#xpCelebrationOverlay').is_visible();assert page.evaluate('window.__wbMock.calls')==0
+   assert not page.locator('#xpCelebrationOverlay').is_visible()
    assert '開始時' in page.locator('#wbSaveStatus').inner_text()
    page.evaluate("window.YoshiAccount.user={uid:'mock-student'}");page.locator('#wbRetrySave').click()
    page.wait_for_function("document.getElementById('wbSaveStatus').textContent.includes('保存しました')")
   elif case=='sync-failure':
-   page.locator('#wbRetrySave').wait_for(state='visible');page.evaluate('window.__wbFailSync=false');page.locator('#wbRetrySave').click()
+   page.locator('#wbRetrySave').wait_for(state='visible');assert not page.locator('#xpCelebrationOverlay').is_visible();page.evaluate('window.__wbFailSync=false');page.locator('#wbRetrySave').click()
    page.wait_for_function("document.getElementById('wbSaveStatus').textContent.includes('保存しました')")
-   assert page.locator('#wbEarnedXP').inner_text()=='獲得 +3 XP';assert page.evaluate("Object.keys(JSON.parse(localStorage.getItem('wbMockRecords'))).length")==1
+   assert page.locator('#wbEarnedXP').inner_text()=='獲得 +3 XP';assert page.locator('#xpCelebrationOverlay').is_visible();assert page.evaluate("Object.keys(JSON.parse(localStorage.getItem('wbMockRecords'))).length")==1
   else:
-   page.locator('#wbSetupProfile').wait_for(state='visible');assert page.locator('#wbEarnedXP').inner_text()=='記録済み・反映予定 +3 XP'
+   page.locator('#wbSetupProfile').wait_for(state='visible');assert not page.locator('#xpCelebrationOverlay').is_visible();assert page.locator('#wbEarnedXP').inner_text()=='記録済み・反映予定 +3 XP'
   ctx.close();print('PASS XP flow',case,flush=True)
+ ctx=browser.new_context(viewport={'width':390,'height':950});page=ctx.new_page();page.route('**/*',routes(auth=True));begin(page)
+ page.evaluate('()=>{window.YoshiAccount.syncXP=async()=>({totalXP:600});}')
+ for _ in range(10):answer_one(page);page.locator('#wbNext').click()
+ page.locator('#xpCelebrationOverlay.open').wait_for();assert page.locator('#xpCelebrationEarned').inner_text()=='+30 XP';assert page.locator('#xpCelebrationLevel').inner_text()=='LEVEL 4'
+ page.locator('#xpCelebrationClose').click();assert page.evaluate("Object.keys(JSON.parse(localStorage.getItem('wbMockRecords'))).length")==1
+ ctx.close();print('PASS full completion XP popup and level',flush=True)
  for payload in [{'schemaVersion':1,'words':[]},{'bad':'format'}]:
   context=browser.new_context(viewport={'width':390,'height':850});page=context.new_page();page.route('**/*',routes(payload));page.goto('https://local.test/wordbook.html');page.wait_for_function('document.getElementById("wbStatus").getAttribute("aria-busy")==="false"');text=page.locator('#wbStatus').inner_text();assert ('公開中の単語がありません' in text if 'words' in payload else '読み込めません' in text);context.close()
  context=browser.new_context();page=context.new_page();page.route('**/*',routes(fail=True));page.goto('https://local.test/wordbook.html');page.wait_for_function('document.getElementById("wbStatus").getAttribute("aria-busy")==="false"');assert '読み込めません' in page.locator('#wbStatus').inner_text();page.unroute('**/*');page.route('**/*',routes());page.reload();page.locator('#wbStageList button:enabled').first.wait_for();context.close();print('PASS empty, malformed data, network failure and retry',flush=True)

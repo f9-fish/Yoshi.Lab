@@ -38,3 +38,6 @@
 .wordbook-page .wb-answer-actions #wbSubmit{font-size:14px;font-weight:800;}
 @media(max-width:540px){.wordbook-page .wb-answer-actions{gap:14px;}.wordbook-page .wb-answer-actions button{flex-basis:100px;padding:12px 8px;}}
 .wb-account{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:14px 0;}.wb-account p{flex:1 1 220px;font-size:12px;color:#c4e4db;margin:0;}.wb-account button,#wbRetrySave{font-size:12px;padding:10px 14px;}#wbEarnedXP{font-size:24px;font-weight:900;color:#9affdc;}#wbSaveStatus{font-size:13px;line-height:1.7;}#wbSetupProfile{display:inline-block;color:#a7ffe0;margin:12px 0;}.wordbook-page #wbModeList .wb-mode-xp{white-space:nowrap;}
+
+/* Programmatic heading focus must not look like an extra selection frame. */
+.wordbook-page #wbStages>h2:focus{outline:none;}
