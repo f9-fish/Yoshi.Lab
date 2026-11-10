@@ -106,3 +106,9 @@ python tests/pair-qa-spark-browser.py
 - **Rules実テスト10件は未実行**：公式DatabaseエミュレーターJARのダウンロードが環境のネットワーク制限（403 Domain forbidden）で停止しました。Rules案のコンパイル・サーバー側拒否動作を確認済みとは扱いません。通信許可後に実行し、失敗があれば修正してから有効化してください。
 - テスト専用の最新Firebase SDK/CLIの `npm audit` は19件（moderate14、high5、critical0）を報告します。互換更新後も残存し、提示される自動修正は大幅な旧版への変更を含むため強行していません。アプリのランタイムへ追加した依存はありません。開発環境への影響を確認し、上流修正を追跡してください。
 - 実際の匿名Authentication、現在の本番Rulesとの統合、実DBの同時操作と再接続、実データの容量・接続数は未確認です。本番接続・Rules変更・デプロイ・mainマージは実施していません。
+
+## 終了ボタンとpermission_deniedの確認
+
+終了ボタンは問題カード内の右下に置き、赤系の44px以上のボタンとして表示します。終了の確認後に書き込みが拒否された場合は、Rulesの公開確認を案内し、終了したものとして扱いません。
+
+`permission_denied` はFirebase側が読み書きを拒否した状態です。本番Rulesは直接確認していないため、未適用と断定はできません。Firebase ConsoleのRealtime Database → ルールで、公開中の `pairQaSpark/rooms/$code` に `lastAction: end`、`endedAt`、`endedBy` を検証する終了操作の分岐があるか確認してください。リポジトリの `firebase-rtdb.rules.qa-integrated.json` と `pair-qa-spark.rules.proposed.json` は対応案を含みます。現在のRulesに別の更新がある場合は全文を上書きせず差分を確認する必要があります。今回Rulesの変更・公開は行っていません。

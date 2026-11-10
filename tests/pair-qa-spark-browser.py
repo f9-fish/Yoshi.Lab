@@ -65,9 +65,16 @@ with sync_playwright() as p:
   code=A.locator('#roomCode').inner_text();B.locator('#joinCode').fill(code);B.locator('#join').click();A.locator('#rotationSetup').wait_for(state='visible');A.locator('#rotationOptions button').filter(has_text='1問ずつ交代する').click();A.locator('#briefing').wait_for(state='visible');A.locator('#startPair').click()
   for page in pages:
    page.locator('#game').wait_for(state='visible');page.locator('#qaExit').wait_for(state='visible')
-   box=page.locator('#qaExit').bounding_box();assert box['width']<=100 and box['height']<=48;assert box['x']+box['width']<=width and box['y']+box['height']<=950
+   box=page.locator('#qaExit').bounding_box();assert box['width']<=100 and box['height']<=48;card=page.locator('#game .card').bounding_box();assert box['x']>=card['x'] and box['x']+box['width']<=card['x']+card['width'];assert box['y']>=card['y'] and box['y']+box['height']<=card['y']+card['height'];assert page.locator('#qaExit').evaluate('el=>getComputedStyle(el).position')!='fixed'
   if width==390:
    A.locator('#qaAnswerOpen').click();A.locator('#qaModel').wait_for(state='visible');A.locator('#correct').click();B.locator('#feedback').wait_for(state='visible')
+  # A rejected server write must not pretend either device has ended.
+  if width==390:
+   B.evaluate("()=>{window.originalQACall=window.YoshiPairQA.call;window.YoshiPairQA.call=async()=>{throw Object.assign(Error('PERMISSION_DENIED'),{code:'PERMISSION_DENIED'})};}")
+   B.once('dialog',lambda dialog:dialog.accept());B.locator('#qaExit').click()
+   B.wait_for_function("document.getElementById('status').textContent.includes('Rulesの公開')")
+   assert A.locator('#game').is_visible() and B.locator('#game').is_visible()
+   B.evaluate('()=>{window.YoshiPairQA.call=window.originalQACall;}')
   quitter=A if width==1280 else B
   quitter.once('dialog',lambda dialog:dialog.dismiss());quitter.locator('#qaExit').click();assert quitter.locator('#game').is_visible()
   A.screenshot(path=f'/tmp/qa-exit-button-{width}.png',full_page=True)
