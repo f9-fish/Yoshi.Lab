@@ -114,9 +114,9 @@ test('EIKEN UI: short sets disclose the actual available count',async()=>{
 });
 test('EIKEN UI: completion displays every result and saves once despite repeated answer clicks',async()=>{
   const h=ui();await h.choose();await h.finish();
-  assert.equal(h.nodes.get('resultScore').textContent,'10 / 10 問正解');assert.equal(h.nodes.get('resultXP').textContent,'獲得 +50 XP');
+  assert.equal(h.nodes.get('resultScore').textContent,'10 / 10 問正解');assert.equal(h.nodes.get('resultXP').textContent,'獲得 +70 XP');
   assert.equal(h.nodes.get('review').children.length,10);assert.equal((await h.account.api.records()).length,1);
-  assert.equal((await h.account.api.syncXP()).totalXP,50);assert.equal(h.storage.size,0);
+  assert.equal((await h.account.api.syncXP()).totalXP,70);assert.equal(h.storage.size,0);
 });
 test('EIKEN UI: guests can study but no result or XP is written',async()=>{
   const h=ui({account:accountHarness({loggedIn:false})});await h.choose();await h.finish();
@@ -132,7 +132,7 @@ test('EIKEN UI: failed save survives reload and retry keeps the same session ID'
   const h=ui({account});await h.choose();await h.finish();assert.equal(h.storage.size,1);
   fail=false;const reload=ui({account,storage:h.storage});assert.equal(reload.nodes.get('restorePending').hidden,false);
   reload.nodes.get('restorePending').onclick();await tick();await tick();
-  assert.equal((await account.api.records()).length,1);assert.equal((await account.api.syncXP()).totalXP,50);assert.equal(h.storage.size,0);
+  assert.equal((await account.api.records()).length,1);assert.equal((await account.api.syncXP()).totalXP,70);assert.equal(h.storage.size,0);
 });
 test('EIKEN UI: JSON fetch failure can be retried without starting a game',async()=>{
   const h=ui({fetchError:true});await h.choose();assert.match(h.nodes.get('dataStatus').textContent,/読み込みに失敗/);assert.equal(h.nodes.get('start').disabled,true);
@@ -151,7 +151,7 @@ test('EIKEN UI: sync failure retries only synchronization after a successful sav
   await h.choose();await h.finish();assert.match(h.nodes.get('saveStatus').textContent,/記録は保存済み/);
   assert.equal((await h.account.api.records()).length,1);fail=false;
   h.nodes.get('retrySave').onclick();await tick();await tick();
-  assert.equal((await h.account.api.records()).length,1);assert.equal((await h.account.api.syncXP()).totalXP,50);
+  assert.equal((await h.account.api.records()).length,1);assert.equal((await h.account.api.syncXP()).totalXP,70);
 });
 test('every currently published EIKEN choice has a Japanese meaning',()=>{
   for(const [grade,file] of [['pre2','eiken_pre2.json'],['2','eiken_2.json']]){
@@ -198,7 +198,7 @@ test('legacy questions without choiceMeanings remain playable and show an explic
   const choices=h.nodes.get('review').children[0].children[1].children;
   assert.ok(choices.every(li=>li.children[0].textContent==='（意味未登録）'));
 });
-for(const [right,expected] of [[0,0],[1,5],[6,30],[7,35],[10,50]])test(`new EIKEN ${right} correct gives ${expected} XP in every view`,async()=>{
+for(const [right,expected] of [[0,0],[1,5],[6,30],[7,35],[10,50]])test(`V2 EIKEN ${right} correct gives ${expected} XP in every view`,async()=>{
   const h=accountHarness(),row=await h.api.saveEikenResult(payload({right,bestStreak:0}));
   assert.equal((await h.api.syncXP()).totalXP,expected);
   assert.equal((await h.api.syncXP()).weeklyXP,expected);
@@ -241,7 +241,7 @@ test('quit after four answers saves only those answers and displays their earned
   }
   h.nodes.get('quit').onclick();await tick();await tick();
   const rows=await h.account.api.records();assert.equal(rows.length,1);assert.equal(rows[0].right,3);assert.equal(rows[0].total,4);assert.equal(rows[0].completedSet,false);
-  assert.equal(h.nodes.get('resultXP').textContent,'獲得 +15 XP');assert.equal(h.nodes.get('review').children.length,4);
+  assert.equal(h.nodes.get('resultXP').textContent,'獲得 +21 XP');assert.equal(h.nodes.get('review').children.length,4);
   assert.match(h.nodes.get('completionStatus').textContent,/10問中4問に解答/);
   assert.match(h.nodes.get('completionStatus').textContent,/未解答の6問は採点しません/);
 });
@@ -249,7 +249,7 @@ test('quit before answering the current question does not count it as wrong',asy
   const h=ui({data:Array.from({length:10},(_,i)=>fixture(i))});await h.choose();h.nodes.get('start').onclick();
   h.nodes.get('choices').children[0].onclick();h.nodes.get('next').onclick();h.nodes.get('quit').onclick();await tick();await tick();
   const row=(await h.account.api.records())[0];assert.equal(row.total,1);assert.equal(row.right,1);
-  assert.equal((await h.account.api.syncXP()).totalXP,5);
+  assert.equal((await h.account.api.syncXP()).totalXP,7);
 });
 test('a failed partial save can be restored after reload without completing unattempted questions',async()=>{
   const account=accountHarness(),save=account.api.saveEikenResult;let fail=true;
@@ -258,11 +258,11 @@ test('a failed partial save can be restored after reload without completing unat
   h.nodes.get('choices').children[0].onclick();h.nodes.get('quit').onclick();await tick();await tick();
   assert.equal(h.storage.size,1);fail=false;
   const restored=ui({account,storage:h.storage});restored.nodes.get('restorePending').onclick();await tick();await tick();
-  assert.equal((await account.api.records()).length,1);assert.equal((await account.api.syncXP()).totalXP,5);
+  assert.equal((await account.api.records()).length,1);assert.equal((await account.api.syncXP()).totalXP,7);
   assert.match(restored.nodes.get('completionStatus').textContent,/10問中1問/);assert.equal(h.storage.size,0);
 });
 
-for(const [selected,label,rate] of [[0,'準2級',5],[1,'2級',10]])test(`EIKEN ${label} completion popup matches saved XP and closes without awarding again`,async()=>{
+for(const [selected,label,rate] of [[0,'準2級',7],[1,'2級',7]])test(`EIKEN ${label} completion popup matches saved XP and closes without awarding again`,async()=>{
   const h=ui({data:Array.from({length:10},(_,i)=>({...fixture(i),grade:label}))});
   await h.choose(selected);await h.finish();
   assert.equal(h.nodes.get('resultXP').textContent,'獲得 +'+10*rate+' XP');
@@ -280,7 +280,7 @@ test('EIKEN 2 partial exit celebrates only answered correct questions',async()=>
   await h.choose(1);h.nodes.get('start').onclick();
   h.nodes.get('choices').children[0].onclick();h.nodes.get('next').onclick();
   h.nodes.get('choices').children[1].onclick();h.nodes.get('quit').onclick();await tick();await tick();
-  assert.equal(h.nodes.get('xpCelebrationEarned').textContent,'+10 XP');
+  assert.equal(h.nodes.get('xpCelebrationEarned').textContent,'+7 XP');
   const [row]=await h.account.api.records();assert.equal(row.right,1);assert.equal(row.total,2);
 });
 test('popup does not claim earned XP until synchronization succeeds',async()=>{
@@ -289,7 +289,7 @@ test('popup does not claim earned XP until synchronization succeeds',async()=>{
   await h.choose();await h.finish();
   assert.equal(h.nodes.get('xpCelebrationOverlay').classList.contains('open'),false);
   fail=false;h.nodes.get('retrySave').onclick();await tick();await tick();
-  assert.equal(h.nodes.get('xpCelebrationEarned').textContent,'+50 XP');
+  assert.equal(h.nodes.get('xpCelebrationEarned').textContent,'+70 XP');
   assert.ok(h.nodes.get('xpCelebrationOverlay').classList.contains('open'));
 });
 test('missing profile popup shows zero reflected XP and explains pending credit',async()=>{
@@ -305,4 +305,9 @@ test('pre-update pending EIKEN 2 session keeps its original rate on restore',asy
   assert.equal(h.nodes.get('resultXP').textContent,'獲得 +5 XP');
   assert.equal(h.nodes.get('xpCelebrationEarned').textContent,'+5 XP');
   assert.notEqual((await account.api.records())[0].xpPolicyV2,true);
+});
+
+test('V3 score is 7 XP for both grades; previously pending V2 2級 stays 10 XP',async()=>{
+ for(const grade of ['pre2','2'])for(const right of [0,1,6,10]){const qs=Array.from({length:10},(_,i)=>({...fixture(i),grade:grade==='2'?'2級':'準2級'}));assert.equal(core.score({grade,xpPolicyV3:true,questions:qs,answers:qs.map((q,i)=>i<right?1:2)}).xp,right*7);}
+ const account=accountHarness(),storage=new Map();storage.set('yoshiEikenPendingV1:'+account.uid,JSON.stringify({id,grade:'2',uid:account.uid,xpPolicyV2:true,questions:[{...fixture(),grade:'2級'}],answers:[1],completedSet:false,plannedTotal:10}));const h=ui({account,storage});h.nodes.get('restorePending').onclick();await tick();await tick();assert.equal(h.nodes.get('resultXP').textContent,'獲得 +10 XP');assert.equal((await account.api.syncXP()).totalXP,10);
 });

@@ -18,6 +18,7 @@ function context(extra = {}) {
     codeGeneration: { strings: false, wasm: false },
   });
   if(!extra.YoshiWeeklyDaily)vm.runInContext(read('weekly-daily.js'), sandbox, { filename: 'weekly-daily.js', timeout: 1000 });
+  vm.runInContext(read('practice-xp.js'), sandbox, { filename: 'practice-xp.js', timeout: 1000 });
   vm.runInContext(read('answer-variants.js'), sandbox, { filename: 'answer-variants.js', timeout: 1000 });
   return sandbox;
 }
@@ -71,7 +72,7 @@ function accountHarness({ records = {}, teacher = false, loggedIn = true, now = 
   });
   const source = read('account.js');
   const imports = source.match(/^import .*;\r?$/gm) || [];
-  assert.equal(imports.length, 3, 'Review harness if Firebase imports change');
+  assert.equal(imports.length, 4, 'Review harness if Firebase imports change');
   vm.runInContext(source.replace(/^import .*;\r?$/gm, ''), sandbox, { filename: 'account.js', timeout: 1000 });
   return { api: sandbox.window.YoshiAccount, sandbox, uid, data, writes,
     evaluate: code => vm.runInContext(code, sandbox, { timeout: 1000 }) };
