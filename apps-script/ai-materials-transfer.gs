@@ -19,7 +19,7 @@ const AI_TRANSFER_SHEETS = {
 const AI_TRANSFER_HEADERS = {
   source:['候補ID','原文ID','科目','単元ID','Part','種別','設問・語句','模範解答・意味','許容解答','ヒント①','ヒント②','解説・ねらい','根拠文ID','レビュー状態','生成日時'],
   vocabulary:['科目','単元ID','単元名','英単語','日本語訳','ヒント','公開設定','読み方'],
-  qa:['問題ID','科目','単元ID','Part','問題番号','英語の質問','模範解答','許容解答','ヒント①','ヒント②','本文根拠・解説','公開状態'],
+  qa:['問題ID','科目','単元ID','Part','問題番号','英語の質問','模範解答','許容解答','本文根拠・解説','公開状態'],
   grammar:['候補ID','科目','単元ID','Part','英語（穴埋め）','日本語訳（要記入）','正答','ヒント①','ヒント②','解説','公開状態'],
   extension:['候補ID','科目','単元ID','Part','種別','英語の設問','模範解答・回答例','許容解答','ヒント①','ヒント②','解説','公開状態']
 };
@@ -77,7 +77,7 @@ function aiTransferPlan_(){
       alreadyQAIds.add(qaId);alreadyQAContent.add(key);
       const ckey=subject+'|'+lesson+'|'+part;
       const next=(qaCounters.get(ckey)||0)+1;qaCounters.set(ckey,next);
-      target.qa.push([qaId,subject,lesson,part,String(next),prompt,answer,alternatives,hint1,hint2,explanation,'下書き']);
+      target.qa.push([qaId,subject,lesson,part,String(next),prompt,answer,alternatives,explanation,'下書き']);
     } else if(type==='文法・穴埋め'){
       if(alreadyGrammar.has(id)){skipped.push(row+'行：文法下書きに登録済み');return;}
       if(!prompt.includes('(     )'))throw Error('AI生成候補 '+row+'行：穴埋めの空欄表記を確認');
