@@ -1,5 +1,7 @@
 # 英C本文Q&A（ドラフト・未公開）
 
+Spark対応版は [pair-text-qa-spark.md](pair-text-qa-spark.md) を参照してください。以下のサーバー構成・回数制限・設定手順は `backend: 'functions'` のCloud Functions版の説明です。
+
 ## 追加機能
 
 既存 `pair.html` の「英C → 学習内容 → 本文Q&A → Lesson → Part → 時間設定 → 6桁コード → 役割確認 → 開始」を追加しました。論表には表示しません。未登録Partは無効です。既存の配色・パネル・ボタン・A/B確認・交代オーバーレイ・効果音・タイマーを再利用し、タイピング・AIは使いません。
@@ -10,7 +12,7 @@
 
 対象：スプレッドシート `1QK19vwZlG5_7uURKLi33W1zutKtAin5sKo8kbULVTrU`、タブ `英C本文QA`。
 
-ユーザーからLesson 7のPart 1〜3に合計15問登録済みとの情報があります。指定URLの読み取りは環境のプロキシに403で拒否され、**実際の15問は未取得・未検証**です。`pair_text_qa.json`、`pair_text_qa_catalog.json`、サーバースナップショットは空配列で、架空の問題を教材として追加していません。テストの15問は明示的な検証用データです。
+リポジトリには英C Lesson 7のPart 1・2・3各5問、PUS6問（合計21問）と4セクションの目録が同期されています。サーバースナップショットとの整合性もテストします。スプレッドシートと稼働中Apps Scriptを直接確認したものではありません。テスト用15問の架空データは実教材とは別です。
 
 実際に稼働中のApps Script・Realtime Database Rulesはリポジトリにありません。リポジトリの英作文用追加コードと既存ペア実装を調査しましたが、外部の既存同期・Rulesを確認したとは扱いません。Sheets・Apps Script・本番Firebase・Rules・課金・デプロイの変更は行っていません。
 
@@ -114,4 +116,4 @@ callableの1.5秒ポーリングはFunctions／Firestore／App Checkの利用量
 - 既存の本文穴埋め・単語別解・XP・Daily・ランキング等のテストも実行します。既存RTDBの実Rulesの安全性、実匿名Auth・App Check・IAM・Firestoreとの疎通は未確認です。ステージングの実サービス確認が必要です。
 - Firebase公式依存を固定しました。`npm audit --omit=dev`は間接依存にmoderate 6、high/critical 0を報告します（glob／minimatchと依存チェーン）。学生入力をファイルパターンへ使う処理はありませんが、解消したとは扱わず、本番有効化前の上流修正版・到達可能性レビューが必要です。
 
-未完了：実シート15問の取得・同期コード適用、実サーバー／App Check／専用DBとRulesの管理者設定、実サービスでの2端末確認、本番公開。mainマージ・本番デプロイ・Rules変更はしていません。
+未完了：稼働中同期コードの直接確認、実サーバー／App Check／専用DBとRulesの管理者設定、実サービスでの2端末確認、本番公開。mainマージ・本番デプロイ・Rules変更はしていません。
