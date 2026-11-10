@@ -1,0 +1,1 @@
+{"functions":[{"source":"pair-qa-functions","codebase":"pair-qa","runtime":"nodejs22","predeploy":["node pair-qa-functions/scripts/snapshot.cjs"],"ignore":["node_modules",".env.local",".secret.local","*-debug.log"]}]}
