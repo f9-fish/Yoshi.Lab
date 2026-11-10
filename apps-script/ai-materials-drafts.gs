@@ -81,6 +81,8 @@ function generateAIMaterialsDrafts(){
     const existing=p.draft.getDataRange().getDisplayValues();
     if(headers.some((h,i)=>existing[0][i]!==h))throw Error('AI生成候補のヘッダーが変わっています');
     const preexisting=new Set(existing.slice(1).map(r=>r[0]).filter(Boolean));
+    const existingContent=new Set(existing.slice(1).filter(r=>r[3]===p.lesson&&r[4]===p.part)
+      .map(r=>String(r[5]||'')+'|'+String(r[6]||'').trim().toLowerCase().replace(/\s+/g,' ')));
     // Two small, independent requests reduce truncated output and let us
     // validate everything before writing any candidate to Sheets.
     const sourceJSON=JSON.stringify({subject:p.subject,lesson:p.lesson,part:p.part,source:p.source});
@@ -142,7 +144,7 @@ function generateAIMaterialsDrafts(){
     const allRows=validated.map(x=>{
       const id='AI-'+groupId+'-'+aiMaterialsHash_(x.type+'|'+x.prompt);
       return [id,x.sourceIds,p.subject,p.lesson,p.part,x.type,x.prompt,x.answer,x.alternatives,x.hint1,x.hint2,x.explanation,x.sourceIds,'要確認',timestamp].map(aiMaterialsSafe_);
-    }).filter(r=>!preexisting.has(r[0]));
+    }).filter(r=>!preexisting.has(r[0])&&!existingContent.has(r[5]+'|'+r[6].toLowerCase().replace(/\s+/g,' ')));
     if(!allRows.length){console.log('重複する候補のみだったため、追加なし');return;}
     const start=p.draft.getLastRow()+1;
     if(start+allRows.length-1>p.draft.getMaxRows())p.draft.insertRowsAfter(p.draft.getMaxRows(),allRows.length+20);
