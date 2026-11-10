@@ -13,7 +13,7 @@ function aiQAReviewTable_(ss,name,headers) {
   const sheet=ss.getSheetByName(name);
   if(!sheet)throw Error('シートがありません：'+name);
   const rows=sheet.getDataRange().getDisplayValues();
-  if(headers.some((v,i)=>rows[0][i]!==v))throw Error(name+'：ヘッダーが不一致');
+  if(headers.some((v,i)=>rows[0][i]!==v))throw Error(name+'：ヘッダーが不一致（期待：'+headers.join(' / ')+' ／ 実際：'+rows[0].slice(0,headers.length).join(' / ')+'）');
   return rows.slice(1);
 }
 function aiQAReviewPlan_(source,candidates,qa) {
@@ -33,7 +33,7 @@ function aiQAReviewPlan_(source,candidates,qa) {
   });
   qa.forEach((r,i)=>{
     if(r[1]!=='英C'||r[2]!==lesson||r[3]!==part)return;
-    const [qaId,,,,num,question,answer,accepted,h1,h2,explanation,status]=r;
+    const [qaId,,,,num,question,answer,accepted,explanation,status]=r;
     const candidateId=qaId.startsWith('QA-')?qaId.substring(3):'';
     const candidate=candidatesById.get(candidateId);
     if(seenIds.has(qaId))errors.push('Q&A ID重複：'+qaId);
@@ -55,7 +55,6 @@ function aiQAReviewPlan_(source,candidates,qa) {
     refs.forEach(id=>{if(!original.has(id))errors.push('Q&A行'+(i+2)+'：存在しない根拠文ID '+id);});
     if(status!=='下書き'&&status!=='公開')warnings.push('Q&A行'+(i+2)+'：公開状態が想定外 '+status);
     if(!accepted)warnings.push('Q&A行'+(i+2)+'：許容解答が未設定');
-    if(!h1||!h2)warnings.push('Q&A行'+(i+2)+'：ヒントが未設定');
     report.push({qaId,num,question,answer,accepted,explanation,status,
       sources:refs.map(id=>({id,text:original.get(id)||''}))});
   });
@@ -65,7 +64,7 @@ function previewLesson8QAPublish(){
   const ss=SpreadsheetApp.openById(AI_QA_REVIEW_BOOK_ID);
   const source=aiQAReviewTable_(ss,'教科書本文マスター',['原文ID','科目','単元ID','Part','文番号','教科書本文（英語）']);
   const candidates=aiQAReviewTable_(ss,'AI生成候補',['候補ID','原文ID','科目','単元ID','Part','種別']);
-  const qa=aiQAReviewTable_(ss,'英C本文QA',['問題ID','科目','単元ID','Part','問題番号','英語の質問','模範解答','許容解答','ヒント①','ヒント②','本文根拠・解説','公開状態']);
+  const qa=aiQAReviewTable_(ss,'英C本文QA',['問題ID','科目','単元ID','Part','問題番号','英語の質問','模範解答','許容解答','本文根拠・解説','公開状態']);
   const p=aiQAReviewPlan_(source,candidates,qa);
   console.log('【Lesson '+AI_QA_REVIEW_LESSON+' Part '+AI_QA_REVIEW_PART+' 本文Q&A公開前チェック】');
   console.log('本文：'+p.sourceCount+'文／Q&A：'+p.report.length+'件／エラー：'+p.errors.length+'／警告：'+p.warnings.length);
