@@ -1,5 +1,7 @@
 # 本文Q&A：Spark用Realtime Database版（ドラフト・未公開）
 
+ユーザー提供Rulesを保持した全体版と利用開始までの手順は [pair-qa-activation.md](pair-qa-activation.md) を参照してください。提供された内容は確認済みですが、現在公開中の本番Rulesとの一致・サーバー実検証は未確認です。
+
 ## 状態と切り替え
 
 `pair-qa-config.js` は `enabled:false, backend:'spark'` です。本番Rulesは**未確認**で、変更・公開していません。管理者による既存Rulesの確認、提案Rulesのエミュレーターテスト、検証環境での2端末テストが終わるまで有効化しないでください。
