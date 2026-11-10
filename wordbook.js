@@ -43,10 +43,22 @@
    if(a.user?.uid!==current.uid)throw Error('ログイン状態が変わりました');
    $('wbEarnedXP').textContent=(updated?'獲得 +':'記録済み・反映予定 +')+current.awardedXP+' XP';
    $('wbSaveStatus').textContent=updated?'記録・XPを保存しました。累計XP・ランキングに反映されます。':'記録は保存済みです。XP反映にはMY PAGEでプロフィールを登録してください。';$('wbSetupProfile').hidden=!!updated;
+   if(updated&&current.awardedXP>0&&!current.celebrated){showXPResult(current.awardedXP,updated.totalXP);current.celebrated=true;}
    try{const p=JSON.parse(sessionStorage.getItem(pendingKey(current.uid))||'null');if(p?.id===current.id)sessionStorage.removeItem(pendingKey(current.uid));}catch{}
   }catch(error){keepPending();$('wbSaveStatus').textContent='保存・XP反映を確認できません。再試行してください。'+error.message;$('wbRetrySave').hidden=false;}
   finally{saving=false;for(const id of ['wbRetry','wbChoose','wbStageNav','wbUnitNav','wbRetrySave'])$(id).disabled=false;authUI();}
  }
+ let previousOverflow='';
+ function showXPResult(earned,totalXP){
+  let level=1,need=100,remaining=Math.max(0,Number(totalXP)||0);while(remaining>=need&&level<10000){remaining-=need;level++;need+=50;}
+  $('xpCelebrationEarned').textContent='+'+earned+' XP';$('xpCelebrationLevel').textContent='LEVEL '+level;
+  $('xpCelebrationMessage').textContent='今回の学習で獲得したXPです。累計XP・ランキングに反映されました。';
+  previousOverflow=document.body.style.overflow;document.body.style.overflow='hidden';document.querySelector('main').inert=true;
+  $('xpCelebrationOverlay').classList.add('open');$('xpCelebrationClose').focus();
+ }
+ function closeXPResult(){if(!$('xpCelebrationOverlay').classList.contains('open'))return;$('xpCelebrationOverlay').classList.remove('open');document.querySelector('main').inert=false;document.body.style.overflow=previousOverflow;$('wbRetry').focus();}
+ $('xpCelebrationClose').onclick=closeXPResult;$('xpCelebrationOverlay').onclick=e=>{if(e.target===$('xpCelebrationOverlay'))closeXPResult();};
+ document.addEventListener('keydown',e=>{if(!$('xpCelebrationOverlay').classList.contains('open'))return;if(e.key==='Escape')closeXPResult();if(e.key==='Tab'){e.preventDefault();$('xpCelebrationClose').focus();}});
  $('wbLogin').onclick=async()=>{try{await window.YoshiAccount.login();}catch(error){$('wbAuthStatus').textContent='ログインできません：'+error.message;}};
  $('wbRetrySave').onclick=()=>void saveResult();$('wbRestorePending').onclick=restorePending;
  $('wbRangeStart').onclick=()=>{if(unit.length)chooseUnit();};$('wbSelectAll').onclick=()=>{unit=[...new Set(rows.filter(w=>w.stage===stage).map(w=>w.unit))];updateSelection();};$('wbClearUnits').onclick=()=>{unit=[];updateSelection();};
