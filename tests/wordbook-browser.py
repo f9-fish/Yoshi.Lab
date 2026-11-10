@@ -29,9 +29,29 @@ with sync_playwright() as p:
   home=page.locator('#subjects .subject-grid>.wordbook-home-link');home.scroll_into_view_if_needed();assert home.is_visible();assert page.evaluate('document.documentElement.scrollWidth<=innerWidth');home.screenshot(path=f'/tmp/wordbook-home-{width}.png');page.locator('#subjects .subject-grid').screenshot(path=f'/tmp/wordbook-home-grid-{width}.png');
   if width>1100:
    boxes=page.locator('#subjects .subject-grid>.choice,#subjects .subject-grid>.eiken-home-link').evaluate_all('(nodes)=>nodes.map(n=>({top:n.getBoundingClientRect().top,height:n.getBoundingClientRect().height}))');assert max(b['top'] for b in boxes)-min(b['top'] for b in boxes)<2;assert max(b['height'] for b in boxes)-min(b['height'] for b in boxes)<2
+  assert 'wordbook-card.svg' in home.evaluate('el=>getComputedStyle(el).backgroundImage')
+  if width<=700:assert 'wordbook-card.svg' in home.evaluate("el=>getComputedStyle(el,'::before').backgroundImage")
   home.click()
   page.locator('#wbStageList button').filter(has_text='STAGE1').wait_for();assert page.locator('#wbStageList button:disabled').count()==sum(not any(w['stage']==s for w in data['words']) for s in ['STAGE0','STAGE1','STAGE2','STAGE3'])
-  page.locator('#wbStageList button').filter(has_text='STAGE1').click();page.locator('#wbUnitList').get_by_role('button',name=re.compile(r'^Unit1\s')).click()
+  page.locator('#wbStageList').screenshot(path=f'/tmp/wordbook-stages-{width}.png')
+  for stage in ['STAGE0','STAGE1','STAGE2','STAGE3']:
+   if not any(w['stage']==stage for w in data['words']):continue
+   page.locator('#wbStageList button').filter(has_text=stage).click()
+   assert page.locator('#wbRangeStart').is_disabled()
+   buttons=page.locator('#wbUnitList button');n=buttons.count()
+   assert re.match(r'^(Part|Unit) \d+',buttons.first.locator('strong').inner_text())
+   for i in range(min(3,n)):buttons.nth(i).click()
+   assert page.locator('#wbUnitList button[aria-pressed="true"]').count()==min(3,n)
+   if stage=='STAGE0':page.locator('#wbUnits').screenshot(path=f'/tmp/wordbook-range-{width}.png')
+   page.locator('#wbRangeStart').click();page.locator('#wbBack').click()
+   assert page.locator('#wbUnitList button[aria-pressed="true"]').count()==min(3,n)
+   page.locator('#wbSelectAll').click();assert page.locator('#wbUnitList button[aria-pressed="true"]').count()==n
+   page.locator('#wbRangeStart').click();page.locator('#wbModeList button').filter(has_text='スペリング').click()
+   assert page.locator('#wbCount').inner_text()=='1 / 10問'
+   page.locator('#wbFinish').click();page.locator('#wbChoose').click();page.locator('#wbBack').click()
+   page.locator('#wbClearUnits').click();assert page.locator('#wbRangeStart').is_disabled()
+   page.locator('#wbBack').click()
+  page.locator('#wbStageList button').filter(has_text='STAGE1').click();page.locator('#wbUnitList').get_by_role('button',name=re.compile(r'^Unit 1\s')).click();page.locator('#wbRangeStart').click()
   page.locator('#wbModeList').screenshot(path=f'/tmp/wordbook-mode-grid-{width}.png')
   for mode,label in [('choice','単語4択'),('spelling','スペリング'),('reorder','文章並び替え')]:
    page.locator('#wbModeList button').filter(has_text=label).click();page.locator('#wbQuiz').wait_for(state='visible')

@@ -59,9 +59,9 @@ var YoshiWordbookData=(function(){
   return others.length===3?shuffle([{word:word.word,meaning:word.practiceMeaning},...others],random):[];
  }
  function questions(rows,stage,unit,mode,random=Math.random){
-  const list=rows.filter(w=>w.stage===stage&&w.unit===unit),pool=rows.filter(w=>w.stage===stage),out=[];
+  const units=new Set(Array.isArray(unit)?unit:[unit]),list=rows.filter(w=>w.stage===stage&&units.has(w.unit)),pool=rows.filter(w=>w.stage===stage),out=[];
   for(const word of list){
-   if(mode==='choice'){const options=choices(word,[...list,...pool.filter(w=>w.unit!==unit)],random);if(options.length===4)out.push({id:word.id,prompt:word.practiceMeaning,answer:word.word,accepted:word.acceptedAnswers,options,word});}
+   if(mode==='choice'){const options=choices(word,[...list,...pool.filter(w=>!units.has(w.unit))],random);if(options.length===4)out.push({id:word.id,prompt:word.practiceMeaning,answer:word.word,accepted:word.acceptedAnswers,options,word});}
    else if(mode==='spelling')out.push({id:word.id,prompt:word.practiceMeaning,answer:word.word,accepted:word.acceptedAnswers,word});
    else if(mode==='reorder')for(const example of word.examples){const parts=tokens(example.english);if(example.reorder&&parts.length>=2&&parts.length<=32)out.push({id:example.id,prompt:example.japanese,answer:example.english,accepted:example.acceptedOrders,word,tokens:parts});}
    else throw Error('練習形式が不正です');

@@ -22,3 +22,16 @@ test('wordbook: the source book can reuse a number in another Unit without losin
 test('wordbook preview: reads the provided spreadsheet and all four stages without touching GitHub',()=>{const h=gas(),visited=[];h.ctx.SpreadsheetApp={openById:id=>{assert.equal(id,'1ON-F_R4CENHAS8fJ-V74ko75qSIJKl_QqRri4MO56lw');return {getSheetByName:name=>{visited.push(name);return {getDataRange:()=>({getValues:()=>[header,name==='STAGE1'?['Unit1',195,'elementary','【形】小学校の','','','A simple example.','簡単な例。','']:row()]})};}};}};const r=h.ctx.wordbookInspect_();assert.equal(r.data.words.length,4);assert.equal(r.data.scope,'ALL');assert.equal(r.data.source.type,'google-sheets');assert.deepEqual(visited,['STAGE0','STAGE1','STAGE2','STAGE3']);assert.equal(h.calls.length,0);});
 
 test('wordbook sync: content omitted for a large file still skips an identical Git blob',()=>{const large=structuredClone(shipped);large.words[0].meaning='語'.repeat(400000);const text=JSON.stringify(large,null,2)+'\n';assert.ok(Buffer.byteLength(text)>1048576);const sha=require('node:crypto').createHash('sha1').update('blob '+Buffer.byteLength(text)+'\0'+text).digest('hex'),h=gas({getStatus:200,remote:{sha,content:'',encoding:'none'},result:{data:large}});h.ctx.syncWordbook();assert.equal(h.calls.filter(c=>c.params?.method==='put').length,0);assert.equal(h.calls[0].params.headers.Accept,'application/vnd.github.object+json');});
+
+test('wordbook: all stages support single, multiple and all Unit/Part selections without mixing ranges',()=>{
+ for(const stage of ['STAGE0','STAGE1','STAGE2','STAGE3']){
+  const stageRows=rows.filter(w=>w.stage===stage),units=[...new Set(stageRows.map(w=>w.unit))];
+  if(!units.length)continue;
+  for(const selected of [[units[0]],units.slice(0,3),units])for(const mode of ['choice','spelling','reorder']){
+   const q=W.questions(rows,stage,selected,mode,()=>0.4),expected=new Set(stageRows.filter(w=>selected.includes(w.unit)).flatMap(w=>mode==='reorder'?w.examples.filter(e=>e.reorder&&W.tokens(e.english).length>=2&&W.tokens(e.english).length<=32).map(e=>e.id):[w.id]));
+   assert.ok(q.length>0&&q.length<=10);assert.ok(q.every(item=>expected.has(item.id)));assert.equal(new Set(q.map(item=>item.id)).size,q.length);
+  }
+  assert.deepEqual(W.questions(rows,stage,[],'spelling'),[]);
+  assert.deepEqual(W.questions(rows,stage,units[0],'spelling',()=>0.4),W.questions(rows,stage,[units[0]],'spelling',()=>0.4));
+ }
+});
