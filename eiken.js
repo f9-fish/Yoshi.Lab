@@ -59,7 +59,7 @@
  $('backGrades').onclick=()=>{loading++;show('gradeScreen');authUI();};
  $('start').onclick=()=>{
   if(!pool.length||$('start').disabled)return;
-  session={id:crypto.randomUUID(),xpPolicyV2:true,grade,questions:core.pick(pool),answers:[],uid:window.YoshiAccount?.user?.uid||null,startedAt:Date.now(),saved:false};
+  session={id:crypto.randomUUID(),xpPolicyV3:true,grade,questions:core.pick(pool),answers:[],uid:window.YoshiAccount?.user?.uid||null,startedAt:Date.now(),saved:false};
   index=0;show('quizScreen');renderQuestion();authUI();
  };
  function renderQuestion(){
@@ -141,9 +141,9 @@
   try{
    if(!currentSession.saved){
     const saved=await withTimeout(a.saveEikenResult({sessionId:currentSession.id,grade:core.grades[currentSession.grade].label,
-     right:result.right,total:result.total,bestStreak:result.bestStreak,xpPolicyV2:currentSession.xpPolicyV2===true,completedSet:currentSession.completedSet!==false,
+     right:result.right,total:result.total,bestStreak:result.bestStreak,xpPolicyV3:currentSession.xpPolicyV3===true,xpPolicyV2:currentSession.xpPolicyV2===true,completedSet:currentSession.completedSet!==false,
      durationSeconds:currentSession.durationSeconds||0}),12000);
-    currentSession.awardedXP=saved.xpMode==='eikenChoice'?(saved.xpPolicyV2===true?saved.right*(saved.lesson==='2級'?10:5):Math.min(50,saved.right*5)):Math.min(30,saved.right);
+    currentSession.awardedXP=saved.xpMode==='eikenChoice'?(saved.xpPolicyV3===true?saved.right*7:saved.xpPolicyV2===true?saved.right*(saved.lesson==='2級'?10:5):Math.min(50,saved.right*5)):Math.min(30,saved.right);
     currentSession.saved=true;
    }
    if(a.user?.uid!==currentSession.uid)throw Error('ログイン状態が変わりました。開始時のアカウントで再試行してください。');
