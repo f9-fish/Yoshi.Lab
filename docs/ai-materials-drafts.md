@@ -158,3 +158,21 @@ Codexでペアワークの「ヒント」ボタンに問題文を表示する仕
 - 転記処理の途中でエラーがあれば、シートを確認してから再実行する。複数シートへの処理はトランザクションではない。
 
 2026-11-10 の現在データを用いたコード実行テスト：Lesson 8 Part 1の文法4問が正しく \`( was ) ( born )\` 等に変換できた。根拠の原文IDが解決され、エラー0件。日本語訳は4問とも未入力で、転記予定0件。実際のスプレッドシートへの書き込みはまだ行っていない。
+
+## STEP 5後半：Reading Plus（True / False・Discussion）
+
+既存のindex.htmlやpair.htmlは変更せず、独立した静的学習画面を用意した。
+
+- `reading-plus.html`：スマホ対応の独立ページ。Lesson・PartとTrue / False / Discussionを選択。正誤問題では回答と本文解説、Discussionでは自由記述と模範回答を表示。既存XP、Firebase、生徒認証、ペアセッションには接続していない。
+- `extension_questions.json`：公開問題の読み込み先。初期値は `[]`。未公開データは含まれない。
+- `apps-script/ai-extension-publish.gs`：AI発展教材下書き（12列）から「公開」行のみ同期。
+  - `previewReadingPlusPublish()`：読み取りのみ。件数と内容、必須データの問題点をログへ出す。
+  - `syncReadingPlusPublish()`：`EXT_SYNC_APPROVED=true` の場合のみGitHubへPUT。元のGitHub QA・単語・問題集JSONには触れない。
+  - `EXT_GITHUB_REPO` と `EXT_GITHUB_TOKEN` をScript Propertiesで設定。既存 `PAIR_QA_GITHUB_REPO` と `PAIR_QA_GITHUB_TOKEN` があればそれを再利用可能。`EXT_GITHUB_BRANCH` 省略時はmain。
+  - 公開0件の場合は上書き停止（全件を空にする場合にのみ `EXT_ALLOW_EMPTY=true` を明示設定）。
+  - JSONの重複ID、不正なT/Fの答え、必須値不足は同期を停止。
+- 画面デモ：デプロイ後の `reading-plus.html?demo=1` は架空教材でUIを試す。通常の `reading-plus.html` は公開問題だけを表示する。
+
+現在の `AI発展教材下書き` 8件はすべて「下書き」。実データで公開0件・エラー0件。2件を仮に「公開」にしたテストでT/F・Discussionの抽出に成功し、T/Fの不正解答はエラーとして検出した。GitHub本番へのマージと公開同期は未実施。
+
+**Codex統合注意**：本番のindex.html・pair.htmlは変更していない。PR #47の全差分をレビューしてからマージする。新ページへのナビゲーション追加は別PRで行う。
