@@ -23,11 +23,11 @@ function view(room,uid,now){
  expire(room,now);const side=member(room,uid),i=room.state.index,current=room.questions[i],isAsker=side===asker(room),revealed=!!room.reveal;
  const visibleHints=current?(current.hints||[]).map((value,index)=>({stage:index+1,text:value})).filter(h=>h.text&&h.stage<=room.hintStage):[];
  const result={code:room.code,subject:'英C',lesson:room.lesson,part:room.part,mode:'textQA',side,guestJoined:!!room.guestUid,count:room.questions.length,rotation:room.rotation||'',duration:room.duration,state:{...room.state},revision:room.revision,reveal:room.reveal?{...room.reveal}:null,hints:visibleHints,hintRequested:!!room.hintRequested,answerOpen:isAsker&&!!room.answerOpen,serverNow:now,asker:asker(room)};
- // No full snapshot, identities, question ID, future questions or answer on B.
- if(current&&(isAsker||revealed))result.question=current.question;
+ // No full snapshot, identities, future questions or model answer on the answerer before grading.
+ if(current&&(isAsker||revealed||room.hintStage>0))result.question=current.question;
  if(current&&(revealed||isAsker&&room.answerOpen)){result.modelAnswer=current.modelAnswer;result.acceptedAnswers=[...current.acceptedAnswers];}
  if(current&&revealed)result.explanation=current.explanation;
- if(current)result.hasNextHint=current.hints.some((h,index)=>h&&index+1>room.hintStage);
+ if(current)result.hasNextHint=room.hintStage===0||current.hints.some((h,index)=>h&&index+1>room.hintStage);
  return result;
 }
 function createRoom({code,uid,lesson,part:partValue,duration,expectedVersion},rows,now){
@@ -55,13 +55,13 @@ function act(source,uid,action,data,now){
  }else{
   if(!room.state.started||room.state.index>=room.questions.length||data.index!==room.state.index)fail('failed-precondition','問題が変わりました。最新の画面を確認してください');
   const isAsker=side===asker(room),q=room.questions[room.state.index];
-  if(action==='hint-request'){if(isAsker||room.reveal||!q.hints.some((h,i)=>h&&i+1>room.hintStage))fail('permission-denied','回答中のみヒントをお願いできます');room.hintRequested=true;}
+  if(action==='hint-request'){if(isAsker||room.reveal||room.hintStage>0&&!q.hints.some((h,i)=>h&&i+1>room.hintStage))fail('permission-denied','回答中のみヒントをお願いできます');room.hintRequested=true;}
   else{
    if(!isAsker)fail('permission-denied','出題者だけが操作できます');
    if(action==='answer-open'){if(room.reveal)fail('failed-precondition','判定済みです');room.answerOpen=true;}
    else if(action==='hint-next'){
     if(room.reveal)fail('failed-precondition','判定済みです');
-    const next=q.hints.findIndex((h,i)=>h&&i+1>room.hintStage);if(next<0)fail('failed-precondition','これ以上のヒントはありません');room.hintStage=next+1;room.hintRequested=false;
+    let next=q.hints.findIndex((h,i)=>h&&i+1>room.hintStage);if(next<0&&room.hintStage===0)next=0;if(next<0)fail('failed-precondition','これ以上のヒントはありません');room.hintStage=next+1;room.hintRequested=false;
    }else if(action==='grade'){
     if(room.reveal||!room.answerOpen||typeof data.ok!=='boolean')fail('failed-precondition','解答を確認してから判定してください');room.reveal={index:room.state.index,ok:data.ok,timeout:false};
    }else if(action==='next'){
