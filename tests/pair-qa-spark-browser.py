@@ -23,7 +23,10 @@ export const serverTimestamp=()=>Date.now(),getDatabase=()=>({}),ref=(_,p)=>({p}
    data=json.loads(r.request.post_data);data['uid']=uid;status,body=server(data);r.fulfill(status=status,body=body,content_type='application/json');return
   if u.path=='/pair_text_qa.json' and resynced:r.fulfill(body='[]',content_type='application/json');return
   f=(root/unquote(u.path).lstrip('/')).resolve()
-  if f.is_relative_to(root) and f.is_file():r.fulfill(body=f.read_bytes(),content_type=mimetypes.guess_type(str(f))[0] or 'application/octet-stream')
+  if f.is_relative_to(root) and f.is_file():
+   body=f.read_bytes()
+   if f.name=='index.html':body=re.sub(r'<script\b[^>]*>[\s\S]*?</script>','',body.decode(),flags=re.I).encode()
+   r.fulfill(body=body,content_type=mimetypes.guess_type(str(f))[0] or 'application/octet-stream')
   else:r.fulfill(status=404,body='missing')
  return route
 with sync_playwright() as p:
@@ -42,6 +45,9 @@ with sync_playwright() as p:
   A.locator('#qaAnswerOpen').wait_for(state='visible');assert not B.locator('#qaModel').is_visible();assert not B.locator('#qaAnswerOpen').is_visible();assert B.locator('#english').inner_text()=='Answer the question';assert B.locator('#instruction').inner_text()=='';assert B.locator('#roleHint').inner_text()=='';assert B.locator('#qaHintRequest').inner_text()=='💡 Ask for a hint'
   B.screenshot(path=f'/tmp/qa-answerer-before-hint-{width}.png',full_page=True)
   B.locator('#qaHintRequest').click();A.wait_for_function('document.getElementById("pairHintText").textContent.includes("お願い")');assert B.locator('#english').inner_text()=='Answer the question';A.locator('#pairHintButton').click();B.wait_for_function('document.getElementById("english").textContent!=="Answer the question"');assert B.locator('#english').inner_text()==A.locator('#english').inner_text();assert not B.locator('#qaModel').is_visible();B.reload();B.locator('#game').wait_for(state='visible');assert B.locator('#english').inner_text()==A.locator('#english').inner_text();assert not B.locator('#qaModel').is_visible();B.screenshot(path=f'/tmp/qa-question-hint-{width}.png',full_page=True)
+  assert A.locator('#pairHintButton').inner_text()=='💡 質問文を表示'
+  assert A.locator('#pairHintButton').is_disabled() and B.locator('#qaHintRequest').is_disabled()
+  assert A.locator('#pairHintText').inner_text()==B.locator('#pairHintText').inner_text()==''
   for index in range(5):
    asker=A if (index//(1 if rotation=='one' else 2 if rotation=='two' else 3))%2==0 else B
    other=B if asker==A else A
@@ -60,7 +66,10 @@ with sync_playwright() as p:
    page.locator('#done').wait_for(state='visible');assert page.locator('#result').inner_text()=='4 / 5 問正解';assert page.locator('#qaExit').is_hidden()
   # Start a second room and verify a cancelled/confirmed exit from either role.
   resynced=False
-  for page in pages:page.locator('#back').click();page.locator('#lobby').wait_for(state='visible');assert page.locator('#qaExit').is_hidden()
+  for page in pages:
+   assert page.locator('#back').inner_text()=='Home'
+   page.locator('#back').click();page.wait_for_url('**/index.html?view=subjects')
+   page.goto('https://local.test/pair.html');page.locator('#lobby').wait_for(state='visible');assert page.locator('#qaExit').is_hidden()
   A.locator('#stepChoices button').filter(has_text='英C').click();A.locator('#stepChoices button').filter(has_text='本文Q&A').click();A.locator('#stepChoices button').filter(has_text='Lesson 7').click();A.locator('#stepChoices button').filter(has_text='Part 1').click();A.locator('#stepChoices button').filter(has_text='10秒' if width==320 else '無制限').click();A.locator('#waiting').wait_for(state='visible')
   code=A.locator('#roomCode').inner_text();B.locator('#joinCode').fill(code);B.locator('#join').click();A.locator('#rotationSetup').wait_for(state='visible');A.locator('#rotationOptions button').filter(has_text='1問ずつ交代する').click();A.locator('#briefing').wait_for(state='visible');A.locator('#startPair').click()
   for page in pages:

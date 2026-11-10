@@ -48,12 +48,12 @@
   async function call(data){
    if(!uid)fail('unauthenticated','匿名ログインが必要です');
    if(data.action==='create'){
-    const rows=await loadQuestions(data),firstHints=rows.map(q=>encodeQuestionHint(q.question,q.hints[0]||'')),time=now();
+    const rows=await loadQuestions(data),firstHints=rows.map(q=>encodeQuestionHint(q.question)),time=now();
     for(let attempt=0;attempt<8;attempt++){
      const code=String(random()).padStart(6,'0'),count=rows.length;
-     const raw={code,hostUid:uid,guestUid:'',lesson:data.lesson,part:data.part,mode:'textQA',duration:data.duration,count,version:data.version,hintMasks:rows.map(q=>1+(q.hints[1]?2:0)).join(''),createdAt:time,expiresAt:time+10800000,revision:0,rotation:'',hintStage:0,hintRequested:false,answerOpen:false,ready:false,lastAction:'create',state:{started:false,index:0,right:0,total:0,startedAt:0,streakA:0,streakB:0}};
+     const raw={code,hostUid:uid,guestUid:'',lesson:data.lesson,part:data.part,mode:'textQA',duration:data.duration,count,version:data.version,hintMasks:'1'.repeat(count),createdAt:time,expiresAt:time+10800000,revision:0,rotation:'',hintStage:0,hintRequested:false,answerOpen:false,ready:false,lastAction:'create',state:{started:false,index:0,right:0,total:0,startedAt:0,streakA:0,streakB:0}};
      try{await api.set(path('rooms',code),raw);}catch(e){if(String(e.code).toLowerCase().includes('permission'))continue;throw e;}
-     const privateRows={},hints={};rows.forEach((q,i)=>{privateRows[i]={index:i,id:q.id,number:q.number,question:q.question,modelAnswer:q.modelAnswer,acceptedAnswers:q.acceptedAnswers,explanation:q.explanation};hints[`${i}/1`]=firstHints[i];if(q.hints[1])hints[`${i}/2`]=q.hints[1];});
+     const privateRows={},hints={};rows.forEach((q,i)=>{privateRows[i]={index:i,id:q.id,number:q.number,question:q.question,modelAnswer:q.modelAnswer,acceptedAnswers:q.acceptedAnswers,explanation:q.explanation};hints[`${i}/1`]=firstHints[i];});
      await api.set(path('questions',code),privateRows);if(Object.keys(hints).length)await api.update(path('hints',code),hints);
      await api.update(path('rooms',code),{ready:true});return safeDisplay(await read(code));
     }fail('resource-exhausted','ルームを作れません。Rulesの設定と通信を確認してください。');

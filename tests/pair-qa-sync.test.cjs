@@ -9,3 +9,13 @@ test('QA sheet sync: unchanged UTF-8 content creates no commit',()=>{const h=har
 test('QA sheet sync: concurrent branch advancement is not force-overwritten',()=>{const h=harness({conflict:true});assert.throws(()=>h.ctx.syncEnglishTextQA(),/422/);assert.equal(h.state.head,'old-head');assert.equal(h.state.released,true);});
 test('QA sheet sync: invalid public rows stop all GitHub writes',()=>{const h=harness({data:[headers,rows[0],rows[0]]});assert.throws(()=>h.ctx.syncEnglishTextQA());assert.equal(h.requests.length,0);assert.equal(h.state.released,true);});
 test('QA sheet builder: private/blank rows excluded; empty normalized Part rejected',()=>{const h=harness();const privateRow=[...rows[0]];privateRow[11]='非公開';const good=h.ctx.pairQABuild_([headers,[],privateRow,rows[1]]);assert.equal(good.questions.length,1);const bad=[...rows[0]];bad[3]='Part';assert.equal(h.ctx.pairQABuild_([headers,bad]).errors.length,1);assert.throws(()=>h.ctx.pairQABuild_([[...headers,'Part'],...rows]));});
+
+test('QA sheet builder: hint columns may be removed, while explanation and publication remain correctly mapped',()=>{
+ const keep=headers.map((_,i)=>i).filter(i=>i!==8&&i!==9),data=[headers,...rows].map(row=>keep.map(i=>row[i])),h=harness({data});
+ const output=JSON.parse(JSON.stringify(h.ctx.pairQABuild_(data)));assert.deepEqual(output.errors,[]);assert.equal(output.questions.length,questions.length);
+ for(const q of output.questions){const original=questions.find(row=>row.id===q.id);assert.deepEqual(q.hints,['','']);assert.equal(q.question,original.question);assert.equal(q.modelAnswer,original.modelAnswer);assert.equal(q.explanation,original.explanation);assert.equal(q.status,'公開');}
+ h.ctx.syncEnglishTextQA();assert.equal(h.state.head,'new-commit');
+});
+test('QA sheet builder: deleting only one optional hint column and reordering remaining columns is safe',()=>{
+ for(const drop of ['ヒント①','ヒント②']){const keep=headers.map((_,i)=>i).filter(i=>headers[i]!==drop).reverse(),data=[headers,...rows].map(row=>keep.map(i=>row[i])),h=harness({data}),output=h.ctx.pairQABuild_(data);assert.equal(output.errors.length,0);assert.equal(output.questions[0].explanation,questions[0].explanation);}
+});
