@@ -33,6 +33,37 @@ function aiMaterialsPart_(){
   if(new Set(source.map(x=>x.id)).size!==source.length)throw Error('原文IDが重複しています');
   return {ss,master,draft,subject,lesson,part,source};
 }
+/**
+ * 任意の本文行を選択して実行。既存データは上書きせず、
+ * 対象Partの原文ID・生成対象のみ補完する（AI送信なし）。
+ * 単元ID / Part / 文番号 / 英文 はあらかじめ入力してください。
+ */
+function prepareAIMaterialsMaster(){
+  const ss=SpreadsheetApp.openById(AI_MATERIALS_SHEET_ID);
+  const sheet=ss.getSheetByName('教科書本文マスター');
+  const active=SpreadsheetApp.getActiveSpreadsheet();
+  const cell=active&&active.getId()===ss.getId()&&active.getActiveSheet()?.getName()==='教科書本文マスター'
+    ? active.getActiveCell():null;
+  if(!cell||cell.getRow()<2)throw Error('本文マスターの対象Partの行を選択してください');
+  const values=sheet.getDataRange().getDisplayValues();
+  const target=values[cell.getRow()-1],lesson=target[2],part=target[3],subject=target[1];
+  if(subject!=='英C'||!lesson||!part)throw Error('英C・Lesson・Partを指定してください');
+  const selections=values.slice(1).map((r,i)=>({row:i+2,value:r}))
+    .filter(x=>x.value[1]===subject&&x.value[2]===lesson&&x.value[3]===part&&x.value[5]);
+  const seen=new Set(values.slice(1).map(r=>r[0]).filter(Boolean)),updates=[];
+  const safePart=String(part).replace(/[^a-zA-Z0-9]/g,'').toUpperCase();
+  for(const {row,value} of selections){
+    if(!Number.isInteger(Number(value[4]))||Number(value[4])<1)throw Error('行'+row+'の文番号を確認してください');
+    if(!value[0]){
+      const id='L'+String(lesson).padStart(2,'0')+'-'+(safePart.startsWith('P')?safePart:'P'+safePart)+'-'+String(value[4]).padStart(3,'0');
+      if(seen.has(id))throw Error('原文IDが重複します：'+id);
+      seen.add(id);updates.push({row,col:1,value:id});
+    }
+    if(!value[8])updates.push({row,col:9,value:'対象'});
+  }
+  updates.forEach(x=>sheet.getRange(x.row,x.col).setValue(x.value));
+  console.log('対象本文'+selections.length+'文、ID・生成対象を'+updates.length+'セル補完。既存セルは変更していません');
+}
 function previewAIMaterialsDrafts(){
   const p=aiMaterialsPart_();
   console.log('対象：'+p.subject+' Lesson '+p.lesson+' Part '+p.part+'／本文'+p.source.length+'文／生成タイプ5種');
