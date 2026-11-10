@@ -11,8 +11,8 @@
       "At the airport."
     ],
     "hints": [
-      "transfer to / where",
-      "at the airport"
+      "Where did the couple transfer to a seaplane?",
+      ""
     ],
     "explanation": "空港から水上飛行機に乗り換えたと本文にある。",
     "status": "公開"
@@ -29,8 +29,8 @@
       "Swimming and snorkeling."
     ],
     "hints": [
-      "enjoy + -ing",
-      "swimming / snorkeling"
+      "What activities did the couple enjoy in the sea?",
+      ""
     ],
     "explanation": "海で水泳とシュノーケリングを楽しんだ。",
     "status": "公開"
@@ -47,8 +47,8 @@
       "They looked up at the stars at night."
     ],
     "hints": [
-      "look up at ～",
-      "the stars"
+      "What did the couple do in their hammocks at night?",
+      ""
     ],
     "explanation": "夜にハンモックで星を見上げた。",
     "status": "公開"
@@ -65,8 +65,8 @@
       "The highlight was a whale shark watching tour."
     ],
     "hints": [
-      "The highlight was ～",
-      "whale shark watching tour"
+      "What was the highlight of their trip?",
+      ""
     ],
     "explanation": "旅行の一番の見どころはジンベエザメを見るツアー。",
     "status": "公開"
@@ -83,8 +83,8 @@
       "The whale shark passed slowly in front of them."
     ],
     "hints": [
-      "It + 過去形",
-      "pass slowly"
+      "How did the whale shark move in front of them?",
+      ""
     ],
     "explanation": "ジンベエザメは二人の前をゆっくり通り過ぎた。",
     "status": "公開"
@@ -101,8 +101,8 @@
       "To the southwest of India."
     ],
     "hints": [
-      "be located + 場所",
-      "southwest of India"
+      "Where is the Republic of Maldives located?",
+      ""
     ],
     "explanation": "モルディブ共和国はインドの南西に位置する。",
     "status": "公開"
@@ -119,8 +119,8 @@
       "Nearly 1,200 islands."
     ],
     "hints": [
-      "consist of ～",
-      "nearly 1,200"
+      "How many islands does the Maldives consist of?",
+      ""
     ],
     "explanation": "およそ1,200の島から成る。",
     "status": "公開"
@@ -137,8 +137,8 @@
       "About 200 islands."
     ],
     "hints": [
-      "about + 数字",
-      "200 islands"
+      "How many of its islands do people live on?",
+      ""
     ],
     "explanation": "約200の島に人が住む。",
     "status": "公開"
@@ -155,8 +155,8 @@
       "The population is around 550,000."
     ],
     "hints": [
-      "The population is ～",
-      "around 550,000"
+      "What is the population of the Maldives?",
+      ""
     ],
     "explanation": "人口は約55万人。",
     "status": "公開"
@@ -173,8 +173,8 @@
       "They stay on completely different islands."
     ],
     "hints": [
-      "Because + 主語 + 動詞",
-      "different islands"
+      "Why might it be difficult for tourists to interact with local people?",
+      ""
     ],
     "explanation": "観光客と住民がまったく異なる島に滞在するため。",
     "status": "公開"
@@ -191,8 +191,8 @@
       "A serious garbage problem."
     ],
     "hints": [
-      "suffer from ～",
-      "garbage problem"
+      "What serious problem does the Maldives suffer from?",
+      ""
     ],
     "explanation": "オーバーツーリズムが引き起こした深刻なごみ問題。",
     "status": "公開"
@@ -209,8 +209,8 @@
       "There are far more tourists than residents."
     ],
     "hints": [
-      "Because + 理由",
-      "far more tourists"
+      "Why is it difficult to handle the garbage?",
+      ""
     ],
     "explanation": "住民より観光客がはるかに多いことが背景。",
     "status": "公開"
@@ -227,8 +227,8 @@
       "The Thilafalhu lagoon."
     ],
     "hints": [
-      "decide to + 動詞",
-      "Thilafalhu lagoon"
+      "What did the government decide to use as a garbage dump in 1991?",
+      ""
     ],
     "explanation": "1991年にティラファルフ礁湖をごみ捨て場にすることを決定。",
     "status": "公開"
@@ -245,8 +245,8 @@
       "The garbage pollutes the sea and sometimes burns spontaneously."
     ],
     "hints": [
-      "A and B",
-      "pollute the sea / burn"
+      "What are two problems caused by the garbage?",
+      ""
     ],
     "explanation": "ごみは海を汚染し、ときどき自然発火する。",
     "status": "公開"
@@ -263,8 +263,8 @@
       "They want them to understand that they may damage the environment."
     ],
     "hints": [
-      "want + 人 + to + 動詞",
-      "damage the environment"
+      "What do local people want tourists to understand?",
+      ""
     ],
     "explanation": "観光客が環境に損害を与える可能性を理解してほしい。",
     "status": "公開"
@@ -281,8 +281,8 @@
       "Wastewater from hotels."
     ],
     "hints": [
-      "What + 過去形?",
-      "wastewater from hotels"
+      "What polluted the sea in Boracay?",
+      ""
     ],
     "explanation": "ボラカイ島ではホテルからの排水が海を汚染した。",
     "status": "公開"
@@ -299,8 +299,8 @@
       "The government closed the beach temporarily and banned cruise ships during peak seasons."
     ],
     "hints": [
-      "It + 過去形 + and + 過去形",
-      "close the beach / ban cruise ships"
+      "What did the government do to reduce the number of tourists in Boracay?",
+      ""
     ],
     "explanation": "政府はビーチを一時閉鎖し、繁忙期にクルーズ船を禁止した。",
     "status": "公開"
@@ -317,8 +317,8 @@
       "They cannot move around freely because there are too many tourists."
     ],
     "hints": [
-      "Because + 理由",
-      "too many tourists"
+      "Why can't local residents move around freely in Venice?",
+      ""
     ],
     "explanation": "ベネチアでは観光客が多すぎるため、住民が自由に移動できない。",
     "status": "公開"
@@ -335,8 +335,8 @@
       "Residents with passes."
     ],
     "hints": [
-      "Only + 名詞 + can ～",
-      "residents with passes"
+      "Who can go through the gates in Venice?",
+      ""
     ],
     "explanation": "通行証を持つ住民だけがゲートを通過できる。",
     "status": "公開"
@@ -353,8 +353,8 @@
       "It began to open earlier and served a special breakfast."
     ],
     "hints": [
-      "It + 過去形 + and + 過去形",
-      "open earlier / serve a special breakfast"
+      "What did Nijo-jo Castle do to attract tourists?",
+      ""
     ],
     "explanation": "二条城は朝の開城を早め、特別な朝食を提供した。",
     "status": "公開"
@@ -371,8 +371,8 @@
       "It helped reduce daytime crowds."
     ],
     "hints": [
-      "help + 動詞の原形",
-      "reduce crowds in the daytime"
+      "How did the special breakfast at Nijo-jo Castle help reduce crowding?",
+      ""
     ],
     "explanation": "特別な朝食の提供は、日中の混雑を減らすのに役立った。",
     "status": "公開"
