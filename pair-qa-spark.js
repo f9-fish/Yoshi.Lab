@@ -3,6 +3,15 @@
  'use strict';
  const base='pairQaSpark',sdk='https://www.gstatic.com/firebasejs/13.1.0/';
  const fail=(code,message)=>{const e=Error(message);e.code=code;throw e;};
+ function encodeQuestionHint(question,hint=''){
+  if(typeof question!=='string'||!question.trim()||typeof hint!=='string')throw Error('質問ヒントの形式を確認してください');
+  const value=JSON.stringify({kind:'pair-qa-question-v1',question,hint});
+  if(value.length>4000)throw Error('質問とヒントが長すぎます');return value;
+ }
+ function decodeHint(value){
+  try{const p=JSON.parse(value);if(p?.kind==='pair-qa-question-v1'&&typeof p.question==='string'&&typeof p.hint==='string')return {question:p.question,hint:p.hint};}catch{}
+  return {question:'',hint:typeof value==='string'?value:''};
+ }
  function inflate(raw){return {...raw,guestUid:raw.guestUid||'',rotation:raw.rotation||'',reveal:raw.reveal||null,questions:Array.from({length:raw.count},(_,i)=>({question:'',modelAnswer:'',acceptedAnswers:[],explanation:'',hints:[raw.hintMasks[i]&1?'hint':'',raw.hintMasks[i]&2?'hint':'']}))};}
  function pack(room,action){const {questions,...raw}=room;return {...raw,lastAction:action};}
  function factory({db,uid,api,core,loadQuestions,now=Date.now,random=()=>crypto.getRandomValues(new Uint32Array(1))[0]%100000}){
@@ -20,8 +29,12 @@
     if(room.reveal)value.explanation=q.explanation;
    }
    value.hints=[];
+   // Old rooms may have no first-stage payload; preserve their available hint controls.
+   value.hasNextHint=!!room.questions[i]?.hints.some((h,j)=>h&&j+1>room.hintStage);
    for(let stage=1;stage<=room.hintStage;stage++){
-    const text=(await api.get(path('hints',room.code,`/${i}/${stage}`))).val();if(text)value.hints.push({stage,text});
+    const text=(await api.get(path('hints',room.code,`/${i}/${stage}`))).val(),hint=decodeHint(text);
+    if(hint.question)value.question=hint.question;
+    if(hint.hint)value.hints.push({stage,text:hint.hint});
    }
    return value;
   }
@@ -34,12 +47,12 @@
   async function call(data){
    if(!uid)fail('unauthenticated','匿名ログインが必要です');
    if(data.action==='create'){
-    const rows=await loadQuestions(data),time=now();
+    const rows=await loadQuestions(data),firstHints=rows.map(q=>encodeQuestionHint(q.question,q.hints[0]||'')),time=now();
     for(let attempt=0;attempt<8;attempt++){
      const code=String(random()).padStart(6,'0'),count=rows.length;
-     const raw={code,hostUid:uid,guestUid:'',lesson:data.lesson,part:data.part,mode:'textQA',duration:data.duration,count,version:data.version,hintMasks:rows.map(q=>(q.hints[0]?1:0)+(q.hints[1]?2:0)).join(''),createdAt:time,expiresAt:time+10800000,revision:0,rotation:'',hintStage:0,hintRequested:false,answerOpen:false,ready:false,lastAction:'create',state:{started:false,index:0,right:0,total:0,startedAt:0,streakA:0,streakB:0}};
+     const raw={code,hostUid:uid,guestUid:'',lesson:data.lesson,part:data.part,mode:'textQA',duration:data.duration,count,version:data.version,hintMasks:rows.map(q=>1+(q.hints[1]?2:0)).join(''),createdAt:time,expiresAt:time+10800000,revision:0,rotation:'',hintStage:0,hintRequested:false,answerOpen:false,ready:false,lastAction:'create',state:{started:false,index:0,right:0,total:0,startedAt:0,streakA:0,streakB:0}};
      try{await api.set(path('rooms',code),raw);}catch(e){if(String(e.code).toLowerCase().includes('permission'))continue;throw e;}
-     const privateRows={},hints={};rows.forEach((q,i)=>{privateRows[i]={index:i,id:q.id,number:q.number,question:q.question,modelAnswer:q.modelAnswer,acceptedAnswers:q.acceptedAnswers,explanation:q.explanation};q.hints.forEach((h,j)=>{if(h)hints[`${i}/${j+1}`]=h;});});
+     const privateRows={},hints={};rows.forEach((q,i)=>{privateRows[i]={index:i,id:q.id,number:q.number,question:q.question,modelAnswer:q.modelAnswer,acceptedAnswers:q.acceptedAnswers,explanation:q.explanation};hints[`${i}/1`]=firstHints[i];if(q.hints[1])hints[`${i}/2`]=q.hints[1];});
      await api.set(path('questions',code),privateRows);if(Object.keys(hints).length)await api.update(path('hints',code),hints);
      await api.update(path('rooms',code),{ready:true});return safeDisplay(await read(code));
     }fail('resource-exhausted','ルームを作れません。Rulesの設定と通信を確認してください。');
@@ -93,6 +106,6 @@
    }});
   }).catch(e=>{connection=null;throw e;});return connection;
  }
- const api={factory,inflate,pack,call:async(app,data)=>(await connect(app)).call(data),watch(app,code,accept,error){let cancelled=false,stop;void connect(app).then(c=>{if(!cancelled)stop=c.watch(code,accept,error);}).catch(e=>{if(!cancelled)error(e,{stopped:true});});return ()=>{cancelled=true;stop?.();};}};
+ const api={factory,inflate,pack,encodeQuestionHint,decodeHint,call:async(app,data)=>(await connect(app)).call(data),watch(app,code,accept,error){let cancelled=false,stop;void connect(app).then(c=>{if(!cancelled)stop=c.watch(code,accept,error);}).catch(e=>{if(!cancelled)error(e,{stopped:true});});return ()=>{cancelled=true;stop?.();};}};
  if(typeof module==='object')module.exports=api;else root.YoshiPairQASpark=api;
 })(typeof window==='object'?window:globalThis);

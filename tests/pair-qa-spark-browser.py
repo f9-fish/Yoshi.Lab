@@ -39,11 +39,13 @@ with sync_playwright() as p:
   code=A.locator('#roomCode').inner_text();assert re.fullmatch(r'0\d{5}',code)
   B.locator('#joinCode').fill(code);B.locator('#join').click();A.locator('#rotationSetup').wait_for(state='visible');B.locator('#rotationSetup').wait_for(state='visible');assert B.locator('#rotationOptions button').count()==0
   A.locator('#rotationOptions button').filter(has_text={'half':'半分で交代する','one':'1問ずつ交代する','two':'2問ずつ交代する'}[rotation]).click();A.locator('#briefing').wait_for(state='visible');A.locator('#startPair').click();B.locator('#game').wait_for(state='visible')
-  A.locator('#qaAnswerOpen').wait_for(state='visible');assert not B.locator('#qaModel').is_visible();assert not B.locator('#qaAnswerOpen').is_visible()
-  B.locator('#qaHintRequest').click();A.wait_for_function('document.getElementById("pairHintText").textContent.includes("お願い")');A.locator('#pairHintButton').click();B.wait_for_function('document.getElementById("pairHintText").textContent.length>10')
+  A.locator('#qaAnswerOpen').wait_for(state='visible');assert not B.locator('#qaModel').is_visible();assert not B.locator('#qaAnswerOpen').is_visible();assert B.locator('#english').inner_text()=='Answer the question';assert B.locator('#instruction').inner_text()=='';assert B.locator('#roleHint').inner_text()=='';assert B.locator('#qaHintRequest').inner_text()=='💡 Ask for a hint'
+  B.screenshot(path=f'/tmp/qa-answerer-before-hint-{width}.png',full_page=True)
+  B.locator('#qaHintRequest').click();A.wait_for_function('document.getElementById("pairHintText").textContent.includes("お願い")');assert B.locator('#english').inner_text()=='Answer the question';A.locator('#pairHintButton').click();B.wait_for_function('document.getElementById("english").textContent!=="Answer the question"');assert B.locator('#english').inner_text()==A.locator('#english').inner_text();assert not B.locator('#qaModel').is_visible();B.reload();B.locator('#game').wait_for(state='visible');assert B.locator('#english').inner_text()==A.locator('#english').inner_text();assert not B.locator('#qaModel').is_visible();B.screenshot(path=f'/tmp/qa-question-hint-{width}.png',full_page=True)
   for index in range(5):
    asker=A if (index//(1 if rotation=='one' else 2 if rotation=='two' else 3))%2==0 else B
    other=B if asker==A else A
+   if index>0:assert other.locator('#english').inner_text()=='Answer the question'
    asker.locator('#qaAnswerOpen').click();asker.locator('#qaModel').wait_for(state='visible');assert not other.locator('#qaModel').is_visible()
    asker.locator('#wrong' if index==2 else '#correct').click();other.locator('#qaModel').wait_for(state='visible');assert other.locator('#next').is_hidden()
    for side,page in zip(['A','B'],pages):
