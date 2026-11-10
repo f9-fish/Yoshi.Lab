@@ -57,3 +57,27 @@ APIキーや承認フラグが未設定ならAPIを呼ばない。API利用料�
 **初期検証**：架空の採用候補5件を用いて、5種類・4転記先への登録、`転記済`への状態更新、未採用候補の保持、同じ処理の再実行で二重登録されないことをモックテストした。Google Sheets本番への転記はまだ行っていない。
 
 注意：Google Sheetsの複数タブへの一括書き込みはトランザクションではない。途中でエラーが出た場合、転記先に既に追加されている行と候補の状態を確認すること。基本的な重複検出はあるが、同じ内容を微妙に書き換えた場合や、人が転記先を編集した場合の全ケースは自動では保証できない。
+
+## STEP 4：英単語・本文Q&Aの公開前チェックとレビュー用同期
+
+追加ファイル：`apps-script/ai-material-release-review.gs`。既存Apps Scriptに新規ファイル `ai-material-release-review` として追加し、`previewAIMaterialRelease()` から実行する。
+
+### 使い方
+1. 採用・転記済み教材を担当教員が校閲し、既存の `英単語` のG列、`英C本文QA` のL列で公開したい行だけ `公開` にする。
+2. `previewAIMaterialRelease()` を実行。**読み取りのみ**で、公開対象の件数・必須項目・同一Part内の重複を検査する。エラーがあれば同期は禁止。
+3. GitHubで事前に専用の検証用ブランチを作成し、Script Propertiesに `AI_RELEASE_REVIEW_BRANCH` を設定する（例：`review/ai-materials`）。`main`、`master` はスクリプトで拒否する。必要に応じて `AI_RELEASE_GITHUB_REPO`、`AI_RELEASE_GITHUB_TOKEN` を登録。既存の `PAIR_QA_GITHUB_REPO` / `PAIR_QA_GITHUB_TOKEN` があれば代用可。**トークンはGitHubやチャットに書かない**。
+4. `syncAIMaterialReleaseReview()` を**手動で**実行。検証用ブランチで `vocabulary.json`、`pair_text_qa.json`、`pair_text_qa_catalog.json` を1コミットでまとめて同期する。mainへの同期はしない。
+5. 検証用ブランチのJSON差分をレビュー。必要な場合だけ人手でPRをマージし、実際のアプリのQ&Aバックエンドやスナップショット側の運用と整合させる。
+
+`AI文法下書き`、`AI発展教材下書き` は今回の同期対象外。アプリ側の対応完了・追加校閲までは公開しない。
+
+### 現在の試験結果（2026-11-10）
+- 実際のGoogle Sheets上の公開件数：英単語62件（5単元）、英C本文Q&A21件（4Part）
+- GitHub mainの現在の教材JSONと件数が一致
+- 下書き状態のLesson 8は出力から除外
+- JSON生成関数のモック検証6件成功：公開行数、公開教材エラーなし、下書き除外、重複検出、下書き追加への耐性、必須項目欠落検出
+- 検証用GitHubブランチへの書き込みは**まだ実行していない**。Apps Scriptへの実運用導入・本番公開も未実施。
+
+**重要**：本番の既存単語同期（Google Apps Script側、リポジトリでソース未確認）が有効な場合、ステータスを `公開` に変えるだけで既存トリガーが別途同期する可能性がある。意図しない本番反映を避けるには、現行トリガーを確認してから公開ステータスを変更すること。レビュー専用の最初の確認は公開設定を変更せずにプレビューする。
+
+**注意**：この追加処理は既存の `syncEnglishTextQA` などを変更しない。英単語の公開JSONは既存の `vocabulary.json` と同じグルーピング形状（subject/id/name/words）で生成する。QAの生成形式は既存の本文QAと同じ。レビュー用GitHubブランチではGitHub上に公開問題が載るため、機密性のある問題の公開前テストには使わない。
