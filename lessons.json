@@ -261,5 +261,28 @@
         "これは日中の混雑(を減らすのに役立ちました)。"
       ]
     ]
+  },
+  {
+    "subject": "英C",
+    "id": "8",
+    "name": "1",
+    "cards": [
+      [
+        "Kazu Hiro ( was ) ( born ) in Kyoto in 1969.",
+        "カズ・ヒロは1969年，京都に生まれました。"
+      ],
+      [
+        "Since childhood, Kazu ( has ) ( been ) full of curiosity and creativity.",
+        "カズは子どもの頃から，好奇心と創造性に満ちあふれていました。"
+      ],
+      [
+        "He ( was ) ( inspired ) by the various kinds of special effects.",
+        "彼は高校時代，たくさんのSF映画を観ました。"
+      ],
+      [
+        "This was ( due ) ( to ) special effects makeup.",
+        "これは特殊メイクによるものでした。"
+      ]
+    ]
   }
 ]
