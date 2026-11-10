@@ -9,7 +9,7 @@ var YoshiWordbookData=(function(){
  const tokens=v=>clean(v).match(/\S+/gu)||[];
  const reorderable=v=>{const t=tokens(v);return t.length>=2&&t.length<=32&&!/[.!?]["”']?\s+\S/.test(v)&&!/[─―]|\n/.test(v);};
  function fromSheets(sheets,options={}){
-  const words=[],warnings=[],errors=[],seen=new Set(),numbers=new Map(),scope=options.scope||'STAGE1:Unit1';
+  const words=[],warnings=[],errors=[],seen=new Set(),numbers=new Map(),scope=options.scope||'ALL';
   const expected=['Unit','見出番号','見出語','見出語日本語','フレーズ','フレーズ日本語','例文','例文日本語','活用'];
   for(const sheet of sheets){
    const stage=clean(sheet.name);if(!/^STAGE[0-3]$/.test(stage))continue;
