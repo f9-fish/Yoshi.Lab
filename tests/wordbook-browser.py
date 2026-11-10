@@ -33,24 +33,28 @@ with sync_playwright() as p:
   if width<=700:assert 'wordbook-card.svg' in home.evaluate("el=>getComputedStyle(el,'::before').backgroundImage")
   home.click()
   page.locator('#wbStageList button').filter(has_text='STAGE1').wait_for();assert page.locator('#wbStageList button:disabled').count()==sum(not any(w['stage']==s for w in data['words']) for s in ['STAGE0','STAGE1','STAGE2','STAGE3'])
-  page.locator('#wbStageList').screenshot(path=f'/tmp/wordbook-stages-{width}.png')
+  assert page.locator('#wbReload,#wbBack').count()==0
+  assert page.locator('#wbStages').evaluate('el=>getComputedStyle(el).borderTopStyle')=='solid'
+  page.locator('#wbStages').screenshot(path=f'/tmp/wordbook-stages-{width}.png')
   for stage in ['STAGE0','STAGE1','STAGE2','STAGE3']:
    if not any(w['stage']==stage for w in data['words']):continue
    page.locator('#wbStageList button').filter(has_text=stage).click()
    assert page.locator('#wbRangeStart').is_disabled()
+   assert ''.join(page.locator('#wbRangeStart').inner_text().split())=='次へ→'
+   assert page.locator('#wbUnits').evaluate('el=>getComputedStyle(el).borderTopStyle')=='solid'
    buttons=page.locator('#wbUnitList button');n=buttons.count()
    assert re.match(r'^(Part|Unit) \d+',buttons.first.locator('strong').inner_text())
    for i in range(min(3,n)):buttons.nth(i).click()
    assert page.locator('#wbUnitList button[aria-pressed="true"]').count()==min(3,n)
    if stage=='STAGE0':page.locator('#wbUnits').screenshot(path=f'/tmp/wordbook-range-{width}.png')
-   page.locator('#wbRangeStart').click();page.locator('#wbBack').click()
+   page.locator('#wbRangeStart').click();page.locator('#wbUnitNav').click()
    assert page.locator('#wbUnitList button[aria-pressed="true"]').count()==min(3,n)
    page.locator('#wbSelectAll').click();assert page.locator('#wbUnitList button[aria-pressed="true"]').count()==n
    page.locator('#wbRangeStart').click();page.locator('#wbModeList button').filter(has_text='スペリング').click()
    assert page.locator('#wbCount').inner_text()=='1 / 10問'
-   page.locator('#wbFinish').click();page.locator('#wbChoose').click();page.locator('#wbBack').click()
+   page.locator('#wbFinish').click();page.locator('#wbChoose').click();page.locator('#wbUnitNav').click()
    page.locator('#wbClearUnits').click();assert page.locator('#wbRangeStart').is_disabled()
-   page.locator('#wbBack').click()
+   page.locator('#wbStageNav').click()
   page.locator('#wbStageList button').filter(has_text='STAGE1').click();page.locator('#wbUnitList').get_by_role('button',name=re.compile(r'^Unit 1\s')).click();page.locator('#wbRangeStart').click()
   page.locator('#wbModeList').screenshot(path=f'/tmp/wordbook-mode-grid-{width}.png')
   for mode,label in [('choice','単語4択'),('spelling','スペリング'),('reorder','文章並び替え')]:
@@ -65,6 +69,8 @@ with sync_playwright() as p:
     elif mode=='spelling':
      assert page.locator('#wbSubmit').is_disabled();page.locator('#wbInput').fill(words[prompt]['word'].upper() if index==0 else 'wrong-fixture-answer');page.locator('#wbSubmit').click()
     else:
+     reset=page.locator('#wbUndo').bounding_box();submit=page.locator('#wbSubmit').bounding_box()
+     assert abs(reset['y']-submit['y'])<2 and submit['x']-(reset['x']+reset['width'])>=12
      sentence=examples[prompt]['english'];tokens=sentence.split();assert page.locator('#wbSubmit').is_disabled()
      if index==0:
       page.locator('#wbTokens button').first.click();page.locator('#wbSelected button').first.click();assert page.locator('#wbSelected button').count()==0
@@ -77,6 +83,6 @@ with sync_playwright() as p:
    page.locator('#wbFinish').click();page.locator('#wbResult').wait_for(state='visible');assert '2問解答 / 正解 1問' in page.locator('#wbSummary').inner_text();assert page.locator('#wbReview article').count()==2;page.locator('#wbChoose').click()
   assert not errors,errors;context.close();print('PASS',width,'HOME, three modes, correct/wrong, duplicate-safe reorder, undo, partial results, no overflow',flush=True)
  for payload in [{'schemaVersion':1,'words':[]},{'bad':'format'}]:
-  context=browser.new_context(viewport={'width':390,'height':850});page=context.new_page();page.route('**/*',routes(payload));page.goto('https://local.test/wordbook.html');page.wait_for_function('!document.getElementById("wbReload").disabled');text=page.locator('#wbStatus').inner_text();assert ('公開中の単語がありません' in text if 'words' in payload else '読み込めません' in text);context.close()
- context=browser.new_context();page=context.new_page();page.route('**/*',routes(fail=True));page.goto('https://local.test/wordbook.html');page.wait_for_function('!document.getElementById("wbReload").disabled');assert '読み込めません' in page.locator('#wbStatus').inner_text();page.unroute('**/*');page.route('**/*',routes());page.locator('#wbReload').click();page.locator('#wbStageList button:enabled').first.wait_for();context.close();print('PASS empty, malformed data, network failure and retry',flush=True)
+  context=browser.new_context(viewport={'width':390,'height':850});page=context.new_page();page.route('**/*',routes(payload));page.goto('https://local.test/wordbook.html');page.wait_for_function('document.getElementById("wbStatus").getAttribute("aria-busy")==="false"');text=page.locator('#wbStatus').inner_text();assert ('公開中の単語がありません' in text if 'words' in payload else '読み込めません' in text);context.close()
+ context=browser.new_context();page=context.new_page();page.route('**/*',routes(fail=True));page.goto('https://local.test/wordbook.html');page.wait_for_function('document.getElementById("wbStatus").getAttribute("aria-busy")==="false"');assert '読み込めません' in page.locator('#wbStatus').inner_text();page.unroute('**/*');page.route('**/*',routes());page.reload();page.locator('#wbStageList button:enabled').first.wait_for();context.close();print('PASS empty, malformed data, network failure and retry',flush=True)
  browser.close()
