@@ -2,9 +2,10 @@
  'use strict';
  let connect,appCheck;
  const sdk='https://www.gstatic.com/firebasejs/13.1.0/';
- function available(){const c=window.YoshiPairQAConfig;return !!(c?.enabled&&c.appCheckSiteKey);}
+ function available(){const c=window.YoshiPairQAConfig;return !!(c?.enabled&&(c.backend==='spark'||c.appCheckSiteKey));}
  async function call(app,data){
   if(!available())throw Error('本文Q&Aは準備中です。');
+  if(window.YoshiPairQAConfig.backend==='spark')return window.YoshiPairQASpark.call(app,data);
   if(!connect)connect=Promise.all([import(sdk+'firebase-functions.js'),import(sdk+'firebase-app-check.js')]).then(([f,a])=>{
    if(!appCheck)appCheck=a.initializeAppCheck(app,{provider:new a.ReCaptchaEnterpriseProvider(window.YoshiPairQAConfig.appCheckSiteKey),isTokenAutoRefreshEnabled:true});
    return f.httpsCallable(f.getFunctions(app,window.YoshiPairQAConfig.region),'pairTextQA',{timeout:15000});
@@ -12,6 +13,7 @@
   return (await (await connect)(data)).data;
  }
  function watch(app,code,accept,error){
+  if(window.YoshiPairQAConfig?.backend==='spark')return window.YoshiPairQASpark.watch(app,code,accept,error);
   let stopped=false,timer=null,failures=0;
   async function poll(){
    try{const value=await call(app,{action:'get',code});if(!stopped){failures=0;accept(value);if(value.state?.started&&value.state.index>=value.count)stopped=true;}}
