@@ -6,14 +6,14 @@ function pairQABuild_(values) {
  const names=['問題ID','科目','単元ID','Part','問題番号','英語の質問','模範解答','許容解答','ヒント①','ヒント②','本文根拠・解説','公開状態'];
  if(!values.length)throw new Error('英C本文QAのヘッダーがありません');
  const headers=values[0].map(v=>String(v??'').trim()),indexes=names.map(h=>headers.indexOf(h));
- if(indexes.some(i=>i<0)||names.some(name=>headers.filter(h=>h===name).length!==1))throw new Error('英C本文QAの12列ヘッダーを確認してください');
+ if(names.some((name,i)=>{const count=headers.filter(h=>h===name).length;return i===8||i===9?count>1:count!==1;}))throw new Error('英C本文QAのヘッダーを確認してください（ヒント①・②は省略可能）');
  const questions=[],errors=[],warnings=[],seen=new Set(),lines=v=>String(v??'').split(/\r?\n|\|\|/).map(s=>s.trim()).filter(Boolean);
  values.slice(1).forEach((row,i)=>{
   if(!row.some(v=>String(v??'').trim()))return;
   const v=indexes.map(index=>String(row[index]??'').trim());if(v[11]!=='公開')return;
   const missing=[0,1,2,3,4,5,6,10].filter(index=>!v[index]);
   if(missing.length){errors.push('行'+(i+2)+'：必須項目不足 '+missing.map(index=>names[index]).join('・'));return;}
-  const q={id:v[0],subject:v[1],lesson:v[2].replace(/^lesson\s*/i,'').trim(),part:v[3].replace(/^part\s*/i,'').trim(),number:Number(v[4]),question:v[5],modelAnswer:v[6],acceptedAnswers:lines(v[7]),hints:[v[8],v[9]],explanation:v[10],status:'公開'};
+  const q={id:v[0],subject:v[1],lesson:v[2].replace(/^lesson\s*/i,'').trim(),part:v[3].replace(/^part\s*/i,'').trim(),number:Number(v[4]),question:v[5],modelAnswer:v[6],acceptedAnswers:lines(v[7]),hints:[v[8]||v[5],v[9]],explanation:v[10],status:'公開'};
   if(!q.lesson||!q.part||q.subject!=='英C'||!Number.isInteger(q.number)||q.number<1||seen.has(q.id)||q.acceptedAnswers.length>10||Utilities.newBlob(JSON.stringify(q)).getBytes().length>16000){errors.push('行'+(i+2)+'：科目・問題番号・ID重複・長さを確認してください');return;}
   seen.add(q.id);questions.push(q);
  });
