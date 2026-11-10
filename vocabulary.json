@@ -405,5 +405,36 @@
         "reading": "ゴースルー"
       }
     ]
+  },
+  {
+    "subject": "英C",
+    "id": "8",
+    "name": "1",
+    "words": [
+      {
+        "word": "curiosity",
+        "meaning": "好奇心",
+        "hint": "名詞",
+        "reading": "キュリオシティ"
+      },
+      {
+        "word": "be inspired by ～",
+        "meaning": "～に刺激を受ける／影響を受ける",
+        "hint": "受動態の形",
+        "reading": "ビーインスパイアード"
+      },
+      {
+        "word": "be fascinated",
+        "meaning": "魅了される／心を奪われる",
+        "hint": "感情を表す過去分詞",
+        "reading": "ビーファッシネイティッド"
+      },
+      {
+        "word": "in charge of ～",
+        "meaning": "～を担当している／～の責任者である",
+        "hint": "人の役割を表す表現",
+        "reading": "インチャージオブ"
+      }
+    ]
   }
 ]
