@@ -5,7 +5,7 @@ const {factory}=require('../../pair-qa-spark.js'),core=require('../../pair-qa-sp
 const server=require('../../pair-qa-functions/core.cjs');
 const rows=server.parseQuestions(require('../../pair_text_qa.json')).filter(q=>q.part==='1');
 let env;
-before(async()=>{env=await initializeTestEnvironment({projectId:'demo-yoshi-pair-qa',database:{host:'127.0.0.1',port:9009,rules:fs.readFileSync('../../pair-qa-spark.rules.proposed.json','utf8')}});});
+before(async()=>{env=await initializeTestEnvironment({projectId:'demo-yoshi-pair-qa',database:{host:'127.0.0.1',port:9009,rules:fs.readFileSync('../../firebase-rtdb.rules.qa-integrated.json','utf8')}});});
 after(async()=>{await env?.cleanup();});
 beforeEach(async()=>{await env.clearDatabase();});
 function client(uid){const db=env.authenticatedContext(uid,{firebase:{sign_in_provider:'anonymous'}}).database();return {db,api:factory({db,uid,api:sdk,core,loadQuestions:async()=>structuredClone(rows),random:()=>12345})};}

@@ -1,0 +1,7 @@
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const existing=require('./fixtures/rtdb-rules-user-provided.json'),proposal=require('../pair-qa-spark.rules.proposed.json'),combined=require('../firebase-rtdb.rules.qa-integrated.json'),{merge}=require('../scripts/merge-pair-qa-spark-rules.cjs');
+test('QA Rules integration preserves every existing rule supplied by the user',()=>{const {pairQaSpark,...rest}=combined.rules;assert.deepEqual(rest,existing.rules);assert.deepEqual(pairQaSpark,proposal.rules.pairQaSpark);assert.deepEqual(combined,merge(existing,proposal));});
+test('QA Rules merge cannot silently overwrite a namespace or broaden root access',()=>{assert.throws(()=>merge(combined,proposal));assert.throws(()=>merge({rules:{'.read':true,'.write':false}},proposal));assert.throws(()=>merge({rules:{'.read':false,'.write':'auth != null'}},proposal));});
+test('QA Rules merge does not mutate either source',()=>{const old=JSON.stringify(existing),p=JSON.stringify(proposal);merge(existing,proposal);assert.equal(JSON.stringify(existing),old);assert.equal(JSON.stringify(proposal),p);});
+
+test('QA Rules: raw snapshot values are never directly negated (Firebase boolean type error)',()=>{const visit=value=>{if(typeof value==='string'){assert.doesNotMatch(value,/!(?:data|newData|root)(?:\.child\('[^']*'\)|\.parent\(\))*\.val\(\)/);assert.doesNotMatch(value,/\.val\(\)\s*\?/);}else if(value&&typeof value==='object')Object.values(value).forEach(visit);};visit(proposal.rules.pairQaSpark);visit(combined.rules.pairQaSpark);});
