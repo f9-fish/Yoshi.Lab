@@ -1,0 +1,5 @@
+const core=require('../../pair-qa-functions/core.cjs');
+// Synthetic examples only; never installed as the actual spreadsheet questions.
+const questions=Array.from({length:15},(_,i)=>({id:'QA-TEST-'+(i+1),subject:'英C',lesson:'7',part:String(Math.floor(i/5)+1),number:i%5+1,question:'What did the student do in example '+(i+1)+'?',modelAnswer:'The student read a book in example '+(i+1)+'.',acceptedAnswers:['A book was read in example '+(i+1)+'.'],hints:['Think about the subject.','Use read a book.'],explanation:'検証用の本文根拠・解説 '+(i+1),status:'公開'}));
+function memoryDB(){const docs=new Map();let queue=Promise.resolve();return {docs,collection:name=>({doc:id=>({id:name+'/'+id})}),runTransaction(fn){const work=queue.then(async()=>{const writes=[];const value=await fn({get:async ref=>({exists:docs.has(ref.id),data:()=>structuredClone(docs.get(ref.id))}),set:(ref,data)=>writes.push(()=>docs.set(ref.id,structuredClone(data)))});writes.forEach(write=>write());return value;});queue=work.catch(()=>{});return work;}};}
+module.exports={questions,catalog:core.catalog(core.parseQuestions(questions)),memoryDB};

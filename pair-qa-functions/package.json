@@ -1,0 +1,1 @@
+{"name":"yoshi-pair-qa","version":"1.0.0","private":true,"main":"index.cjs","engines":{"node":"22"},"scripts":{"prepare:data":"node scripts/snapshot.cjs"},"dependencies":{"firebase-admin":"14.5.0","firebase-functions":"7.4.0"}}

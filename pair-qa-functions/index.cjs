@@ -1,0 +1,10 @@
+'use strict';
+const {onCall,HttpsError}=require('firebase-functions/v2/https');
+const {defineBoolean}=require('firebase-functions/params');
+const {initializeApp}=require('firebase-admin/app');
+const {getFirestore}=require('firebase-admin/firestore');
+const {createService}=require('./service.cjs');
+const {QAError}=require('./core.cjs');
+const enabled=defineBoolean('PAIR_QA_ENABLED',{default:false});
+const app=initializeApp(),service=createService({db:getFirestore(app,'pair-qa'),questions:require('./data/questions.json'),enabled:()=>enabled.value()});
+exports.pairTextQA=onCall({region:'asia-northeast1',enforceAppCheck:true,timeoutSeconds:20,maxInstances:3,concurrency:20,memory:'256MiB',cors:['https://f9-fish.github.io'],invoker:'public'},async request=>{try{return await service(request);}catch(error){if(error instanceof QAError)throw new HttpsError(error.code,error.message);throw new HttpsError('unavailable','本文Q&Aの通信に失敗しました');}});
