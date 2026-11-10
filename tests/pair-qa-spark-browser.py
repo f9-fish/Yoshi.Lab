@@ -22,7 +22,6 @@ export const serverTimestamp=()=>Date.now(),getDatabase=()=>({}),ref=(_,p)=>({p}
   if u.path=='/__db':
    data=json.loads(r.request.post_data);data['uid']=uid;status,body=server(data);r.fulfill(status=status,body=body,content_type='application/json');return
   if u.path=='/pair_text_qa.json' and resynced:r.fulfill(body='[]',content_type='application/json');return
-  if u.path=='/pair-qa-config.js':r.fulfill(body="window.YoshiPairQAConfig={enabled:true,backend:'spark'};",content_type='text/javascript');return
   f=(root/unquote(u.path).lstrip('/')).resolve()
   if f.is_relative_to(root) and f.is_file():r.fulfill(body=f.read_bytes(),content_type=mimetypes.guess_type(str(f))[0] or 'application/octet-stream')
   else:r.fulfill(status=404,body='missing')

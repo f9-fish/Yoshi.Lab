@@ -27,6 +27,8 @@ node scripts/merge-pair-qa-spark-rules.cjs tests/fixtures/rtdb-rules-user-provid
 
 Rules実テスト10件は引き続き未実行です。このCodex環境は公式エミュレーターの取得先 `storage.googleapis.com` を拒否しており、403 Domain forbiddenで止まります。通信設定が変わっていないことを確認しました。Rulesの構文や実際の拒否動作を検証済みとは扱いません。Consoleでの構文チェックもこちらから実行していません。
 
-そのためアプリは `enabled:false` を維持しています。ルール未適用のままボタンを有効にしても、ルーム作成時にpermission-deniedとなります。スイッチだけ変えて利用開始済みとは報告しません。
+ユーザーからのRules書き換え報告と利用開始指示を受け、作業ブランチでアプリを `enabled:true, backend:'spark'` に変更しました。これは本番サイトへの反映完了や、本番Rulesの公開・動作を確認したことを意味しません。ルールが未公開・未適用の場合、ルーム作成時にpermission-deniedとなります。Rules実テスト未実行の制約は残ります。
+
+有効化変更後の自動テストは348件成功、失敗0・スキップ0。ブラウザーテストは固定の有効化モックではなく、実際の `pair-qa-config.js` を読み込み、外部通信を遮断して検証します。
 
 公開JSONの直接閲覧や改造ホストの教材差し替えなど、Spark方式の制約は `docs/pair-text-qa-spark.md` を参照してください。
