@@ -38,7 +38,7 @@ with sync_playwright() as p:
   page.locator('#wbStageList button').filter(has_text='STAGE 1').wait_for();assert page.locator('#wbStageList button:disabled').count()==sum(not any(w['stage']==s for w in data['words']) for s in ['STAGE0','STAGE1','STAGE2','STAGE3'])
   assert page.locator('#wbReload,#wbBack').count()==0
   assert page.locator('#wbStages>h2').evaluate('el=>getComputedStyle(el).outlineStyle')=='none'
-  assert page.locator('#wbStageList').evaluate('el=>getComputedStyle(el).borderTopStyle')=='solid'
+  assert page.locator('#wbStageList').evaluate('el=>getComputedStyle(el).backgroundImage')=='none'  # Single landscape, no nested scenery panel.
   page.wait_for_function('window.YoshiAccount?.authReady')
   page.locator('#wbStages').screenshot(path=f'/tmp/wordbook-stages-{width}.png')
   for stage in ['STAGE0','STAGE1','STAGE2','STAGE3']:
@@ -46,7 +46,7 @@ with sync_playwright() as p:
    page.locator('#wbStageList button').filter(has_text=stage.replace('STAGE','STAGE ')).click()
    assert page.locator('#wbRangeStart').is_disabled()
    assert ''.join(page.locator('#wbRangeStart').inner_text().split())=='練習方法へ→'
-   assert page.locator('#wbRangeScene').evaluate('el=>getComputedStyle(el).borderTopStyle')=='solid'
+   assert page.locator('#wbRangeScene').evaluate('el=>getComputedStyle(el).backgroundImage')=='none'  # Keep the range map on the same landscape.
    buttons=page.locator('#wbUnitList button');n=buttons.count()
    assert re.match(r'^(Part|Unit) \d+',buttons.first.locator('strong').inner_text())
    for i in range(min(3,n)):buttons.nth(i).click()
