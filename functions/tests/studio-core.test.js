@@ -1,0 +1,17 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {makeFiles,validateDraft,validateQuestions,modelPrompt} from '../studio-core.js';
+const base=()=>({'lessons.json':[{subject:'英C',id:'7',name:'1',cards:[['old','古い']]},{subject:'英C',id:'6',name:'1',cards:[['keep','残す']]}],'vocabulary.json':[{subject:'英C',id:'7',name:'1',words:[{word:'old',meaning:'古い'}]}],'ronpyo_text.json':[],'ronpyo_vocab.json':[],'studio-materials.json':[]});
+const empty=()=>({vocabulary:[],cloze:[],qa:[],trueFalse:[],discussion:[]});
+const draft=(changes={})=>({subject:'英C',lesson:'7',part:'1',source:'She went to school.',count:1,questions:empty(),...changes});
+test('正しい教材入力を受理',()=>assert.equal(validateDraft(draft()).lesson,'7'));
+test('本文ゼロ長を拒否',()=>assert.throws(()=>validateDraft(draft({source:' '}))));
+test('本文2万文字超を拒否',()=>assert.throws(()=>validateDraft(draft({source:'x'.repeat(20001)}))));
+test('教科を厳密に確認',()=>assert.throws(()=>validateDraft(draft({subject:'英語'}))));
+test('True False以外の正解を拒否',()=>{const q=empty();q.trueFalse=[{question:'X',answer:'Maybe',translation:'訳'}];assert.throws(()=>validateQuestions(q))});
+test('穴埋めの括弧記法を検証',()=>{const q=empty();q.cloze=[{question:'She went home.',answer:'She went home.',translation:'帰った'}];assert.throws(()=>validateQuestions(q))});
+test('採用問題の重複は拒否',()=>{const q=empty();q.qa=[{question:'What?',answer:'X',translation:'訳'},{question:'what? ',answer:'Y',translation:'訳'}];assert.throws(()=>validateQuestions(q))});
+test('未採用で全0問は公開不可',()=>assert.throws(()=>validateQuestions(empty())));
+test('元の単元を置換し他単元は保持',()=>{const q=empty();q.cloze=[{question:'She ( went ) to school.',answer:'She went to school.',translation:'彼女は学校へ行った'}];const out=makeFiles(base(),draft({questions:q}));const arr=JSON.parse(out.files['lessons.json']);assert.equal(arr[0].cards[0][0],'She ( went ) to school.');assert.equal(arr[1].cards[0][0],'keep');assert.equal(JSON.parse(out.files['vocabulary.json'])[0].words[0].word,'old')});
+test('単語形式を既存JSONへ変換',()=>{const q=empty();q.vocabulary=[{question:'school',answer:'学校',translation:'スクール'}];const out=makeFiles(base(),draft({questions:q}));assert.deepEqual(JSON.parse(out.files['vocabulary.json'])[0].words,[{word:'school',meaning:'学校',hint:'',reading:'スクール'}])});
+test('Q&Aと議論を別JSONに保存',()=>{const q=empty();q.qa=[{question:'Where?',answer:'At school.',translation:'どこ？ 学校。'}];q.discussion=[{question:'Why?',answer:'Because...',translation:'なぜ？'}];const out=makeFiles(base(),draft({questions:q}));assert.equal(JSON.parse(out.files['studio-materials.json'])[0].qa.length,1);assert.equal(JSON.parse(out.files['studio-materials.json'])[0].discussion.length,1)});
+test('ソースをプロンプトに含む',()=>assert.match(modelPrompt(draft()),/She went to school/));
