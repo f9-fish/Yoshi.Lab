@@ -16,14 +16,14 @@
 <p id="message" role="status" class="status muted"></p></section>
 <section class="panel hidden" id="review"><h2>STEP 2｜問題を確認・編集</h2><p class="muted">採用する問題にチェックを入れ、問題文・正解・日本語訳を確認してから公開してください。AIの出力は必ず教員が確認します。</p><div id="questions"></div></section>
 <section class="panel hidden" id="publishPanel"><h2>STEP 3｜一括公開</h2><p class="muted">公開先・重複・必須項目はサーバーでも検証します。公開まで既存教材は変更されません。</p><div class="actions"><button id="publish" class="primary">採用した教材を一括公開</button></div><p id="publishStatus" role="status" class="status"></p></section>
-</main><script type="module">
+</main><script src="./studio-config.js"></script><script type="module">
 import './account.js';
 import {getAuth} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js';
 const $=id=>document.getElementById(id);
 const types=[['vocabulary','単語・熟語'],['cloze','文法・穴埋め'],['qa','本文Q&A'],['trueFalse','True / False'],['discussion','Discussion']];
 const storageKey='yoshilab.studio.draft.v1';
 let draft=null,busy=false;
-const endpoint=(document.querySelector('meta[name="yoshilab-studio-api"]')?.content||'').replace(/\/$/,'');
+const endpoint=(window.YoshiStudioApiBase||'').replace(/\/$/,'');
 const msg=(value,error=false)=>{$('message').textContent=value;$('message').className='status '+(error?'error':'muted')};
 function setBusy(value){busy=value;for(const id of ['generate','publish'])$(id).disabled=value}
 function clean(s){return String(s??'').trim()}
@@ -37,6 +37,6 @@ function selected(){if(!draft)throw Error('先に教材を生成してくださ�
 $('generate').addEventListener('click',async()=>{if(busy)return;setBusy(true);try{const input=validInput();msg('AI教材を生成しています…');const data=await api('generate',input);draft=normalize(data,input);render();msg('生成完了。内容を確認して採用する問題を選んでください')}catch(e){msg(e.message,true)}finally{setBusy(false)}});
 $('save').addEventListener('click',()=>{try{if(!draft)throw Error('保存する問題がありません');localStorage.setItem(storageKey,JSON.stringify(draft));msg('この端末のブラウザに下書きを保存しました（共有・自動バックアップではありません）')}catch(e){msg(e.message,true)}});
 $('restore').addEventListener('click',()=>{try{const data=JSON.parse(localStorage.getItem(storageKey)||'null');if(!data)throw Error('保存済み下書きがありません');draft=normalize(data,data);for(const id of ['subject','lesson','part','source','count'])$(id).value=draft[id];render();msg('下書きを復元しました')}catch(e){msg(e.message,true)}});
-$('publish').addEventListener('click',async()=>{if(busy)return;try{const payload=selected();if(!confirm('採用した問題を公開します。Lesson '+payload.lesson+' / Part '+payload.part+' の既存データを上書きする場合があります。続けますか？'))return;setBusy(true);$('publishStatus').textContent='サーバーで検証・公開中…';const result=await api('publish',payload);$('publishStatus').textContent='公開処理が完了しました。'+(result.url?'確認: '+result.url:'アプリ側への反映を確認してください')}catch(e){$('publishStatus').textContent=e.message;$('publishStatus').className='status error'}finally{setBusy(false)}});
+$('publish').addEventListener('click',async()=>{if(busy)return;try{const payload=selected();setBusy(true);$('publishStatus').textContent='サーバーで検証・公開中…';const preview=await api('preview',payload);if(!confirm('公開先：'+preview.slot+'\\n採用：'+preview.newCount+'問\\n'+(preview.replacing?'既存のAI教材 '+preview.previousCount+'問を置き換えます。':'新規のAI教材として追加します。')+'\\n公開しますか？')){$('publishStatus').textContent='公開を取り消しました';return}payload.expectedSha=preview.sha;const result=await api('publish',payload);$('publishStatus').textContent='GitHubに保存しました。アプリへの配信は数分後になる場合があります。 '+(result.url||'')}catch(e){$('publishStatus').textContent=e.message;$('publishStatus').className='status error'}finally{setBusy(false)}});
 window.YoshiAccount.subscribe(async()=>{const a=window.YoshiAccount;if(!a)return;try{if(!a.user){$('authStatus').textContent='教員ダッシュボードでGoogleログインしてください';$('editor').classList.add('hidden');return}const allowed=await a.isTeacher();$('authStatus').textContent=allowed?'教員権限を確認しました':'教員権限がありません';$('editor').classList.toggle('hidden',!allowed)}catch(e){$('authStatus').textContent='教員権限を確認できません: '+e.message;$('editor').classList.add('hidden')}});
 </script></body></html>
