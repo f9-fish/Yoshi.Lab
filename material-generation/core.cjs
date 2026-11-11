@@ -89,7 +89,7 @@ function validateResult(type,raw,source,settings){
  if(type==='writing'&&items.length){const acts=items.map(x=>'起承転結'.indexOf(x.act));need(new Set(acts).size===4&&acts.every((v,i)=>!i||v>=acts[i-1]),'物語は起承転結を順番に含めてください');warnings.push('物語の自然さ・英文と日本語の対応・難易度は教員確認が必要です');}
  if(type==='trueFalse'&&items.length>=2){const trueCount=items.filter(x=>x.modelAnswer==='True').length;need(trueCount>0&&trueCount<items.length&&Math.abs(trueCount-(items.length-trueCount))<=1,'True/Falseの数が偏っています');}
  if(type==='qa'&&items.length>=4){const wh=new Set(items.map(x=>norm(x.question).split(' ')[0]));if(wh.size<3)warnings.push('Q&Aの疑問詞が偏っています');}
- if(items.length<settings.counts[type]){text(raw.shortageReason,'不足理由',1000);} 
+ if(items.length<settings.counts[type]){text(raw.shortageReason,'不足理由',1000);}
  if(items.length<settings.counts[type])warnings.push('指定'+settings.counts[type]+'問に対し'+items.length+'問：水増しせず不足として報告します');
  return {candidates,warnings,shortage:settings.counts[type]-items.length,reason:clean(raw.shortageReason)};
 }
