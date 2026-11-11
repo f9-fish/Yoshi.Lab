@@ -1,5 +1,7 @@
 # Phase 3：テスト専用Google Sheets連携（本番接続は無効）
 
+作成済みテストシート向けの最新手順は [TEST01接続準備](../ops/test01/README.md) を参照してください。接続確認専用モードではGemini・保存先・追記を使用しません。Cloud Runでは新しいGCS保存アダプターを使用し、FileStoreは使用禁止です。
+
 ## 今回の範囲と実環境の確認状況
 
 最新main `12606d06` とPR #76の `7c0992b1` を取り込んだ `feat/sheet-material-generation-phase3` で実装しています。Phase 2の純粋エンジンは変更していません。mainやPR #76のブランチへのマージは行っていません。

@@ -1,14 +1,17 @@
 'use strict';
+const {checkSchemas}=require('./schema-check.cjs');
 const {buildSource,settingsFor,hash,MASTER}=require('../core.cjs'),{generateBatch}=require('../engine.cjs'),{planAppend}=require('../append-plan.cjs'),{PRODUCTION_IDS,TABS,fault,checkTarget}=require('./policy.cjs');
-function createService({enabled=false,allowedTestIds=[],allowedSourceIds=PRODUCTION_IDS,verifyIdentity,checkTeacher,store,generate,mock=false,clock=()=>Date.now(),dailyLimit=10,testAppendEnabled=false}={}){
+function createService({enabled=false,allowedTestIds=[],allowedSourceIds=PRODUCTION_IDS,verifyIdentity,checkTeacher,store,generate,mock=false,clock=()=>Date.now(),dailyLimit=10,testAppendEnabled=false,preflightOnly=false}={}){
  if(enabled&&(!allowedTestIds.length||allowedTestIds.some(id=>PRODUCTION_IDS.includes(id))))throw Error('本番と異なるテスト用IDが必要です');
- if(enabled&&(!store||(!mock&&!store.persistent)||typeof verifyIdentity!=='function'||typeof checkTeacher!=='function'||typeof generate!=='function'))throw Error('認証・永続保存・生成設定が未完了です');
+ if(enabled&&(typeof verifyIdentity!=='function'||typeof checkTeacher!=='function'||(!preflightOnly&&(!store||(!mock&&!store.persistent)||typeof generate!=='function'))))throw Error('認証・永続保存・生成設定が未完了です');
  if(!Number.isInteger(dailyLimit)||dailyLimit<1||dailyLimit>100)throw Error('利用上限が不正です');
  const publicJob=j=>({jobId:j.id,state:j.state,revision:j.revision,sourceHash:j.sourceHash,targetSpreadsheetId:j.targetId,report:j.report?Object.fromEntries(Object.entries(j.report).filter(([k])=>k!=='checkpoint')):null});
  async function quota(owner,kind='generation',limit=dailyLimit){const day=new Date(clock()+9*3600000).toISOString().slice(0,10),key='Q-'+hash([owner,day,kind]).slice(0,32);await store.lock(key,async()=>{const value=await store.read(key)||{count:0};if(!Number.isInteger(value.count)||value.count<0)throw fault(500,'利用管理データが不正です');if(value.count>=limit)throw fault(429,'1日の生成上限です');await store.write(key,{count:value.count+1});});}
  return async({action,authorization,body={}})=>{
   if(!enabled)throw fault(503,'シート連携は無効です。管理者確認が必要です');
   const identity=await verifyIdentity(authorization),teacher=await checkTeacher(identity);if(!teacher?.uid)throw fault(403,'教員権限がありません');const owner=hash(teacher.uid);
+  if(action==='preflight'){checkTarget(body.targetSpreadsheetId,allowedTestIds);if(body.sourceSpreadsheetId!==body.targetSpreadsheetId)throw fault(403,'接続確認は同じテスト用ブックだけで行ってください');return {mode:preflightOnly?'PREFLIGHT':'TEST',authenticated:true,teacherVerified:true,testSpreadsheetId:body.targetSpreadsheetId,schemas:checkSchemas(body.tabs),generationEnabled:!preflightOnly,testAppendAllowed:!preflightOnly&&testAppendEnabled===true,publishEnabled:false,vocabularyAppendAllowed:false};}
+  if(preflightOnly)throw fault(503,'接続確認専用モードです。ジョブ登録・生成・追記は無効です');
   if(action==='enqueue'){
    checkTarget(body.targetSpreadsheetId,allowedTestIds);if(!allowedSourceIds.includes(body.sourceSpreadsheetId)&&!allowedTestIds.includes(body.sourceSpreadsheetId))throw fault(403,'未承認の読み取り元です');
    const source=buildSource(body.master,body.selection),config=settingsFor(source,body.settings),batchId='B-'+hash([source.hash,config.hash]).slice(0,24),id='JOB-'+hash([owner,batchId,body.targetSpreadsheetId]).slice(0,32);

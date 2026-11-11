@@ -16,7 +16,8 @@ function createTeacherChecker({auth,database}){
  return async identity=>{
   let user;try{user=await auth.getUserByEmail(identity.email);}catch{throw fault(403,'教員権限がありません');}
   if(user.disabled||!user.emailVerified||!user.providerData?.some(p=>p.providerId==='google.com'&&p.uid===identity.sub))throw fault(403,'教員権限がありません');
-  if((await database.ref('teacherUids/'+user.uid).get()).val()!==true)throw fault(403,'教員権限がありません');
+  let flag;try{flag=(await database.ref('teacherUids/'+user.uid).get()).val()}catch{throw fault(503,'教員登録を読み取れません。管理者が読み取り権限を確認してください')}
+  if(flag!==true)throw fault(403,'教員権限がありません');
   return {uid:user.uid};
  };
 }

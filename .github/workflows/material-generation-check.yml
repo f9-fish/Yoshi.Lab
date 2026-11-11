@@ -4,6 +4,8 @@ on:
     paths:
       - 'material-generation/**'
       - 'apps-script/material-generation-client.gs'
+      - 'apps-script/material-generation-preflight.gs'
+      - 'apps-script/material-generation-preflight-appsscript.example.json'
       - 'apps-script/material-generation-appsscript.example.json'
       - 'apps-script/writing-sync.gs'
       - 'apps-script/pair-text-qa-sync.gs'
@@ -15,6 +17,8 @@ on:
     paths:
       - 'material-generation/**'
       - 'apps-script/material-generation-client.gs'
+      - 'apps-script/material-generation-preflight.gs'
+      - 'apps-script/material-generation-preflight-appsscript.example.json'
       - 'apps-script/material-generation-appsscript.example.json'
       - '.github/workflows/material-generation-check.yml'
 permissions:
@@ -39,3 +43,5 @@ jobs:
       - run: node --check material-generation/phase3/auth.cjs
       - run: node --check material-generation/phase3/file-store.cjs
       - run: node --check material-generation/phase3/http.cjs
+      - run: node --check material-generation/phase3/gcs-store.cjs
+      - run: node --check material-generation/phase3/schema-check.cjs
