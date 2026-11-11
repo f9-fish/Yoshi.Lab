@@ -45,3 +45,14 @@ body.wordbook-page,body.wordbook-page[data-quest-stage]{background-image:linear-
  body[data-quest-screen="wbUnits"] .quest-section-head{position:relative;display:block;}
  .wordbook-page .quest-progress button{clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%);padding-inline:28px;}
 }
+/* 範囲ラベルは台座に添える小さなプレートとしてまとめる。 */
+.wordbook-page #wbUnitList .quest-node{width:19%;gap:5px;}
+.wordbook-page #wbUnitList .quest-plate{flex:0 1 138px;min-width:0;min-height:42px;padding:5px 10px;}
+#wbUnitList .quest-plate strong{font-size:13px;line-height:1.35;letter-spacing:.02em;white-space:nowrap;}
+#wbUnitList .quest-plate small{font-size:10px;line-height:1.4;margin-top:2px;color:#b6cbd6;}
+@media(max-width:760px){
+ .wordbook-page #wbUnitList .quest-node{width:78%;gap:5px;}
+ .wordbook-page #wbUnitList .quest-plate{flex-basis:150px;min-height:44px;padding:6px 11px;}
+ #wbUnitList .quest-plate strong{font-size:14px;}
+ #wbUnitList .quest-plate small{font-size:11px;}
+}
