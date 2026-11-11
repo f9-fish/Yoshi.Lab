@@ -1,0 +1,8 @@
+/* Presentation helpers only; data, grading, XP and persistence stay in their existing modules. */
+(function(root){
+ function ranges(rows,stage){const groups=new Map();for(const row of rows)if(row.stage===stage)groups.set(row.unit,(groups.get(row.unit)||0)+1);return [...groups].sort(([a],[b])=>a.localeCompare(b,'ja',{numeric:true})).map(([id,count])=>({id,count,label:id.replace(/^(Part|Unit)\s*(\d+)/i,'$1 $2')}));}
+ function segments(items,size=10){const out=[];for(let i=0;i<items.length;i+=size){const entries=items.slice(i,i+size),first=entries[0].label,last=entries.at(-1).label;out.push({items:entries,label:entries.length===1?first:first+'–'+last.replace(/^(Part|Unit)\s*/i,'')});}return out;}
+ function layout(count,width,mobile=false,overview=false){const height=mobile?count*104+24:overview?450:550,points=[];for(let i=0;i<count;i++){let left,y;if(mobile){left=i%2?14:2;y=56+i*104;}else if(overview){left=[3,26,49,71][i];y=[355,270,180,90][i];}else{const row=Math.floor(i/3),col=row%2?2-i%3:i%3;left=[3,36,69][col];y=height-65-row*132;}points.push({left,y,x:width*left/100+(mobile?26:31)});}return {height,points};}
+ function path(points){if(!points.length)return '';let d=`M ${points[0].x} ${points[0].y}`;for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i];if(a.y===b.y)d+=` L ${b.x} ${b.y}`;else{const bend=a.x===b.x?(a.x>200?70:-50):0;d+=` C ${a.x+bend} ${(a.y+b.y)/2}, ${b.x+bend} ${(a.y+b.y)/2}, ${b.x} ${b.y}`;}}return d;}
+ const api={ranges,segments,layout,path};if(typeof module==='object')module.exports=api;else root.YoshiWordbookMap=api;
+})(typeof window==='object'?window:globalThis);

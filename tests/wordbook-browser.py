@@ -35,18 +35,18 @@ with sync_playwright() as p:
   assert 'wordbook-card-photo.webp' in home.evaluate('el=>getComputedStyle(el).backgroundImage')
   if width<=700:assert 'wordbook-card-photo.webp' in home.evaluate("el=>getComputedStyle(el,'::before').backgroundImage")
   home.click()
-  page.locator('#wbStageList button').filter(has_text='STAGE1').wait_for();assert page.locator('#wbStageList button:disabled').count()==sum(not any(w['stage']==s for w in data['words']) for s in ['STAGE0','STAGE1','STAGE2','STAGE3'])
+  page.locator('#wbStageList button').filter(has_text='STAGE 1').wait_for();assert page.locator('#wbStageList button:disabled').count()==sum(not any(w['stage']==s for w in data['words']) for s in ['STAGE0','STAGE1','STAGE2','STAGE3'])
   assert page.locator('#wbReload,#wbBack').count()==0
   assert page.locator('#wbStages>h2').evaluate('el=>getComputedStyle(el).outlineStyle')=='none'
-  assert page.locator('#wbStages').evaluate('el=>getComputedStyle(el).borderTopStyle')=='solid'
+  assert page.locator('#wbStageList').evaluate('el=>getComputedStyle(el).borderTopStyle')=='solid'
   page.wait_for_function('window.YoshiAccount?.authReady')
   page.locator('#wbStages').screenshot(path=f'/tmp/wordbook-stages-{width}.png')
   for stage in ['STAGE0','STAGE1','STAGE2','STAGE3']:
    if not any(w['stage']==stage for w in data['words']):continue
-   page.locator('#wbStageList button').filter(has_text=stage).click()
+   page.locator('#wbStageList button').filter(has_text=stage.replace('STAGE','STAGE ')).click()
    assert page.locator('#wbRangeStart').is_disabled()
-   assert ''.join(page.locator('#wbRangeStart').inner_text().split())=='次へ→'
-   assert page.locator('#wbUnits').evaluate('el=>getComputedStyle(el).borderTopStyle')=='solid'
+   assert ''.join(page.locator('#wbRangeStart').inner_text().split())=='練習方法へ→'
+   assert page.locator('#wbRangeScene').evaluate('el=>getComputedStyle(el).borderTopStyle')=='solid'
    buttons=page.locator('#wbUnitList button');n=buttons.count()
    assert re.match(r'^(Part|Unit) \d+',buttons.first.locator('strong').inner_text())
    for i in range(min(3,n)):buttons.nth(i).click()
@@ -60,7 +60,7 @@ with sync_playwright() as p:
    page.locator('#wbFinish').click();page.locator('#wbChoose').click();page.locator('#wbUnitNav').click()
    page.locator('#wbClearUnits').click();assert page.locator('#wbRangeStart').is_disabled()
    page.locator('#wbStageNav').click()
-  page.locator('#wbStageList button').filter(has_text='STAGE1').click();page.locator('#wbUnitList').get_by_role('button',name=re.compile(r'^Unit 1\s')).click();page.locator('#wbRangeStart').click()
+  page.locator('#wbStageList button').filter(has_text='STAGE 1').click();page.locator('#wbUnitList').get_by_role('button',name=re.compile(r'^Unit 1\s')).click();page.locator('#wbRangeStart').click()
   page.locator('#wbModeList').screenshot(path=f'/tmp/wordbook-mode-grid-{width}.png')
   for mode,label in [('choice','単語4択'),('spelling','スペリング'),('reorder','文章並び替え')]:
    page.locator('#wbModeList button').filter(has_text=label).click();page.locator('#wbQuiz').wait_for(state='visible')
@@ -100,7 +100,7 @@ with sync_playwright() as p:
  # Auth/save flows use a local account mock, never a live Firebase SDK.
  def begin(page):
   page.goto('https://local.test/wordbook.html');page.wait_for_function('window.YoshiAccount?.authReady')
-  page.locator('#wbStageList button').filter(has_text='STAGE1').click()
+  page.locator('#wbStageList button').filter(has_text='STAGE 1').click()
   page.locator('#wbUnitList').get_by_role('button',name=re.compile(r'^Unit 1\s')).click();page.locator('#wbRangeStart').click()
   page.locator('#wbModeList button').filter(has_text='単語4択').click()
  def answer_one(page):
