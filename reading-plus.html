@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101d38"><title>Yoshi.Lab｜Reading Plus</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;color:#eaf0ff;background:#0c1325}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#24345b 0,transparent 39%),#0c1325;min-height:100vh}.wrap{max-width:780px;margin:0 auto;padding:24px 16px 64px}.brand{font-size:15px;letter-spacing:.12em;font-weight:900;color:#91c4ff}.brand span{color:#fff}.back{display:inline-block;margin:16px 0;color:#c4d7f7;text-decoration:none}.panel{margin-top:16px;padding:22px;background:#17213a;border:1px solid #30415f;border-radius:20px;box-shadow:0 12px 32px #050b1b35}h1{font-size:clamp(26px,5vw,34px);margin:7px 0}h2{font-size:20px;margin:0 0 12px}.sub{color:#a7b5d1;font-size:14px;line-height:1.7}label{font-size:14px;font-weight:700}select,button,textarea{font:inherit;border-radius:12px;max-width:100%}select,textarea{width:100%;color:#fff;background:#101a30;border:1px solid #4a5e7b;padding:12px}textarea{min-height:100px;resize:vertical}button{border:1px solid #5a739b;background:#293f64;color:white;padding:12px 17px;font-weight:800;cursor:pointer;min-height:46px}button.primary{background:#85b9ff;border-color:#85b9ff;color:#09182c}button:disabled{opacity:.5;cursor:not-allowed}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.grow{flex:1}.hidden{display:none!important}.pill{font-size:12px;color:#bdd8ff;background:#1b3353;padding:6px 10px;border-radius:99px}.question{font-size:clamp(19px,4.5vw,25px);font-weight:750;line-height:1.55;margin:12px 0 24px}.choice{flex:1;min-width:130px}.choice.selected{border-color:#8bd5ff;background:#315786}.answer{border-left:4px solid #85b9ff;padding:13px 16px;margin-top:18px;background:#0f1d37;border-radius:0 12px 12px 0}.answer strong{color:#a9e7c7}.answer p{margin:6px 0;line-height:1.6}.progress{margin-bottom:12px;color:#bac9e4;font-size:14px}.notice{font-size:13px;color:#c4d4ee;line-height:1.65}.error{color:#ffb0b0}.success{color:#a9e7c7}#feedback{margin-top:12px}.footer{margin-top:18px;text-align:center;color:#8da1c5;font-size:12px}@media(max-width:440px){.grid{grid-template-columns:1fr}.panel{padding:18px}}
+</style></head><body><main class="wrap"><div class="brand">Yoshi<span>.Lab</span> / READING PLUS</div><a class="back" href="./index.html?view=subjects">← ホームに戻る</a><h1>Reading Plus</h1><p class="sub">本文をもとに考える True / False と Discussion。自分で考えてから答えを確認しよう。</p>
+<section class="panel"><h2>教材を選ぶ</h2><div class="grid"><div><label for="unit">Lesson・Part</label><select id="unit"><option value="">読み込み中…</option></select></div><div><label for="kind">問題の種類</label><select id="kind"><option value="True / False">True / False</option><option value="Discussion">Discussion</option></select></div></div><p id="load" class="notice" role="status"></p><button id="start" class="primary" type="button" disabled>練習を始める</button></section>
+<section class="panel hidden" id="play" aria-live="polite"><div class="row"><span id="progress" class="progress grow"></span><span id="mode" class="pill"></span></div><div id="question" class="question"></div><div id="tf" class="row hidden"><button class="choice" type="button" id="trueBtn">○ True</button><button class="choice" type="button" id="falseBtn">× False</button></div><div id="discuss" class="hidden"><label for="response">自分の答えを書いてみよう（任意）</label><textarea id="response" placeholder="I think ... / In my opinion, ..."></textarea><p class="notice">自由回答。模範解答は一例で、異なる意見でも理由が伝わればOK。</p><button type="button" id="showAnswer">回答例を見る</button></div><div id="feedback" role="status"></div><div id="reveal" class="answer hidden"><strong id="correct"></strong><p id="explain"></p></div><div class="row" style="margin-top:20px"><button type="button" id="next" class="primary hidden">次の問題へ →</button><button type="button" id="restart">教材選択に戻る</button></div></section><p class="footer">Yoshi.Lab — Review, think, discuss.</p></main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+let all=[],current=[],index=0,selected=null,shown=false;
+const demo=[{id:'DEMO-1',subject:'英C',lesson:'DEMO',part:'1',type:'True / False',question:'Mina made a lamp that uses sunlight.',modelAnswer:'True',acceptedAnswers:[],explanation:'Mina designed a solar-powered lamp.',status:'公開'},{id:'DEMO-2',subject:'英C',lesson:'DEMO',part:'1',type:'Discussion',question:'What useful invention would you like to create?',modelAnswer:'I would like to make a small robot that cleans the park.',acceptedAnswers:[],explanation:'This is one possible answer.',status:'公開'}];
+const clean=x=>String(x==null?'':x).trim();
+function valid(q){return q&&clean(q.subject)&&clean(q.lesson)&&clean(q.part)&&['True / False','Discussion'].includes(q.type)&&clean(q.question)&&clean(q.modelAnswer)&&q.status==='公開'&&(!(q.type==='True / False')||/^(true|false)$/i.test(clean(q.modelAnswer)));}
+function groups(){return [...new Map(all.map(q=>[JSON.stringify([q.subject,q.lesson,q.part]),{key:JSON.stringify([q.subject,q.lesson,q.part]),label:q.subject+' Lesson '+q.lesson+' Part '+q.part}])).values()];}
+function updateChoices(){
+ const selection=$('unit').value,selectedType=$('kind').value;
+ $('start').disabled=!all.some(q=>JSON.stringify([q.subject,q.lesson,q.part])===selection&&q.type===selectedType);
+}
+function populate(){
+ const unit=$('unit');unit.replaceChildren();
+ const gg=groups();if(!gg.length){const opt=document.createElement('option');opt.textContent='公開教材がありません';opt.value='';unit.append(opt);unit.disabled=true;return;}
+ unit.disabled=false;gg.forEach(g=>{const o=document.createElement('option');o.value=g.key;o.textContent=g.label;unit.append(o);});updateChoices();
+}
+function resetAnswer(){selected=null;shown=false;$('trueBtn').disabled=false;$('falseBtn').disabled=false;$('trueBtn').classList.remove('selected');$('falseBtn').classList.remove('selected');$('response').value='';$('reveal').classList.add('hidden');$('next').classList.add('hidden');$('feedback').replaceChildren();}
+function display(){
+ resetAnswer();if(index>=current.length){$('progress').textContent='完了！ '+current.length+'問';$('question').textContent='おつかれさま！🎉';$('tf').classList.add('hidden');$('discuss').classList.add('hidden');$('mode').textContent='FINISH';return;}
+ const q=current[index];$('progress').textContent=(index+1)+' / '+current.length;$('mode').textContent=q.type;$('question').textContent=q.question;$('tf').classList.toggle('hidden',q.type!=='True / False');$('discuss').classList.toggle('hidden',q.type!=='Discussion');
+}
+function reveal(){
+ const q=current[index];if(!q||shown)return;shown=true;
+ $('correct').textContent=q.type==='True / False'?'正解：'+q.modelAnswer:'回答例：'+q.modelAnswer;
+ $('explain').textContent=q.explanation||'';
+ $('reveal').classList.remove('hidden');$('next').classList.remove('hidden');
+}
+function choose(value){
+ if(shown)return;const q=current[index];selected=value;
+ $('trueBtn').classList.toggle('selected',value==='True');$('falseBtn').classList.toggle('selected',value==='False');
+ $('trueBtn').disabled=true;$('falseBtn').disabled=true;
+ const isCorrect=value.toLowerCase()===clean(q.modelAnswer).toLowerCase();
+ const t=document.createElement('p');t.className=isCorrect?'success':'error';t.textContent=isCorrect?'正解！':'もう一度本文を確認してみよう。';$('feedback').append(t);reveal();
+}
+$('trueBtn').addEventListener('click',()=>choose('True'));$('falseBtn').addEventListener('click',()=>choose('False'));
+$('showAnswer').addEventListener('click',reveal);
+$('next').addEventListener('click',()=>{index++;display();});
+$('restart').addEventListener('click',()=>{$('play').classList.add('hidden');document.querySelector('section.panel').classList.remove('hidden');});
+$('kind').addEventListener('change',updateChoices);$('unit').addEventListener('change',updateChoices);
+$('start').addEventListener('click',()=>{const unit=$('unit').value,kind=$('kind').value;current=all.filter(q=>JSON.stringify([q.subject,q.lesson,q.part])===unit&&q.type===kind);if(!current.length)return;index=0;document.querySelector('section.panel').classList.add('hidden');$('play').classList.remove('hidden');display();});
+(async()=>{
+ const isDemo=new URLSearchParams(location.search).get('demo')==='1';
+ if(isDemo){all=demo;$('load').textContent='デモモード：架空のオリジナル教材を表示しています。';populate();return;}
+ const controller=new AbortController(),t=setTimeout(()=>controller.abort(),12000);
+ try{
+  const res=await fetch('./extension_questions.json?t='+Date.now(),{cache:'no-store',signal:controller.signal});
+  if(!res.ok)throw Error('HTTP '+res.status);
+  const data=await res.json();if(!Array.isArray(data))throw Error('JSON形式が不正です');
+  all=data.filter(valid);
+  $('load').textContent=all.length?'公開問題：'+all.length+'件':'現在、公開中の発展教材はありません。';
+  populate();
+ }catch(err){$('unit').replaceChildren();$('unit').disabled=true;$('start').disabled=true;$('load').className='notice error';$('load').textContent='教材の読み込みに失敗しました。時間をおいて再読み込みしてください。';}
+ finally{clearTimeout(t);}
+})();
+})();
+</script></body></html>
