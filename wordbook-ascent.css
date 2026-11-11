@@ -56,3 +56,8 @@ body.wordbook-page,body.wordbook-page[data-quest-stage]{background-image:linear-
  #wbUnitList .quest-plate strong{font-size:14px;}
  #wbUnitList .quest-plate small{font-size:11px;}
 }
+/* スマートフォンはHOMEと同じ時間帯別の背景を使う。 */
+@media(max-width:700px){
+ body.wordbook-page,body.wordbook-page[data-quest-stage]{background-color:#04132e!important;background-image:linear-gradient(rgba(0,8,24,.25),rgba(0,8,24,.25)),url('./yoshilab-mobile-mountain-v11.png')!important;background-size:100% 100%,100% auto!important;background-position:center center,center top!important;background-repeat:no-repeat!important;background-attachment:fixed!important;}
+ body.wordbook-page.yoshi-daytime,body.wordbook-page.yoshi-daytime[data-quest-stage]{background-image:linear-gradient(rgba(0,8,24,.25),rgba(0,8,24,.25)),url('./yoshilab-mobile-day-v13.png')!important;}
+}
