@@ -50,8 +50,8 @@ export function makeFiles(existing,input){
  }
  const extras=files['studio-materials.json'];
  const pos=extras.findIndex(r=>same(r,subject,lesson,part));
- const supplement={...key,qa:questions.qa,trueFalse:questions.trueFalse,discussion:questions.discussion};
- if(pos<0)extras.push(supplement);else extras[pos]=supplement;
+ const hasSupplement=questions.qa.length||questions.trueFalse.length||questions.discussion.length;
+ if(hasSupplement){const supplement={...key,qa:questions.qa,trueFalse:questions.trueFalse,discussion:questions.discussion};if(pos<0)extras.push(supplement);else extras[pos]=supplement;}
  const result={};
  for(const name of names)result[name]=JSON.stringify(files[name],null,2)+'\n';
  return {files:result,counts:Object.fromEntries(TYPES.map(t=>[t,questions[t].length])),replaced:{cloze:cloze.length&&existing[textName].some(r=>same(r,subject,lesson,part)),vocabulary:words.length&&existing[vocabName].some(r=>same(r,subject,lesson,part)),supplement:pos>=0}};
