@@ -1,1 +1,106 @@
-[]
+[
+  {
+    "id": "AI-L08P1-017",
+    "subject": "英C",
+    "lesson": "8",
+    "part": "1",
+    "type": "Discussion",
+    "question": "What kind of art or technology are you curious about? Why?",
+    "modelAnswer": "I am curious about animation because I enjoy learning how characters move.",
+    "acceptedAnswers": [
+      "自由回答。理由が伝われば別解可。"
+    ],
+    "explanation": "本文のcuriosityを自分の関心につなげる自由回答。正解は一つではない。",
+    "status": "公開"
+  },
+  {
+    "id": "AI-L08P1-018",
+    "subject": "英C",
+    "lesson": "8",
+    "part": "1",
+    "type": "Discussion",
+    "question": "Have you ever been inspired by a movie or a person? Explain.",
+    "modelAnswer": "Yes. I was inspired by a musician, and I started practicing the guitar.",
+    "acceptedAnswers": [
+      "自由回答。経験と説明があれば可。"
+    ],
+    "explanation": "本文のbe inspired byを使って経験を話す。正解は一つではない。",
+    "status": "公開"
+  },
+  {
+    "id": "AI-L08P1-019",
+    "subject": "英C",
+    "lesson": "8",
+    "part": "1",
+    "type": "Discussion",
+    "question": "If you could ask an expert for advice, whom would you choose and why?",
+    "modelAnswer": "I would ask a professional athlete because I want to improve my training.",
+    "acceptedAnswers": [
+      "自由回答。人物と理由があれば可。"
+    ],
+    "explanation": "Dickへの手紙という展開から、専門家への相談を考える。",
+    "status": "公開"
+  },
+  {
+    "id": "AI-L08P1-020",
+    "subject": "英C",
+    "lesson": "8",
+    "part": "1",
+    "type": "Discussion",
+    "question": "How can a teacher help students develop their interests?",
+    "modelAnswer": "A teacher can introduce useful resources and encourage students to try new things.",
+    "acceptedAnswers": [
+      "自由回答。具体例があれば可。"
+    ],
+    "explanation": "Kazuの英語教師による支援とつなげ、教師の役割について話す。",
+    "status": "公開"
+  },
+  {
+    "id": "AI-L08P1-013",
+    "subject": "英C",
+    "lesson": "8",
+    "part": "1",
+    "type": "True / False",
+    "question": "Kazu Hiro was born in New York.",
+    "modelAnswer": "False",
+    "acceptedAnswers": [],
+    "explanation": "本文では京都生まれとあるためFalse。",
+    "status": "公開"
+  },
+  {
+    "id": "AI-L08P1-014",
+    "subject": "英C",
+    "lesson": "8",
+    "part": "1",
+    "type": "True / False",
+    "question": "Kazu became interested in special effects after watching sci-fi movies.",
+    "modelAnswer": "True",
+    "acceptedAnswers": [],
+    "explanation": "高校時代にSF映画を見て特殊効果に刺激を受けたためTrue。",
+    "status": "公開"
+  },
+  {
+    "id": "AI-L08P1-015",
+    "subject": "英C",
+    "lesson": "8",
+    "part": "1",
+    "type": "True / False",
+    "question": "Dick Smith refused to give Kazu advice about his makeup work.",
+    "modelAnswer": "False",
+    "acceptedAnswers": [],
+    "explanation": "Dickは作品写真を送れば助言すると返事をしたためFalse。",
+    "status": "公開"
+  },
+  {
+    "id": "AI-L08P1-016",
+    "subject": "英C",
+    "lesson": "8",
+    "part": "1",
+    "type": "True / False",
+    "question": "Kazu's English teacher helped him communicate with Dick Smith.",
+    "modelAnswer": "True",
+    "acceptedAnswers": [],
+    "explanation": "英語教師の助けで手紙のやり取りをしたためTrue。",
+    "status": "公開"
+  }
+]
