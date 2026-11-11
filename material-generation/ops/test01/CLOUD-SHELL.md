@@ -74,3 +74,22 @@ MG_JOB_STORAGE_VERIFIED = false
 - Phase 2/3自動テスト93件成功、失敗0・スキップ0。シェル構文・差分チェック成功。
 - この環境にはgcloud、Google Cloud認証・ID連携がなく、Google Cloud APIも現在の通信許可先に含まれません。Google Cloudビルド・デプロイ・実IAM照合は未実施。上記Cloud Shell手順で管理者が実行してください。
 - 本番studioapi、Sheets、Apps Script、main、Pages、GitHubトリガーは変更なし。
+
+## BuildKitエラー修正後の再実行
+
+Cloud Shellの `export DOCKER_BUILDKIT=1` はCloud Buildには伝わりません。`cloudbuild.yaml` のDockerステップ自身に `env: ['DOCKER_BUILDKIT=1']` を設定しました。Dockerfileのsecret mountは環境内のプロキシCAをローカルビルド時だけ渡すためのもので、Cloud Buildでは指定不要です。
+
+既に取得済みの作業フォルダ内で実行してください。ローカル変更がある場合はpullが停止するため、変更を削除せず確認してください。
+
+```bash
+set -e
+git switch feat/sheet-material-generation-phase3
+git pull --ff-only origin feat/sheet-material-generation-phase3
+bash material-generation/ops/test01/manual-cloud-run.sh build
+bash material-generation/ops/test01/manual-cloud-run.sh deploy
+bash material-generation/ops/test01/manual-cloud-run.sh verify
+```
+
+生成・追記無効の設定は変更していません。
+
+修正の検証：Google公式 `gcr.io/cloud-builders/docker` コンテナ内で `DOCKER_BUILDKIT=1` を設定し、このDockerfileのビルドに成功しました。ローカル環境のプロキシCAは検証用コンテナとsecret mountへ一時的に渡しただけで、製品イメージへ保存していません。関連自動テスト93件成功、失敗0・スキップ0。実際のGoogle Cloudビルドは、この環境にGoogle Cloud認証がないため未実施です。

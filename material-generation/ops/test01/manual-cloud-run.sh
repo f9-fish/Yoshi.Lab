@@ -32,6 +32,8 @@ case "${1:-}" in
     trap 'rm -rf "$context"' EXIT
     # Upload only tracked engine files; no local secrets, .git, or unrelated app data.
     git archive HEAD material-generation | tar -x -C "$context"
+    # BuildKit is enabled inside cloudbuild.yaml, not via the caller shell.
+    echo "Cloud BuildのDockerステップ内でDOCKER_BUILDKIT=1を設定してビルドします。"
     gcloud builds submit "$context" --project="$project" --region="$region" --config="$ops/cloudbuild.yaml" --substitutions="_IMAGE=$image"
     echo "ビルド完了。次に実行: bash $ops/manual-cloud-run.sh deploy"
     ;;

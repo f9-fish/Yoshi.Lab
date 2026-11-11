@@ -1,6 +1,8 @@
 # Manual submission only: no GitHub trigger and no deployment step.
 steps:
   - name: gcr.io/cloud-builders/docker
+    # Cloud Shell exports do not propagate into this build container.
+    env: ['DOCKER_BUILDKIT=1']
     args: ['build', '-f', 'material-generation/ops/test01/Dockerfile', '-t', '${_IMAGE}', '.']
 images: ['${_IMAGE}']
 options:
