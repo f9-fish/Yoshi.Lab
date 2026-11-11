@@ -1,5 +1,7 @@
 # 教科書本文マスター連動：AI教材生成エンジン（Phase 1/2）
 
+Phase 3のテスト専用シート接続・認証・追記と復旧は [phase3/README.md](phase3/README.md) を参照してください。以下はPhase 2の純粋エンジンの説明です。
+
 ## 今回実装した範囲
 
 最新main `b45fbee4` のアプリ・教材形式・リポジトリ内同期コードと、利用者の開発指示書を基準にしています。Google Sheets・稼働中のApps Script・Geminiの実環境は未接続です。実シートの列と既存下書きタブの仕様は、Phase 3開始前に管理者確認が必要です。
@@ -141,6 +143,7 @@ Q&A・英作文・正誤の現行同期コードをVMで実行し、「要確認
 - 既存Q&Aテスト6件はmainでも失敗しているため、本実装で修正しない。
 
 ```sh
+npm ci --prefix material-generation --ignore-scripts
 node --test --test-isolation=none material-generation/tests/*.test.cjs
 node --test --test-isolation=none tests/*.test.cjs
 node --test --test-isolation=none studio-functions/tests/*.test.cjs

@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'material-generation/**'
+      - 'apps-script/material-generation-client.gs'
+      - 'apps-script/material-generation-appsscript.example.json'
       - 'apps-script/writing-sync.gs'
       - 'apps-script/pair-text-qa-sync.gs'
       - 'apps-script/ai-extension-publish.gs'
@@ -12,6 +14,8 @@ on:
   push:
     paths:
       - 'material-generation/**'
+      - 'apps-script/material-generation-client.gs'
+      - 'apps-script/material-generation-appsscript.example.json'
       - '.github/workflows/material-generation-check.yml'
 permissions:
   contents: read
@@ -23,9 +27,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - run: npm ci --prefix material-generation --ignore-scripts --no-audit --no-fund
       - run: node --test --test-isolation=none material-generation/tests/*.test.cjs
       - run: node --check material-generation/core.cjs
       - run: node --check material-generation/engine.cjs
       - run: node --check material-generation/append-plan.cjs
       - run: node --check material-generation/gemini.cjs
       - run: node material-generation/examples/demo.cjs
+      - run: node --check material-generation/phase3/server.cjs
+      - run: node --check material-generation/phase3/service.cjs
+      - run: node --check material-generation/phase3/auth.cjs
+      - run: node --check material-generation/phase3/file-store.cjs
+      - run: node --check material-generation/phase3/http.cjs
