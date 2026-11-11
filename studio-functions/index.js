@@ -17,6 +17,21 @@ const REPO='f9-fish/Yoshi.Lab';
 const BRANCH='main';
 const model=process.env.STUDIO_GEMINI_MODEL||'gemini-2.5-flash';
 const allowed=()=>String(process.env.STUDIO_ALLOWED_ORIGINS||'').split(',').map(s=>s.trim().replace(/\/$/,'')).filter(Boolean);
+const budget=(action)=>action==='generate'?{max:5,window:3600000}:action==='publish'?{max:20,window:86400000}:null;
+async function enforceQuota(uid,action){
+ const plan=budget(action);if(!plan)return;
+ // Admin SDK transactions are atomic across concurrent devices and function instances.
+ const key='studioQuota/'+uid+'/'+action;
+ const now=Date.now();
+ const result=await getDatabase().ref(key).transaction(current=>{
+  const start=Number(current?.start);
+  const active=Number.isFinite(start)&&start<=now&&now-start<plan.window;
+  const count=active?Number(current.count)||0:0;
+  if(count>=plan.max)return;
+  return {start:active?start:now,count:count+1};
+ },undefined,false);
+ if(!result.committed)throw fail(429,'利用回数の上限に達しました。時間をあけて再度お試しください');
+}
 const json=(res,status,obj)=>res.status(status).set('Cache-Control','no-store').json(obj);
 const fail=(status,message)=>Object.assign(new Error(message),{status});
 function responseCors(req,res){
@@ -109,6 +124,9 @@ exports.studioApi=onRequest({region:'asia-northeast1',secrets:[geminiKey,githubT
   limited(req);
   const user=await authorized(req);
   const action=String(req.path||'').replace(/^\/+|\/+$/g,'');
+  if(action!=='generate'&&action!=='preview'&&action!=='publish')return json(res,404,{error:'未対応の操作です'});
+  if(req.body.source&&typeof req.body.source==='string'&&req.body.source.length>20000)throw fail(400,'本文が長すぎます');
+  await enforceQuota(user.uid,action);
   if(action==='generate'){
    const input=checkInput(req.body);
    // Never log passages, tokens, model output or user emails.
