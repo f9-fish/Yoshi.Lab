@@ -43,6 +43,15 @@ async function publish(input){
  await github('PATCH',path('refs/heads/'+encodeURIComponent(branch)),{sha:next.sha,force:false});
  return {url:'https://github.com/'+repo+'/commit/'+next.sha,commit:next.sha,counts,replaced,note:'GitHubへの登録が完了。配信サイトへの反映は別途確認してください'};
 }
+async function enforceRateLimit(uid,action){
+ const interval=action==='generate'?30000:10000;
+ const target=getDatabase().ref('studioRateLimits/'+uid+'/'+action),now=Date.now();
+ const result=await target.transaction(old=>{
+  if(typeof old==='number'&&now-old<interval)return;
+  return now;
+ },undefined,false);
+ if(!result.committed)throw Object.assign(Error('連続操作を制限しています。少し時間を空けて再試行してください'),{status:429});
+}
 async function generate(input){
  const key=geminiKey.value();
  if(!key)throw Object.assign(Error('Gemini APIキーが未設定です'),{status:503});
@@ -76,8 +85,8 @@ export const studioApi=onRequest({region:'asia-northeast1',timeoutSeconds:120,me
   if(JSON.stringify(req.body||{}).length>150000)throw Object.assign(Error('入力データが大きすぎます'),{status:413});
   const input=validateDraft(req.body);
   const action=req.path.replace(/\/$/,'').split('/').pop();
-  if(action==='generate')return json(res,200,await generate(input));
-  if(action==='publish'){validateQuestions(req.body.questions);return json(res,200,await publish(req.body))}
+  if(action==='generate'){await enforceRateLimit(decoded.uid,'generate');return json(res,200,await generate(input))}
+  if(action==='publish'){validateQuestions(req.body.questions);await enforceRateLimit(decoded.uid,'publish');return json(res,200,await publish(req.body))}
   return json(res,404,{error:'操作が見つかりません'});
  }catch(e){console.error('Studio API failure',e.status||500,e.message);return json(res,e.status||400,{error:e.status>=500?'サーバー処理に失敗しました: '+e.message:e.message})}
 });
