@@ -4,3 +4,8 @@ node_modules/
 !.env.example
 .secret.local
 *-debug.log
+functions/node_modules/
+functions/.env
+functions/.env.*
+!functions/.env.example
+.firebase/
