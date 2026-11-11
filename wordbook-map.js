@@ -6,7 +6,7 @@
   const height=mobile?count*120+36:desktopHeight||(overview?480:600),points=[];
   // 一つの遠景上で、番号順に必ず手前から奥へ上がる。
   const ascent=[[4,.88],[32,.84],[55,.66],[28,.62],[74,.42],[50,.40],[26,.38],[26,.18],[50,.16],[74,.14]];
-  for(let i=0;i<count;i++){let left,y;if(mobile){left=i%2?14:2;y=62+i*120;}else if(overview){left=[3,26,49,71][i];y=height*[.82,.61,.40,.19][i];}else{[left,y]=ascent[i];y*=height;}points.push({left,y,x:width*left/100+(mobile?29:33),mobile,overview,width});}return {height,points};
+  for(let i=0;i<count;i++){let left,y;if(mobile){left=i%2?14:2;y=62+i*120;}else if(overview){left=[3,26,49,71][i];y=height*[.82,.61,.40,.19][i];}else{[left,y]=ascent[i];y=50+(y-.14)/.74*(height-100);}points.push({left,y,x:width*left/100+(mobile?29:33),mobile,overview,width});}return {height,points};
  }
  function path(points){
   if(!points.length)return '';const p=points.map(v=>({...v,y:v.y+(v.mobile?18:22)}));let d=`M ${p[0].x} ${p[0].y}`;
