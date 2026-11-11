@@ -1,0 +1,13 @@
+/* Shared HOME card structure; title sizing is local to the long training labels. */
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .writing-home-link,
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-subject-link{container-type:inline-size;}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .writing-home-link .growth-subject-name,
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-subject-link .growth-subject-name{font-size:clamp(18px,18cqi,30px)!important;line-height:1.25!important;letter-spacing:.02em!important;white-space:nowrap!important;overflow-wrap:normal;word-break:keep-all;}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-subject-link{--card-tone:#ffda72;--tile-wash:#3b290c;--tile-photo:right 30%;background-image:none!important;}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-subject-link::before{content:''!important;position:absolute;inset:0 -52px;width:auto;height:auto;border-radius:0;z-index:-1;pointer-events:none;background-image:linear-gradient(0deg,#493000cc,#22130811 70%),url('./home-training-triptych.png');background-size:100% 100%,300% auto;background-position:center,right top;background-repeat:no-repeat;transform:skewX(15deg);}
+body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-card-xp{font:600 9px/1.5 system-ui,sans-serif;color:#ffe5a3;letter-spacing:0;white-space:nowrap;}
+@media(max-width:700px){
+ body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-subject-link{background-image:linear-gradient(100deg,var(--tile-wash),var(--tile-wash))!important;}
+ body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-subject-link::before{inset:0 -11px 0 auto;width:58%;z-index:0;background-image:linear-gradient(90deg,var(--tile-wash),transparent 85%),url('./home-training-triptych.png');background-position:center,right 30%;transform:skewX(9deg)!important;}
+ body.home-dashboard:not(.welcome-active):has(#subjects) #subjects .eiken-card-xp{position:absolute!important;left:22px;bottom:9px;font-size:9px;}
+}
