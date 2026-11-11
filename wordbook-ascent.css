@@ -15,7 +15,7 @@
 .wordbook-page .quest-scene{border-color:#87b2c31a;box-shadow:none;}
 @media(max-width:760px){.wordbook-page .quest-node,.quest-overview .quest-node{width:82%;min-height:98px;gap:6px;}.wordbook-page .quest-stone,.quest-node[aria-pressed="true"] .quest-stone{flex-basis:58px;height:66px;}.quest-stone-number{font-size:28px;}.wordbook-page .quest-check{left:43px;top:13px;width:20px;height:20px;line-height:16px;}.wordbook-page .quest-plate{padding:10px 14px;}.quest-plate strong,.quest-overview .quest-plate strong{font-size:16px;}.quest-route .trail-rim{stroke-width:11;}.quest-route .trail-bed{stroke-width:8;}.quest-route .trail-inner{stroke-width:4;}}
 /* 全体に一枚の遠景を使い、マップには背景画像を重ねない。 */
-body.wordbook-page,body.wordbook-page[data-quest-stage]{background-image:linear-gradient(#04142c20,#04142c35),url('./wordbook-quest-night.webp')!important;background-position:center top!important;}
+body.wordbook-page,body.wordbook-page[data-quest-stage]{background-image:linear-gradient(#04142c20,#04142c35),url('./wordbook-reference-landscape.webp')!important;background-position:center top!important;}
 .wordbook-page .quest-scene:not(.list-mode){background:transparent;border:0;border-radius:0;box-shadow:none;}
 .wordbook-page .quest-scene::after{content:none;}
 .quest-stone-number{white-space:nowrap;min-width:2ch;text-align:center;}
@@ -34,4 +34,14 @@ body.wordbook-page,body.wordbook-page[data-quest-stage]{background-image:linear-
  body[data-quest-screen="wbUnits"] .quest-node{min-height:74px;}
  body[data-quest-screen="wbUnits"] .quest-dock{bottom:10px;padding:12px 22px;}
  body[data-quest-screen="wbUnits"] .quest-scene.list-mode{height:calc(100dvh - 350px);overflow:auto;}
+}
+
+/* 参考画像の空・山・草地を一枚の背景として配置する。 */
+@media(min-width:761px) and (min-height:700px){
+ body[data-quest-screen="wbUnits"]{background-size:100% 100dvh!important;}
+ body[data-quest-screen="wbUnits"] .quest-intro h1{font-size:clamp(32px,4vw,52px);letter-spacing:.08em;}
+ body[data-quest-screen="wbUnits"] .quest-section-head h2{display:table;margin:4px auto 10px;padding:5px 40px;background:linear-gradient(#bbffe4,#60e8bb);color:#052b2b;clip-path:polygon(3% 0,97% 0,100% 50%,97% 100%,3% 100%,0 50%);}
+ body[data-quest-screen="wbUnits"] .quest-area{position:absolute;left:0;top:6px;}
+ body[data-quest-screen="wbUnits"] .quest-section-head{position:relative;display:block;}
+ .wordbook-page .quest-progress button{clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%);padding-inline:28px;}
 }
