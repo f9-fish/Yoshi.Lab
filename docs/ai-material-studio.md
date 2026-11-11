@@ -30,9 +30,9 @@
 **注意:** 上記デプロイ手順はこのリポジトリに対応する設計上の手順。外部プロジェクト環境・課金・権限・実際のHosting URLはこのPRから確認できないため、未検証。Firebase CLIのバージョンに応じて必要な初期設定を行うこと。生成APIの利用には料金が発生する場合がある。
 
 ## 処理・公開ルール
-- `POST /generate`：教員認証後にGeminiを呼び出し、`questions` を返す。生成結果は公開されない。
+- `POST /generate`：教員認証後にGeminiを呼び出し、`questions` を返す。生成結果は公開されない。教員UIDごとに1時間5回までの上限をサーバー側で適用する（Firebase RTDBの`studioQuota/`に計数用の最小データを保存）。
 - `POST /preview`：同じLesson・PartのAI教材があるかと、公開対象の問数・ファイルSHAを返す。
-- `POST /publish`：確認時のSHAを必須とし、一致しない場合は409。採用済みの問題を単元ごとに置換して1ファイル・1コミットで更新する。過去のコミットから復元可能。
+- `POST /publish`：確認時のSHAを必須とし、一致しない場合は409。採用済みの問題を単元ごとに置換して1ファイル・1コミットで更新する。過去のコミットから復元可能。教員UIDごとに24時間20回の上限を適用。
 - 教科書本文自体や個人情報を `studio-content.json` に保存しない。公開には採用した設問・解答・解説を保存する。
 - 既存の`lessons.json` / `vocabulary.json` / `ronpyo_text.json` / `ronpyo_vocab.json` へは書き込まない。XP・Daily・ランキング・既存の通常学習への変更はしない。
 - True/False以外の自由記述は自己採点（解答例表示）であり、AIの正誤判定やXPの付与はしない。
@@ -48,6 +48,12 @@
 {"questions":{"vocabulary":[{"question":"visited","answer":"訪れた","translation":"visitの過去形"}],"cloze":[{"question":"I (visited) Kyoto.","answer":"私は京都を訪れた。","translation":"過去形"}],"qa":[{"question":"Where did I go?","answer":"Kyoto.","translation":"私はどこへ行きましたか？"}],"trueFalse":[{"question":"I visited Kyoto.","answer":"True","translation":"私は京都を訪れた。本文と一致"}],"discussion":[{"question":"Where do you want to go?","answer":"I want to go to Kyoto.","translation":"どこへ行きたいですか？"}]}}
 ```
 Publishでは同一入力に`questions`と`expectedSha`を含める。ログや画面にトークン・Secretを表示しない。
+
+## デプロイ前の重要な注意事項
+- 生成5回/時、公開20回/日の利用回数制限はUIDごとの技術的な上限。費用の予算上限ではないため、Google Cloudの課金アラートも設定する。
+- `STUDIO_ALLOWED_ORIGINS` を正確なGitHub Pages本番オリジンに設定する。未設定ならブラウザからのクロスオリジン通信は拒否される。APIのURLだけでアクセスを防げる設計ではなく、**毎回Firebase IDトークンと教員UIDを再検証**する。
+- GitHub Pagesがデプロイされた先がHTTPSで配信されること、およびFunctionsの呼び出し先URLの末尾・ルートが `/generate`, `/preview`, `/publish` に到達することを実環境で確認する。
+- Functionsは第2世代の公開HTTPSエンドポイントなので、アクセス制御はサーバー側で実施する。事前の校内利用許可が必要。
 
 ## 本番運用に向けた残課題
 - 現在の関数・UIの実環境テストとFirebase Security Rulesの監査。
