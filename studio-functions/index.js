@@ -15,7 +15,8 @@ const githubToken=defineSecret('STUDIO_GITHUB_TOKEN');
 const FILE='studio-content.json';
 const REPO='f9-fish/Yoshi.Lab';
 const BRANCH='main';
-const model=process.env.STUDIO_GEMINI_MODEL||'gemini-2.5-flash';
+// Do not silently switch models when a future deployment loses its runtime setting.
+const model=String(process.env.STUDIO_GEMINI_MODEL||'').trim();
 const allowed=()=>String(process.env.STUDIO_ALLOWED_ORIGINS||'').split(',').map(s=>s.trim().replace(/\/$/,'')).filter(Boolean);
 const budget=(action)=>action==='generate'?{max:5,window:3600000}:action==='publish'?{max:20,window:86400000}:null;
 async function enforceQuota(uid,action){
@@ -126,6 +127,7 @@ exports.studioApi=onRequest({region:'asia-northeast1',secrets:[geminiKey,githubT
   const action=String(req.path||'').replace(/^\/+|\/+$/g,'');
   if(action!=='generate'&&action!=='preview'&&action!=='publish')return json(res,404,{error:'未対応の操作です'});
   if(req.body.source&&typeof req.body.source==='string'&&req.body.source.length>20000)throw fail(400,'本文が長すぎます');
+  if(action==='generate'&&!model)return json(res,503,{error:'AIモデルが未設定です。管理者にSTUDIO_GEMINI_MODELの確認を依頼してください'});
   await enforceQuota(user.uid,action);
   if(action==='generate'){
    const input=checkInput(req.body);
