@@ -1,3 +1,5 @@
+確定済みCloud Run環境での手動実行は [Cloud Shell手順](CLOUD-SHELL.md) を参照してください。`preflight.env.yaml` は管理者から提示されたOAuth audience設定済みです。以下の初期設定説明にある空欄は、未設定プロジェクト向けの説明です。
+
 # 作成済みTEST01を使う接続準備（生成・追記はまだ無効）
 
 対象：<https://docs.google.com/spreadsheets/d/1DhOMLWw9nlMvNLRuT32vCN0A69GnaREWZqLZJyFLERc/edit>
