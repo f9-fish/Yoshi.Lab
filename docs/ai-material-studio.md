@@ -1,38 +1,41 @@
-# AI教材スタジオ：段階的実装と安全条件
+# AI教材スタジオ（実装状況：2026-11-11）
+
 ## 目的
-教員が本文・Lesson・Partを一度入力し、AIが「単語・熟語 / 文法・穴埋め / 本文Q&A / True / False / Discussion」を一括生成する。教員が修正・採否を確認した後に一括公開し、既存Yoshi.Labへ反映する。
+教員が本文、科目、Lesson、Partを入力し、AIが教材5種別を生成。教員が問題文・正解・日本語訳を編集し採用したものを一括公開して、既存アプリで利用できる状態にする。
 
-## 追加した画面
-- `teacher-studio.html` は**実装途中の管理画面**。認証済み教員のみ入力領域を表示し、ブラウザ内の下書き保存・編集・採用を扱う。
-- APIが未設定なら生成・公開は失敗を明示する。**現時点でAI自動生成・公開は動かない**。本番への導線は未追加。
-- API URLは配信HTMLの `<head>` に `<meta name="yoshilab-studio-api" content="https://...">` を設定する予定。設定値は公開してよいHTTPSのエンドポイントのみ。
-- クライアントはFirebaseのIDトークンを `Authorization: Bearer` として送る。教員であるかを**サーバー側でも再検証**する必要がある。
+## 実装済み（このPRのコード）
+- `teacher-studio.html`: Firebaseログイン状態と教員権限確認、本文入力、5種別生成APIとの通信、問題編集/採用、ローカル下書き、公開前確認
+- `functions/studio-api.js`: Firebase Admin IDトークン検証、`teacherUids` のサーバー側認可、Origin制限、操作間隔制限、Gemini API生成、GitHubへの複数ファイル一括コミット
+- `functions/studio-core.js`: 問題バリデーション、重複検出、既存教材JSONとの互換変換
+- `studio-practice.html`: 本文Q&A、True/False、Discussionの単元選択と回答表示
+- `studio-materials.json`: 新しい3種別のデータ保存先
+- `firebase.json`, `.firebaserc`, `functions/.env.example`: Cloud Functions設定雛形
 
-## バックエンド必須要件（未実装）
-1. Firebase Admin SDKでIDトークンを検証し、Realtime Databaseの `teacherUids/{uid} === true` を読み取る。ログイン中の教員判定のみでは許可しない。Firebase Rulesの監査も別途必須。
-2. `POST /generate` は認証・サイズ制限・レート制限後、サーバー秘密情報のGemini APIキーを用い、下記形式のJSONを返す（APIキーをブラウザやGitHubに置かない）。
-3. `POST /publish` は再認証・スキーマ検証・二重登録チェック・対象教科/単元の整合性確認をする。GitHubトークンはサーバーのSecret Managerに保存する。
-4. 既存の `lessons.json`, `vocabulary.json`, `ronpyo_text.json`, `ronpyo_vocab.json` の仕様を維持する。既存の英C・論表の単元ID/Partと教材の共存ルールを確認し、上書き対象を事前に教員へ表示する。**5種類すべてが現状の学習画面で利用可能とは未確認**なので、QA/TF/Discussionの格納先と表示画面も実装・テストする。
-5. GitHubに対しては最新SHAで楽観ロックを行い、可能なら1回のコミットで対象ファイルを更新する。途中失敗で一部だけ公開しない。公開履歴と復元可能なコミットSHAを残す。
-6. 授業本文を外部生成AIに送ることについて学校の運用・ライセンス条件を確認する。生徒氏名等の個人情報は入力不可とし、サーバーにも長期保存しない。
-7. 「公開完了」はGithubへの変更が成功した時点と、配信サイトに反映された時点を区別して表示する。キャッシュ更新・CDN反映を確認するまで即時反映と断言しない。
-8. Apps Script/スプレッドシート同期が後からJSONを上書きしないよう、教材データの正本を一本化するか衝突検出を設ける。
+## 運用上の制約
+- **Firebase Functionsは未デプロイ。Gemini APIキー・GitHubトークンは未設定。このPRをマージするだけでは生成・公開は動作しない。**
+- 本番FirebaseのSecurity Rulesと学校の教材送信ルールは未確認。APIはサーバー側で教師権限を再検証するが、Rules全体の監査を代替しない。
+- 既存の単語・穴埋めは対応する教材JSONへ変換して従来の学習画面で利用する。
+- 本文Q&A・True/False・Discussionは `studio-materials.json` に保存し、独立した `studio-practice.html` で利用する。**この3種別ではXP・学習履歴を保存しない**。
+- 同じ科目・Lesson・Partの採用済みカテゴリは新しい内容に上書きする。他の単元は維持する。カテゴリが0件なら既存教材を維持する（QA/TF/Discussionは一括の追加教材グループとして上書きされる）。
+- GitHubの更新が成功してもホスティング上の配信反映は別途確認が必要。Apps Scriptによる既存JSON同期が公開を上書きしないよう移行が必要。
+- `teacher-studio.html` はAPIのURLを `https://asia-northeast1-yoshi-lab-db3eb.cloudfunctions.net/studioApi` に設定済み。Firebase Functionsデプロイ時にURLを照合する。
 
-## API契約（クライアントの暫定インターフェース）
-POST /generate:
+## データ形式
+`POST /generate`:
 ```json
-{"subject":"英C","lesson":"8","part":"1","source":"English text","count":4}
+{"subject":"英C","lesson":"8","part":"1","source":"She went to school.","count":4}
 ```
-Response:
+返却:
 ```json
-{"questions":{"vocabulary":[{"question":"word","answer":"意味","translation":"補足"}],"cloze":[],"qa":[],"trueFalse":[],"discussion":[]}}
+{"questions":{"vocabulary":[{"question":"school","answer":"学校","translation":"スクール"}],"cloze":[{"question":"She ( went ) to school.","answer":"She went to school.","translation":"彼女は学校へ行きました。"}],"qa":[],"trueFalse":[],"discussion":[]}}
 ```
-他の種別もすべて配列で返すこと。各要素は question / answer / translation の文字列。AIの出力は正答保証ではない。
+- vocabulary: question = 英語、answer = 日本語の意味、translation = カタカナ読み。
+- cloze: question = 既存Yoshi.Labの `( answer )` 形式、answer = 括弧なし完全英文、translation = 日本語訳。
+- qa: 英語の質問・英語の答え・日本語訳。
+- trueFalse: 英語の正誤文・`True` または `False`・日本語訳と解説。
+- discussion: 英語の自由意見質問・英語の模範解答例・日本語訳。
 
-POST /publish: 上記入力に `questions`（5種別・採用済みのみ）を追加して送る。正常時は `{"url":"https://..."}` を返す。失敗時は非200 + `{"error":"説明"}` とする。
+`POST /publish`: 生成の入力と採用済み `questions` をすべて含めて送信する。Firebase IDトークンで教員認証を行う。成功時はGitHubコミットURL・変更件数を返す。
 
-## 次の実装
-- Cloud Functionsなどサーバーの配置方法・Secret管理を決め、上記2 APIを実装。
-- 5種類の出題形式と既存画面の対応を確定。穴埋めは既存の括弧表現、単語は `word/meaning/hint/reading` へ正規化し、日本語訳等を破壊しない。
-- 新規/既存単元のプレビュー、差分確認、重複検査、ロールバックを実装。
-- モックFirebase/Gemini/GitHubによる検証・スマホUIを含むテストを追加。セキュリティ設定確認後にのみ管理画面に正式導線を追加。
+## デプロイ
+`docs/ai-studio-deployment.md` を参照。安全確認と管理者の明示的な判断を終えてから実施する。
