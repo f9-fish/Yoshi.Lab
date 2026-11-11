@@ -1,41 +1,57 @@
-# AI教材スタジオ（実装状況：2026-11-11）
+# Yoshi.Lab AI教材スタジオ
 
-## 目的
-教員が本文、科目、Lesson、Partを入力し、AIが教材5種別を生成。教員が問題文・正解・日本語訳を編集し採用したものを一括公開して、既存アプリで利用できる状態にする。
+## 目標
+先生が英語本文・科目・Lesson・Partを入力すると、Gemini が5種類の練習問題を生成。先生が採否・内容を確認し、公開ボタンを押すと、GitHub上の `studio-content.json` に一括保存。生徒は `studio-study.html` で各教材を学習する。
 
-## 実装済み（このPRのコード）
-- `teacher-studio.html`: Firebaseログイン状態と教員権限確認、本文入力、5種別生成APIとの通信、問題編集/採用、ローカル下書き、公開前確認
-- `functions/studio-api.js`: Firebase Admin IDトークン検証、`teacherUids` のサーバー側認可、Origin制限、操作間隔制限、Gemini API生成、GitHubへの複数ファイル一括コミット
-- `functions/studio-core.js`: 問題バリデーション、重複検出、既存教材JSONとの互換変換
-- `studio-practice.html`: 本文Q&A、True/False、Discussionの単元選択と回答表示
-- `studio-materials.json`: 新しい3種別のデータ保存先
-- `firebase.json`, `.firebaserc`, `functions/.env.example`: Cloud Functions設定雛形
+## 実装済み（PR内・本番未反映）
+- `teacher-studio.html`：Firebaseログイン・教員権限確認、教材入力、AI生成、5種類の問題編集、採用チェック、ブラウザへの下書き保存、サーバーでの差分プレビュー、公開確認、API通信。
+- `studio-functions/index.js`：Firebase IDトークンと`teacherUids/{uid} === true`の**サーバー側の**検証。Gemini生成、構造化JSONバリデーション、GitHubのSHA競合防止、`studio-content.json`へのコミット。
+- `studio-functions/studio-core.cjs`：教材形式検証、必須項目・重複確認、単元キーの突合。
+- `studio-study.html`：単語、穴埋め、本文Q&A、True/False、Discussionの演習画面。英C・論表、Lesson・Part選択に対応。
+- `studio-content.json`：AI生成教材専用データ。既存の4種類のJSONとは独立し、Apps Script同期が上書きしない。
+- `studio-config.js`：公開API URL設定（**まだ空欄**）。
+- `studio-functions/tests/studio-core.test.cjs`：形式、重複、入力値等の単体テスト。
+- `.github/workflows/studio-check.yml`：上記テスト・サーバー構文検証のGitHub Actions。
+- `index.html`：ホームメニューのAI教材リンクのみ追加。
 
-## 運用上の制約
-- **Firebase Functionsは未デプロイ。Gemini APIキー・GitHubトークンは未設定。このPRをマージするだけでは生成・公開は動作しない。**
-- 本番FirebaseのSecurity Rulesと学校の教材送信ルールは未確認。APIはサーバー側で教師権限を再検証するが、Rules全体の監査を代替しない。
-- 既存の単語・穴埋めは対応する教材JSONへ変換して従来の学習画面で利用する。
-- 本文Q&A・True/False・Discussionは `studio-materials.json` に保存し、独立した `studio-practice.html` で利用する。**この3種別ではXP・学習履歴を保存しない**。
-- 同じ科目・Lesson・Partの採用済みカテゴリは新しい内容に上書きする。他の単元は維持する。カテゴリが0件なら既存教材を維持する（QA/TF/Discussionは一括の追加教材グループとして上書きされる）。
-- GitHubの更新が成功してもホスティング上の配信反映は別途確認が必要。Apps Scriptによる既存JSON同期が公開を上書きしないよう移行が必要。
-- `teacher-studio.html` はAPIのURLを `https://asia-northeast1-yoshi-lab-db3eb.cloudfunctions.net/studioApi` に設定済み。Firebase Functionsデプロイ時にURLを照合する。
+**重要:** 本番公開はまだ実施していない。GitHub PRがマージされてもFirebase Functionsは自動ではデプロイされない。デプロイ・Secret設定・本番権限監査が終わるまで「生成」「公開」は使用できない。
 
-## データ形式
-`POST /generate`:
+## 一度限りのFirebase側準備（管理者が実施）
+1. Firebase/Google Cloudの同一プロジェクト `yoshi-lab-db3eb` を確認。Firebase Functions第2世代とSecret Managerを利用できる課金・権限を用意。
+2. このリポジトリをPC上にチェックアウトし、`studio-functions` 内で `npm install` を実行する。既存のアプリには依存を追加しない。
+3. Gemini APIキーを入手し、`firebase functions:secrets:set STUDIO_GEMINI_API_KEY --project yoshi-lab-db3eb --config studio.firebase.json`で登録（コマンド実行時の入力欄に設定）。**チャットやGitHubに貼り付けない**。
+4. GitHubの`f9-fish/Yoshi.Lab`の`studio-content.json`に書き込み可能な、必要最小限の権限を持つFine-grained tokenを発行する。GitHub側は Contents: Read/Write のみ。これを `firebase functions:secrets:set STUDIO_GITHUB_TOKEN --project yoshi-lab-db3eb --config studio.firebase.json`で登録。
+5. `studio-functions/.env` に、実際にアクセスするアプリのHTTPSオリジンだけを `STUDIO_ALLOWED_ORIGINS=https://<本番のオリジン>` の形で指定する。**ファイルをGitHubにコミットしない**。モデルを変更する場合のみ `STUDIO_GEMINI_MODEL=...` も指定する。
+6. `firebase deploy --only functions:ai-studio --config studio.firebase.json --project yoshi-lab-db3eb` でFunctionsを公開。出力された `studioApi` のURLを控える。
+7. `studio-config.js` の `window.YoshiStudioApiBase` にそのURL（末尾`/studioApi`まで）を設定し、通常のPR・マージと配信を経て反映する。
+8. `teacherUids/{uid}` の教員権限とSecurity Rulesを点検。教員以外でGenerate/Preview/Publishが403になることを実機テストする。
+9. 学校での外部生成AI利用・教科書本文の送信可否を必ず確認し、許可されてから授業本文を入力する。
+
+**注意:** 上記デプロイ手順はこのリポジトリに対応する設計上の手順。外部プロジェクト環境・課金・権限・実際のHosting URLはこのPRから確認できないため、未検証。Firebase CLIのバージョンに応じて必要な初期設定を行うこと。生成APIの利用には料金が発生する場合がある。
+
+## 処理・公開ルール
+- `POST /generate`：教員認証後にGeminiを呼び出し、`questions` を返す。生成結果は公開されない。
+- `POST /preview`：同じLesson・PartのAI教材があるかと、公開対象の問数・ファイルSHAを返す。
+- `POST /publish`：確認時のSHAを必須とし、一致しない場合は409。採用済みの問題を単元ごとに置換して1ファイル・1コミットで更新する。過去のコミットから復元可能。
+- 教科書本文自体や個人情報を `studio-content.json` に保存しない。公開には採用した設問・解答・解説を保存する。
+- 既存の`lessons.json` / `vocabulary.json` / `ronpyo_text.json` / `ronpyo_vocab.json` へは書き込まない。XP・Daily・ランキング・既存の通常学習への変更はしない。
+- True/False以外の自由記述は自己採点（解答例表示）であり、AIの正誤判定やXPの付与はしない。
+- GitHubに保存した時点とPagesに反映された時点は異なる。ブラウザで再読み込みして確認する。
+
+## API構造
+入力:
 ```json
-{"subject":"英C","lesson":"8","part":"1","source":"She went to school.","count":4}
+{"subject":"英C","lesson":"8","part":"1","source":"I visited Kyoto.","count":4}
 ```
-返却:
+生成結果:
 ```json
-{"questions":{"vocabulary":[{"question":"school","answer":"学校","translation":"スクール"}],"cloze":[{"question":"She ( went ) to school.","answer":"She went to school.","translation":"彼女は学校へ行きました。"}],"qa":[],"trueFalse":[],"discussion":[]}}
+{"questions":{"vocabulary":[{"question":"visited","answer":"訪れた","translation":"visitの過去形"}],"cloze":[{"question":"I (visited) Kyoto.","answer":"私は京都を訪れた。","translation":"過去形"}],"qa":[{"question":"Where did I go?","answer":"Kyoto.","translation":"私はどこへ行きましたか？"}],"trueFalse":[{"question":"I visited Kyoto.","answer":"True","translation":"私は京都を訪れた。本文と一致"}],"discussion":[{"question":"Where do you want to go?","answer":"I want to go to Kyoto.","translation":"どこへ行きたいですか？"}]}}
 ```
-- vocabulary: question = 英語、answer = 日本語の意味、translation = カタカナ読み。
-- cloze: question = 既存Yoshi.Labの `( answer )` 形式、answer = 括弧なし完全英文、translation = 日本語訳。
-- qa: 英語の質問・英語の答え・日本語訳。
-- trueFalse: 英語の正誤文・`True` または `False`・日本語訳と解説。
-- discussion: 英語の自由意見質問・英語の模範解答例・日本語訳。
+Publishでは同一入力に`questions`と`expectedSha`を含める。ログや画面にトークン・Secretを表示しない。
 
-`POST /publish`: 生成の入力と採用済み `questions` をすべて含めて送信する。Firebase IDトークンで教員認証を行う。成功時はGitHubコミットURL・変更件数を返す。
-
-## デプロイ
-`docs/ai-studio-deployment.md` を参照。安全確認と管理者の明示的な判断を終えてから実施する。
+## 本番運用に向けた残課題
+- 現在の関数・UIの実環境テストとFirebase Security Rulesの監査。
+- Gemini生成の品質・教材日本語訳・曖昧な正答の教員確認。
+- APIアクセス量の上限・監査ログ・費用アラートの運用設計。
+- 学校からの教科書本文送信許可と著作権・データ取り扱い確認。
+- 利用実績を踏まえ、必要なら生徒用AI教材にもXPや学習履歴を接続（今回は対象外）。
