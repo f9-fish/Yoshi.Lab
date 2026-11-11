@@ -9,7 +9,7 @@ const {
   describeSlot, normalizedKey
 }=require('./studio-core.cjs');
 
-if(!getApps().length)initializeApp();
+if(!getApps().length)initializeApp({databaseURL:'https://yoshi-lab-db3eb-default-rtdb.firebaseio.com'});
 const geminiKey=defineSecret('STUDIO_GEMINI_API_KEY');
 const githubToken=defineSecret('STUDIO_GITHUB_TOKEN');
 const FILE='studio-content.json';
