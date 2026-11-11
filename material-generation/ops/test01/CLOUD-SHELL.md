@@ -93,3 +93,32 @@ bash material-generation/ops/test01/manual-cloud-run.sh verify
 生成・追記無効の設定は変更していません。
 
 修正の検証：Google公式 `gcr.io/cloud-builders/docker` コンテナ内で `DOCKER_BUILDKIT=1` を設定し、このDockerfileのビルドに成功しました。ローカル環境のプロキシCAは検証用コンテナとsecret mountへ一時的に渡しただけで、製品イメージへ保存していません。関連自動テスト93件成功、失敗0・スキップ0。実際のGoogle Cloudビルドは、この環境にGoogle Cloud認証がないため未実施です。
+
+## 認証接続が120秒でタイムアウトした場合の診断版
+
+3段階をそれぞれ5秒で打ち切ります。通常は合計15秒程度以内＋実行オーバーヘッドで返り、タイムアウトはHTTP 504、サービス参照失敗は安全な503、登録・本人確認不一致は403/401です。Cloud Runの上限120秒を延ばす対処は行いません。
+
+| ログのstage | 内容 | タイムアウト／failure時に管理者が確認する項目 |
+|---|---|---|
+| google_id_token | Google署名・期限・audience検証 | Google公開鍵取得への通信、DNS、外向きネットワーク。failureはトークン不正の可能性もある |
+| firebase_auth_user | Firebase Authユーザー取得 | Identity Toolkitへの通信、専用実行アカウントの `firebaseauth.users.get` 権限、登録状態 |
+| rtdb_teacher_flag | ADCのアクセストークン取得とRTDBの1フラグ読み取り | 実行アカウントのADC、RTDB URL、RTDB読み取りIAM、ネットワーク／VPC設定 |
+
+今回の構成ではFirebase Auth ViewerだけでRTDBの読み取りが許可されるとは限りません。ユーザー・teacherUidsが存在していても、実行アカウントのDB読み取り権限や通信経路は別途確認が必要です。現時点の120秒ログだけでは原因を断定できません。
+
+RTDBの単発照合はRealtime SDKの継続接続から、Authorizationヘッダー付きGETへ変更しました。URLのクエリにアクセストークンを入れず、対象パスだけを読み取り、応答上限32バイト、リダイレクト拒否、タイムアウト時にHTTP通信を中断します。書き込みはありません。Google検証/Firebase Auth SDKやADCの内部処理は完全には中断できませんが、呼出元は5秒で終了し、期限後の結果で認証を通したり、次の段階を開始したりしません。
+
+診断ログは `component=material_auth`、stage、event（start/success/failure/timeout）、elapsedMsだけです。エラー全文、トークン、メール、UID、教材本文は出しません。stageのsuccessはそのAPI取得の完了を示し、最終的な教員認可成功と同じではありません。
+
+更新・再ビルド・再デプロイは上の再実行コマンドを使用してください。その後、新規テストApps Scriptの `mgCheckTest01Connection` を再実行し、次のコマンドで診断ログを確認します。
+
+```bash
+gcloud logging read \
+  'resource.type="cloud_run_revision" AND resource.labels.service_name="yoshilab-material-test01" AND jsonPayload.component="material_auth"' \
+  --project=yoshi-lab-db3eb --freshness=15m --limit=30 \
+  --format='table(timestamp,jsonPayload.stage,jsonPayload.event,jsonPayload.elapsedMs)'
+```
+
+`start` の後の `timeout` / `failure` を確認してください。接続先への到達性やIAMの確認が済むまでは、生成・追記を有効にしないでください。Rulesの緩和やEditor権限の追加で回避しないでください。
+
+検証：既存93件＋追加13件、合計106件成功、失敗0・スキップ0。Google検証・Firebase Auth・RTDBの各ハング、REST拒否、ADCの遅延、期限後の認可防止、ログの個人情報除外、HTTP 504応答を外部サービスに接続せず確認しました。実Cloud接続・本番データ参照・デプロイは未実施です。

@@ -40,6 +40,7 @@ jobs:
       - run: node material-generation/examples/demo.cjs
       - run: node --check material-generation/phase3/server.cjs
       - run: node --check material-generation/phase3/service.cjs
+      - run: node --check material-generation/phase3/auth-step.cjs
       - run: node --check material-generation/phase3/auth.cjs
       - run: node --check material-generation/phase3/file-store.cjs
       - run: node --check material-generation/phase3/http.cjs

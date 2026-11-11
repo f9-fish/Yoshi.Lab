@@ -6,10 +6,10 @@ async function main(){
  if(preflight&&(env.MG_ENABLED==='true'||env.MG_TEST_APPEND_ENABLED==='true'))throw Error('接続確認専用モードでは生成・追記を有効にできません');
  if(!preflight&&(env.MG_AUTH_VERIFIED!=='true'||env.MG_STORAGE_VERIFIED!=='true'))throw Error('認証・永続保存の管理者確認が必要です');
  if(!env.MG_TEST_SPREADSHEET_ID||!env.MG_GOOGLE_AUDIENCE)throw Error('テストID・Apps Scriptのaudienceが必要です');
- const {OAuth2Client}=require('google-auth-library'),{initializeApp}=require('firebase-admin/app'),{getAuth}=require('firebase-admin/auth'),{getDatabase}=require('firebase-admin/database');
- const {createIdentityVerifier,createTeacherChecker}=require('./auth.cjs'),{createService}=require('./service.cjs'),{handler}=require('./http.cjs');
+ const {OAuth2Client}=require('google-auth-library'),{initializeApp}=require('firebase-admin/app'),{getAuth}=require('firebase-admin/auth');
+ const {createIdentityVerifier,createTeacherChecker,createRestTeacherReader}=require('./auth.cjs'),{createService}=require('./service.cjs'),{handler}=require('./http.cjs');
  const app=initializeApp({projectId:'yoshi-lab-db3eb',databaseURL:'https://yoshi-lab-db3eb-default-rtdb.firebaseio.com'},'sheet-material-server');
- const options={enabled:true,preflightOnly:preflight,allowedTestIds:[env.MG_TEST_SPREADSHEET_ID],allowedSourceIds:[env.MG_TEST_SPREADSHEET_ID],verifyIdentity:createIdentityVerifier({audience:env.MG_GOOGLE_AUDIENCE,OAuth2Client}),checkTeacher:createTeacherChecker({auth:getAuth(app),database:getDatabase(app)})};
+ const options={enabled:true,preflightOnly:preflight,allowedTestIds:[env.MG_TEST_SPREADSHEET_ID],allowedSourceIds:[env.MG_TEST_SPREADSHEET_ID],verifyIdentity:createIdentityVerifier({audience:env.MG_GOOGLE_AUDIENCE,OAuth2Client}),checkTeacher:createTeacherChecker({auth:getAuth(app),readTeacherFlag:createRestTeacherReader({credential:app.options.credential,databaseURL:app.options.databaseURL})})};
  if(!preflight){
   if(!env.MG_GEMINI_MODEL||!env.MG_GEMINI_API_KEY)throw Error('確認済みモデルとサーバー側Secret設定が必要です');
   if(env.MG_STORE_BACKEND==='gcs'){
