@@ -1,0 +1,28 @@
+name: Yoshi.Lab regression checks
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  existing-app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Existing application tests
+        run: node --test --test-isolation=none tests/*.test.cjs
+  studio-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Studio schema and conversion tests
+        working-directory: functions
+        run: npm test
