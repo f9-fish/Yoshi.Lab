@@ -27,6 +27,12 @@ with sync_playwright() as p:
  browser=p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])
  for width in [320,390,1280,1536,1920]:
   ctx=browser.new_context(viewport={'width':width,'height':990 if width==1920 else 792 if width==1536 else 1100 if width>760 else 950});page=ctx.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)));page.route('**/*',routes(auth=True));page.goto('https://local.test/wordbook.html');page.wait_for_function('document.getElementById("wbStatus").getAttribute("aria-busy")==="false"')
+  # HOMEと同じモバイル用の昼夜画像。PCの山岳マップは維持。
+  for daytime in [False,True]:
+   page.evaluate('(day)=>document.body.classList.toggle("yoshi-daytime",day)',daytime)
+   background=page.evaluate('getComputedStyle(document.body).backgroundImage')
+   expected=('yoshilab-mobile-day-v13.png' if daytime else 'yoshilab-mobile-mountain-v11.png') if width<=700 else 'wordbook-reference-landscape.webp'
+   assert expected in background
   assert page.locator('#wbUnitNav').is_disabled() and page.locator('#wbMethodNav').is_disabled()
   assert page.locator('#wbStageList .quest-node').count()==4
   if width in [390,1280]:page.screenshot(path=f'/tmp/quest-stage-{width}.png',full_page=False)
