@@ -66,5 +66,16 @@ with sync_playwright() as p:
   page.locator('#wbChangeUnits').click();page.set_viewport_size({'width':width+30,'height':950})
   page.wait_for_function("Math.abs(document.querySelector('#wbRangeScene .quest-route').viewBox.baseVal.width-document.getElementById('wbRangeScene').clientWidth)<1")
   assert page.locator('#wbUnitList button[aria-pressed=true]').count()==1
+  if width==1280:
+   page.locator('#wbSegments button').nth(1).click()
+   for height in [768,900,1080]:
+    page.set_viewport_size({'width':1366,'height':height})
+    page.wait_for_timeout(150)
+    assert page.evaluate('document.documentElement.scrollHeight<=innerHeight'), 'desktop range screen must fit viewport'
+    nodes=page.locator('#wbUnitList button').evaluate_all('(nodes)=>nodes.map(n=>{const r=n.getBoundingClientRect();return {top:r.top,bottom:r.bottom,text:n.querySelector(".quest-stone-number").textContent};})')
+    for i in range(1,len(nodes)):assert nodes[i]['top']<nodes[i-1]['top'], 'number order must climb uphill'
+    assert nodes[-1]['top']>0 and nodes[0]['bottom']<page.locator('#wbRangeDock').bounding_box()['y']
+    assert page.locator('.quest-stone-number').last.evaluate('(n)=>getComputedStyle(n).whiteSpace')=='nowrap'
+    page.screenshot(path=f'/tmp/quest-parts11-20-{height}.png')
   assert not errors,errors;ctx.close();print('PASS',width,'all stages, pagination, shared map/list selection, dock, dialog, backtracking, keyboard, screenshots',flush=True)
  browser.close()
