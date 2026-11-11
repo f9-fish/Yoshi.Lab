@@ -324,7 +324,7 @@ html body:not(.unused-yoshilab-selector) {
 #qaExit:focus-visible{outline:2px solid #ffd0d6;outline-offset:3px;}
 #qaExitActions:has(#qaExit.hidden){display:none;}
 </style>
-</head><body><div class="wrap"><a href="./index.html">← 通常練習に戻る</a><h1 class="pair-brand">Yoshi<span class="brand-accent">.Lab</span><span class="pair-suffix">PAIR</span></h1><p class="sub">LEARN × LEVEL UP</p><div class="row" style="margin:10px 0"><button id="soundToggle" type="button" style="flex:0 0 auto">🔇 効果音をON</button><span class="muted">各スマホで一度押してね</span></div><div id="status" class="status">Firebaseに接続しています…</div>
+<link rel="stylesheet" href="./pair-menu.css?v=1"></head><body><div class="wrap"><a href="./index.html">← 通常練習に戻る</a><h1 class="pair-brand">Yoshi<span class="brand-accent">.Lab</span><span class="pair-suffix">PAIR</span></h1><p class="sub">LEARN × LEVEL UP</p><div class="row" style="margin:10px 0"><button id="soundToggle" type="button" style="flex:0 0 auto">🔇 効果音をON</button><span class="muted">各スマホで一度押してね</span></div><div id="status" class="status">Firebaseに接続しています…</div>
 <section id="lobby" class="panel hidden"><div id="wizard"><div class="step-label" id="stepLabel">STEP 1 / 5</div><h2 id="stepTitle">科目を選ぼう</h2><button type="button" id="stepBack" class="step-back hidden">← 戻る</button><div id="stepChoices"></div><p class="status" id="stepMessage"></p></div><div class="join-area"><h2>参加コードを持っている人（生徒B）</h2><p class="muted">生徒Aが作った6桁のコードを入力して参加してね。</p><div class="row"><input id="joinCode" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="6桁のコード" aria-label="参加コード"><button id="join">参加（生徒B）</button></div></div></section>
 <section id="waiting" class="panel hidden"><h2>相手の参加を待っています</h2><div class="code" id="roomCode"></div><p class="muted">この6桁を相手に伝えてね。相手は「参加」に入力します。</p><button id="cancel" class="red">待機を終了</button></section>
 <section id="rotationSetup" class="panel hidden" aria-live="polite">
@@ -344,7 +344,7 @@ html body:not(.unused-yoshilab-selector) {
   <p id="briefingWaiting" class="muted hidden">生徒Aが「スタート」を押すまで待ってね。</p>
 </section><section id="game" class="hidden"><section class="panel"><div class="stat"><span id="role" class="tag"></span><span id="counter" class="tag"></span></div><div class="stat"><span>連続正解</span><span class="streak-chip" id="pairStreakChip">🔥 0 STREAK</span></div><div class="stat"><span>残り時間</span><strong id="timer">00:30</strong></div><div class="stat"><span>ペアの正解数</span><strong id="score">0 / 0</strong></div><div class="card"><div class="sub" id="instruction"></div><div id="english" class="english"></div><div id="pairHintArea" class="hidden" style="margin:12px 0"><button type="button" id="pairHintButton" class="outline" style="width:100%">💡 ヒントを出す</button><p id="pairHintText" class="muted" style="margin:8px 0 0"></p><p id="pairHintRequest" class="hidden pair-hint-request" style="margin:8px 0 0">💡 ヒントが欲しい → ペアにお願い → 表示！</p></div><button id="qaAnswerOpen" type="button" class="primary hidden" style="margin:12px 0">解答を見る</button><div id="qaModel" class="japanese hidden"></div><button id="qaHintRequest" type="button" class="outline hidden" style="margin:12px 0">💡 Ask for a hint</button><div id="qaExplanation" class="japanese hidden"></div><div id="pairChoices" class="hidden" style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0"></div><div id="pairTypingArea" class="hidden" style="margin:12px 0"><input id="pairTypingInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="穴埋めの英語を入力" style="width:100%;padding:13px"><button id="pairTypingSubmit" class="primary" style="width:100%;margin-top:8px">回答する</button><p id="pairTypingHint" class="muted"></p></div><div id="answerKey" class="answer-key hidden">黄色い文字が解答箇所</div><div id="japanese" class="japanese"></div><div id="qaExitActions"><button id="qaExit" type="button" class="hidden" aria-label="2人のペアワークを終了" title="2台とも終了します">終了</button></div></div><p id="roleHint" class="muted"></p><div id="grading" class="split hidden"><button id="correct" class="green">○ 正解</button><button id="wrong" class="red">× 不正解</button></div><div id="feedback" class="panel hidden"><div id="feedbackTitle" class="judgment" role="status">正答確認</div><div id="feedbackWordCard" class="hidden"><div class="feedback-word-label">正しい英単語</div><div id="feedbackWord" class="feedback-word"></div><div id="feedbackMeaning" class="feedback-meaning"></div></div><p id="feedbackAnswer" class="english"></p><button id="next" class="primary" style="width:100%">次の問題へ →</button><p id="nextHint" class="muted"></p></div></section><section id="change" class="panel hidden"><h2>🔄 役割交代！</h2><p><span id="changeExplanation">出題者と回答者が入れ替わるよ。</span></p></section></section>
 <div id="pairRoleOverlay" class="pair-role-overlay hidden" role="status" aria-live="polite"><div class="pair-role-overlay-card"><div class="pair-role-overlay-title">🔄 役割チェンジ！</div><div id="pairRoleOverlaySub" class="pair-role-overlay-sub"></div></div></div><section id="done" class="panel hidden"><h2>🎉 おつかれさま！</h2><p class="big" id="result"></p><p class="muted" id="detail"></p><button id="back" class="primary">Home</button></section></div>
-<script src="./answer-variants.js?v=1"></script><script src="./pair-qa-config.js?v=1"></script><script src="./pair-qa-spark-core.js?v=3"></script><script src="./pair-qa-spark.js?v=4"></script><script src="./pair-qa-client.js?v=3"></script><script type="module">
+<script src="./pair-reading-tf.js?v=1"></script><script src="./answer-variants.js?v=1"></script><script src="./pair-qa-config.js?v=1"></script><script src="./pair-qa-spark-core.js?v=3"></script><script src="./pair-qa-spark.js?v=4"></script><script src="./pair-qa-client.js?v=3"></script><script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js';
 import {getAuth,signInAnonymously,onAuthStateChanged,inMemoryPersistence,browserSessionPersistence,setPersistence} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js';
 import {getDatabase,ref,onValue,runTransaction,set} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js';
@@ -457,24 +457,27 @@ const catalog=()=>{
   return [...entries.values()];
 };
 const vocabCards=entry=>(entry?.vocab||[]).map(w=>Array.isArray(w)?[String(w[0]??''),String(w[1]??'')]:[String(w.word??''),String(w.meaning??'')]).filter(c=>c[0]&&c[1]);
+let tfRows=[],tfState='loading';
+const tfEntries=()=>YoshiPairReadingTF.entries(tfRows);
 let selection={subject:'',lesson:'',part:'',mode:'',duration:0},step=0;
 const steps=['科目を選ぼう','学習内容を選ぼう','Lessonを選ぼう','Partを選ぼう','制限時間を選ぼう'];
-function choice(label,action,{detail='',disabled=false,featured=false}={}){
-  const b=document.createElement('button');b.type='button';b.className='step-choice'+(featured?' featured':'');b.disabled=disabled;
-  b.textContent=label;if(detail){const small=document.createElement('small');small.textContent=detail;b.append(small)}
-  b.onclick=action;$('stepChoices').append(b);
+function choice(label,action,{detail='',disabled=false,featured=false,kind=''}={}){
+ const b=document.createElement('button');b.type='button';b.className='step-choice'+(featured?' featured':'');b.disabled=disabled;b.dataset.kind=kind;
+ if(kind){const icons={cloze:'M5 4h14v16H5zM8 8h8M8 12h5M8 16h8',vocab:'M4 5h16v14H4zM8 9h8M8 13h3',qa:'M4 4h16v12H9l-5 4zM8 8h8M8 12h5',tf:'m4 7 3 3 5-6M14 15l6 6m0-6-6 6'};const icon=document.createElement('span');icon.className='pair-menu-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="'+icons[kind]+'"/></svg>';b.append(icon);}
+ const copy=document.createElement('span');copy.className='pair-menu-copy';const title=document.createElement('span');title.className='pair-menu-title';title.textContent=label;copy.append(title);
+ if(detail){const small=document.createElement('small');small.textContent=detail;copy.append(small);}b.append(copy);const arrow=document.createElement('span');arrow.className='pair-menu-arrow';arrow.setAttribute('aria-hidden','true');arrow.textContent='→';b.append(arrow);b.onclick=action;$('stepChoices').append(b);
 }
-function currentEntry(){return catalog().find(g=>g.subject===selection.subject&&g.id===selection.lesson&&g.name===selection.part)}
+function currentEntry(){return (selection.mode==='textTF'?tfEntries():catalog()).find(g=>g.subject===selection.subject&&g.id===selection.lesson&&g.name===selection.part)}
 function goStep(n){step=(selection.subject==='論表'&&n===3)?4:n;renderStep()}
 function renderStep(){
   const isRonpyo=selection.subject==='論表';
   $('stepLabel').textContent='STEP '+(step+(isRonpyo&&step===4?0:1))+' / '+(isRonpyo?4:5);$('stepTitle').textContent=steps[step];
   show('stepBack',step>0);$('stepBack').onclick=()=>goStep(isRonpyo&&step===4?2:step-1);
   $('stepChoices').replaceChildren();$('stepChoices').classList.toggle('study-mode-choices',step===1);$('stepMessage').textContent='';
-  const all=selection.mode==='textQA'&&step!==0?qaEntries():catalog();
+  const all=step!==0&&selection.mode==='textTF'?tfEntries():selection.mode==='textQA'&&step!==0?qaEntries():catalog();
   if(step===0){
     for(const s of ['英C','論表',...new Set(all.map(g=>g.subject))].filter((v,i,a)=>a.indexOf(v)===i)){
-      const count=new Set([...all.filter(g=>g.subject===s).map(g=>JSON.stringify([g.id,g.name])),...(s==='英C'?qaCatalog.map(g=>JSON.stringify([g.lesson,g.part])):[])]).size;
+      const count=new Set([...all.filter(g=>g.subject===s).map(g=>JSON.stringify([g.id,g.name])),...(s==='英C'?[...qaCatalog.map(g=>JSON.stringify([g.lesson,g.part])),...tfEntries().map(g=>JSON.stringify([g.id,g.name]))]:[])]).size;
       choice(s,()=>{selection.subject=s;selection.mode='';goStep(1)},{detail:count+' Part',disabled:!count});
     }
   }else if(step===2){
@@ -490,14 +493,15 @@ function renderStep(){
     });
   }else if(step===3){
     const parts=all.filter(g=>g.subject===selection.subject&&g.id===selection.lesson&&(selection.mode==='textQA'||hasModeCards(g))).sort((a,b)=>sortNatural(a.name,b.name));
-    for(const g of parts)choice(partLabel(g.name),()=>{selection.part=g.name;goStep(4)},{detail:selection.mode==='textQA'?g.count+'問':(g.text.length?'本文 '+g.text.length+'問':'本文未登録')+' ／ '+vocabCards(g).length+'語',disabled:selection.mode==='textQA'&&!g.count});
+    for(const g of parts)choice(partLabel(g.name),()=>{selection.part=g.name;goStep(4)},{detail:selection.mode==='textTF'?g.questions.length+'問':selection.mode==='textQA'?g.count+'問':(g.text.length?'本文 '+g.text.length+'問':'本文未登録')+' ／ '+vocabCards(g).length+'語',disabled:selection.mode==='textQA'&&!g.count});
   }else if(step===1){
     const entries=all.filter(g=>g.subject===selection.subject);
     const cloze=entries.flatMap(g=>(g.text||[]).filter(c=>Array.isArray(c)&&blank(String(c[0]??''))));
     const words=entries.flatMap(g=>vocabCards(g));
-    choice('📖 本文穴埋め',()=>{selection.mode='cloze';goStep(2)},{detail:cloze.length?cloze.length+'問':'穴埋め問題は未登録',disabled:!cloze.length});
-    choice(selection.subject==='論表'?'🔤 単語・熟語チェック':'🔤 単語チェック',()=>{selection.mode='vocabChoice';goStep(2)},{detail:words.length?words.length+'語':'単語は未登録',disabled:!words.length});
-    if(selection.subject==='英C')choice('🗣️ 本文Q&A',()=>{selection.mode='textQA';goStep(2)},{detail:qaCatalog.length?(window.YoshiPairQA.available()?'英語の質問に口頭で答える':'本文Q&Aは準備中です'):'問題未登録',disabled:!qaCatalog.length||!window.YoshiPairQA.available()});
+    choice('本文穴埋め',()=>{selection.mode='cloze';goStep(2)},{detail:cloze.length?cloze.length+'問':'穴埋め問題は未登録',disabled:!cloze.length,kind:'cloze'});
+    choice(selection.subject==='論表'?'単語・熟語チェック':'単語チェック',()=>{selection.mode='vocabChoice';goStep(2)},{detail:words.length?words.length+'語':'単語は未登録',disabled:!words.length,kind:'vocab'});
+    if(selection.subject==='英C')choice('本文Q&A',()=>{selection.mode='textQA';goStep(2)},{detail:qaCatalog.length?(window.YoshiPairQA.available()?'英語の質問に口頭で答える':'本文Q&Aは準備中です'):'問題未登録',disabled:!qaCatalog.length||!window.YoshiPairQA.available(),kind:'qa'});
+    if(selection.subject==='英C')choice('本文正誤問題',()=>{selection.mode='textTF';goStep(2)},{detail:tfRows.length?'TRUE / FALSE · '+tfRows.length+'問':tfState==='loading'?'教材を読み込み中…':tfState==='error'?'教材を読み込めませんでした':'公開中の問題がありません',disabled:!tfRows.length,kind:'tf'});
   }else{
     $('stepMessage').textContent='無制限がおすすめ！自分のペースで回答できるよ。';
     choice('∞ 無制限',()=>createRoom(0),{detail:'おすすめ・時間を気にせず練習',featured:true});
@@ -506,9 +510,13 @@ function renderStep(){
       const b=document.createElement('button');b.className='step-choice';b.textContent=label;b.onclick=()=>createRoom(seconds);row.append(b);
     }
     const summary=document.createElement('div');summary.className='step-summary';
-    summary.textContent=selection.subject+' / '+lessonLabel(selection.lesson)+(selection.subject==='論表'?'':' / '+partLabel(selection.part))+' / '+(selection.mode==='textQA'?'本文Q&A':selection.mode==='vocabChoice'?'単語チェック':selection.mode==='vocabTyping'?'単語チェック（タイピング）':selection.mode==='clozeTyping'?'本文穴埋め（タイピング）':'本文穴埋め');
+    summary.textContent=selection.subject+' / '+lessonLabel(selection.lesson)+(selection.subject==='論表'?'':' / '+partLabel(selection.part))+' / '+(selection.mode==='textTF'?'本文正誤問題':selection.mode==='textQA'?'本文Q&A':selection.mode==='vocabChoice'?'単語チェック':selection.mode==='vocabTyping'?'単語チェック（タイピング）':selection.mode==='clozeTyping'?'本文穴埋め（タイピング）':'本文穴埋め');
     $('stepChoices').append(summary);
   }
+}
+async function loadTFCatalog(){
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),5000);
+ try{const response=await fetch('./extension_questions.json',{cache:'no-store',signal:controller.signal});if(!response.ok)throw Error('Reading Plus');tfRows=YoshiPairReadingTF.parse(await response.json());tfState='ready';}catch{tfRows=[];tfState='error';}finally{clearTimeout(timer);if(!$('lobby').classList.contains('hidden')&&(step===0||step===1))renderStep();}
 }
 async function loadQACatalog(){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),5000);
@@ -539,19 +547,19 @@ async function init(){
  }catch(e){err(e)}
 }
 onValue(ref(db,'.info/serverTimeOffset'),snapshot=>{serverOffset=snapshot.val()||0;offsetReady=true;},e=>{console.warn('時刻補正の取得に失敗',e);});
-const getCards=r=>{if(r.mode==='textQA')return Array.from({length:r.count},()=>['','']);let g=catalog().find(g=>g.subject===r.subject&&g.id===normLesson(r.lesson)&&g.name===normPart(r.part));return r.mode.startsWith('vocab')?vocabCards(g):(g?.text||[]).filter(c=>r.mode!=='cloze'||blank(String(c[0]??'')))};
+const getCards=r=>{if(r.mode==='textTF')return YoshiPairReadingTF.cards(r.tfQuestions||[]);if(r.mode==='textQA')return Array.from({length:r.count},()=>['','']);let g=catalog().find(g=>g.subject===r.subject&&g.id===normLesson(r.lesson)&&g.name===normPart(r.part));return r.mode.startsWith('vocab')?vocabCards(g):(g?.text||[]).filter(c=>r.mode!=='cloze'||blank(String(c[0]??'')))};
 function watch(c){if(unsubscribe)unsubscribe();qaView=null;qaRemember('');code=c;unsubscribe=onValue(ref(db,'rooms/'+c),snap=>{let r=snap.val();if(!r){msg('ペアが終了したか、部屋が見つかりません。');return}room=r;render()},err)}
 async function createRoom(duration){
  if(busy)return;busy=true;
  try{
   if(selection.mode==='textQA'){const entry=qaEntries().find(g=>g.id===selection.lesson&&g.name===selection.part);if(!entry?.count)throw Error('このPartには公開問題がありません');await setPersistence(auth,browserSessionPersistence);const v=await window.YoshiPairQA.call(app,{action:'create',lesson:entry.id,part:entry.name,duration,version:entry.version});qaWatch(v);return;}
   const g=currentEntry();if(!g)throw Error('Partを選び直してください');
-  const cards=selection.mode.startsWith('vocab')?vocabCards(g):(g.text||[]).filter(c=>blank(String(c[0]??'')));
+  const cards=selection.mode==='textTF'?YoshiPairReadingTF.cards(g.questions):selection.mode.startsWith('vocab')?vocabCards(g):(g.text||[]).filter(c=>blank(String(c[0]??'')));
   if(!cards.length)throw Error('このPartには該当する問題がありません');
   let created=false,c='';
   for(let attempt=0;attempt<8&&!created;attempt++){
    c=String(100000+Math.floor(Math.random()*900000));
-   const initial={hostUid:uid,guestUid:'',subject:g.subject,lesson:String(g.id),part:String(g.name),mode:selection.mode,duration,createdAt:Date.now(),state:{index:0,right:0,total:0,started:false,startedAt:0}};
+   const initial={...(selection.mode==='textTF'?{tfQuestions:g.questions}:{}),hostUid:uid,guestUid:'',subject:g.subject,lesson:String(g.id),part:String(g.name),mode:selection.mode,duration,createdAt:Date.now(),state:{index:0,right:0,total:0,started:false,startedAt:0}};
    try{await set(ref(db,'rooms/'+c),initial);created=true}
    catch(e){if(e.code!=='PERMISSION_DENIED'&&e.code!=='database/permission-denied')throw e}
   }
@@ -617,7 +625,7 @@ function qaEntries(){
  for(const g of qaCatalog)entries.set(JSON.stringify([g.lesson,g.part]),{subject:'英C',id:g.lesson,name:g.part,text:[],vocab:[],count:g.count,version:g.version});
  return [...entries.values()].sort((a,b)=>sortNatural(a.id,b.id)||sortNatural(a.name,b.name));
 }
-function hasModeCards(g){return selection.mode==='textQA'?g.count>0:selection.mode.startsWith('vocab')?vocabCards(g).length>0:(g.text||[]).some(c=>blank(String(c[0]??'')));}
+function hasModeCards(g){return selection.mode==='textTF'?g.questions?.length>0:selection.mode==='textQA'?g.count>0:selection.mode.startsWith('vocab')?vocabCards(g).length>0:(g.text||[]).some(c=>blank(String(c[0]??'')));}
 let qaSending=false,qaLastRole=null;
 function qaAccept(value){
  if(qaView?.code===value.code&&value.revision<qaView.revision)return;
@@ -723,6 +731,7 @@ function renderBriefing(){
  : (vocab?'<b>① 画面の日本語を確認する</b><br>② 表示されている日本語を英語で答える<br>③ 判定結果と正しい英語を確認する<br>④ 生徒Aが次の問題に進めるまで待つ'
  :'<b>① 画面の英文の空欄を確認する</b><br>② 空欄に入る英語を声に出して答える<br>③ 生徒Aの○×判定を待つ<br>④ 正解を確認して次の問題を待つ');
  if(room.mode==='textQA'){$('briefingSummary').textContent='英C / Lesson '+room.lesson+' / Part '+room.part+' ・ 本文Q&A';$('briefingTasks').textContent=isA?'① 英語の質問を相手に読み上げる　② 解答を見るで答えを確認　③ 口頭回答を○×で判定　④ 次の問題へ進む':'① 相手の英語の質問を聞く　② 英語で口頭回答する　③ 必要ならヒントをお願い　④ 判定後に質問と解答を確認する';}
+ if(room.mode==='textTF'){$('briefingSummary').textContent='英C / Lesson '+room.lesson+' / Part '+room.part+' ・ 本文正誤問題';$('briefingTasks').textContent=isA?'① 英文と正解を確認する　② 相手にTrue / Falseで口頭回答してもらう　③ ○×で判定する　④ 解説を確認して次へ進む':'① 英文を読む・聞く　② True / Falseで口頭回答する　③ 出題者の判定を待つ　④ 正解と解説を確認する';}
  show('startPair',isA);show('briefingWaiting',!isA);
 }
 $('startPair').onclick=async()=>{
@@ -759,7 +768,9 @@ $('pairHintText').textContent=hintActive?(room.mode==='cloze'?'💡 空欄に頭
 show('pairChoices',false);
 
 $('pairTypingInput').classList.toggle('hidden',room.mode==='clozeTyping');if(room.mode==='vocabTyping'&&!isAsker&&!revealed){$('pairTypingInput').placeholder='英単語・熟語を入力';}
-else if(room.mode==='normal'&&!isAsker){$('english').textContent='日本語を聞いて、英語で答えよう';$('japanese').textContent=ja}else if(room.mode==='normal'&&isAsker){$('instruction').textContent='日本語を読み上げ、相手の英語を採点'}updateTimer();}
+else if(room.mode==='normal'&&!isAsker){$('english').textContent='日本語を聞いて、英語で答えよう';$('japanese').textContent=ja}else if(room.mode==='normal'&&isAsker){$('instruction').textContent='日本語を読み上げ、相手の英語を採点'}
+if(room.mode==='textTF'){$('instruction').textContent=isAsker?'英文を確認し、相手のTrue / Falseを判定しよう':'本文の内容と一致する？ True / Falseで口頭回答しよう';$('english').textContent=rawEnglish;show('japanese',isAsker||!!revealed);$('japanese').textContent=isAsker||revealed?'正解：'+ja+(cards[i][2]?'\n解説：'+cards[i][2]:''):'';$('japanese').style.whiteSpace='pre-line';$('roleHint').textContent=isAsker?'相手の回答を聞いて○×で判定しよう':'出題者が判定するまで待ってね。';}
+updateTimer();}
 function updateTimer(){
   if(room?.mode==='textQA'&&room.ended)return;
   if(!room||!room.guestUid||room.state.started!==true)return;
@@ -808,7 +819,7 @@ $('next').onclick=nextQuestion;
 localTimer=setInterval(updateTimer,300);
 $('cancel').onclick=()=>{if(room?.mode==='textQA')qaRemember('');location.href='./pair.html';};
 $('back').onclick=()=>{if(room?.mode==='textQA')qaRemember('');location.href='./index.html?view=subjects';};
-void loadQACatalog();init();
+void loadQACatalog();void loadTFCatalog();init();
 </script><div id="streakCelebration" class="streak-celebration" hidden aria-live="polite"><div class="streak-celebration-card"><div class="streak-fire">🔥</div><div class="streak-count">5 STREAK</div><div class="streak-praise">連続正解！</div></div></div>
 <script id="yoshi-v13-time-background-script">
 /* Device-local time; refresh on visibility/focus and at each minute boundary. */
