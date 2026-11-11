@@ -1,0 +1,20 @@
+/* Matte stone mileposts on a grounded mountain switchback trail. */
+.wordbook-page .quest-node,.quest-overview .quest-node{width:22%;min-height:104px;gap:7px;}
+.wordbook-page .quest-stone,.quest-node[aria-pressed="true"] .quest-stone{position:relative;flex:0 0 92px;height:102px;border:0;border-radius:0;background:transparent url('./quest-stone-marker.svg') center/contain no-repeat;box-shadow:none;text-shadow:none;isolation:auto;filter:drop-shadow(0 5px 5px #00132388);}
+.wordbook-page .quest-stone::before,.wordbook-page .quest-stone::after{content:none!important;}
+.quest-stone-number{position:absolute;top:37%;left:50%;transform:translate(-50%,-50%);font:600 40px/1 Georgia,'Times New Roman',serif;color:#152535;text-shadow:0 1px #fafff5;}
+.wordbook-page .quest-node[aria-pressed="true"] .quest-stone{background-image:url('./quest-stone-selected.svg');filter:drop-shadow(0 0 12px #5df7b8aa) drop-shadow(0 0 25px #5df7b844);}
+.quest-node[aria-pressed="true"] .quest-stone-number{color:#074332;}.wordbook-page .quest-check{left:66px;top:4px;width:28px;height:28px;line-height:24px;}
+.wordbook-page .quest-plate{position:relative;isolation:isolate;background:none;border:0;border-radius:0;box-shadow:none;padding:9px 13px;min-height:62px;display:flex;flex-direction:column;justify-content:center;}
+.quest-plate::before,.quest-plate::after{content:'';position:absolute;pointer-events:none;clip-path:polygon(0 18%,9% 0,91% 0,100% 18%,100% 82%,91% 100%,9% 100%,0 82%);}
+.quest-plate::before{inset:0;background:#d5bc80;z-index:-2;}.quest-plate::after{inset:1px;background:linear-gradient(135deg,#0a263ef5,#03182cf5);z-index:-1;}
+.wordbook-page .quest-node[aria-pressed="true"] .quest-plate{background:none;border:0;filter:drop-shadow(0 0 6px #5ff4bc55);box-shadow:none;}.quest-node[aria-pressed="true"] .quest-plate::before{background:#b7ffe0;}.quest-node[aria-pressed="true"] .quest-plate::after{background:linear-gradient(135deg,#124638f5,#052329f5);}
+.quest-plate strong{font-size:17px;}.quest-plate small{font-size:11px;}.quest-overview .quest-node{width:26%;}.quest-overview .quest-plate strong{font-size:19px;}
+.quest-route .trail-rim{stroke:#a7b087;stroke-width:34;opacity:.24;filter:blur(2px);}.quest-route .trail-bed{stroke:#243d37;stroke-width:27;opacity:.9;filter:drop-shadow(0 4px 3px #00171c);}.quest-route .trail-inner{stroke:#54735a;stroke-width:16;opacity:.35;}
+.quest-route .route-glow{stroke:#f8e2a2;stroke-width:7;opacity:.4;filter:blur(4px);}.quest-route .route-line{stroke:#ffeec1;stroke-width:2;filter:drop-shadow(0 0 4px #fff0b3);}.trail-light{fill:#fff8d0;filter:drop-shadow(0 0 4px #ffe5a8);}
+.wordbook-page .quest-scene{border-color:#87b2c31a;box-shadow:none;}
+@media(max-width:760px){.wordbook-page .quest-node,.quest-overview .quest-node{width:82%;min-height:98px;gap:6px;}.wordbook-page .quest-stone,.quest-node[aria-pressed="true"] .quest-stone{flex-basis:76px;height:84px;}.quest-stone-number{font-size:34px;}.wordbook-page .quest-check{left:54px;top:5px;width:25px;height:25px;line-height:21px;}.wordbook-page .quest-plate{padding:10px 14px;}.quest-plate strong,.quest-overview .quest-plate strong{font-size:16px;}.quest-route .trail-rim{stroke-width:25;}.quest-route .trail-bed{stroke-width:20;}.quest-route .trail-inner{stroke-width:11;}}
+body.wordbook-page,body.wordbook-page[data-quest-stage]{background-image:linear-gradient(var(--area-tint),#04142c22),url('./wordbook-quest-ascent.webp')!important;background-position:center,65% top!important;}
+@media(max-width:760px){body.wordbook-page,body.wordbook-page[data-quest-stage]{background-position:center,center top!important;}}
+/* 背景の月を使い、小さな装飾の月は重ねない。 */
+.wordbook-page .quest-scene::after{content:none;}
