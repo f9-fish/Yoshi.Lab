@@ -1,2 +1,1 @@
-// Firebase Functions のデプロイ後、公開URLのみを設定（秘密鍵は書かない）
-window.YoshiStudioApiBase = '';
+window.YoshiStudioApiBase = 'https://studioapi-bfaa4wjjga-an.a.run.app';
