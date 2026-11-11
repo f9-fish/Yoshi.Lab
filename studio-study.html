@@ -1,0 +1,40 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Yoshi.Lab | AI教材</title><style>
+:root{font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;color:#edf6ff;background:#07172e;color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(#07162bd9,#07162bf0),url('./yoshilab-unified-mountain.png') center/cover fixed}main{max-width:950px;margin:auto;padding:22px 15px 65px}header{display:flex;justify-content:space-between;align-items:center;gap:10px}h1{font-size:clamp(25px,5vw,34px)}a{color:#a6d7ff}.panel{background:#162e50ef;border:1px solid #416593;border-radius:18px;padding:18px;margin:16px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{display:grid;gap:8px}select,input,textarea,button{font:inherit;padding:12px;border-radius:10px;color:#fff;border:1px solid #547baa;background:#0c2341}input,textarea,select{width:100%}textarea{min-height:85px;resize:vertical}button{cursor:pointer;background:#28568b;font-weight:750}button.primary{background:#176ff0;border-color:#67beff}.muted{color:#bbceed}.hidden{display:none!important}.badge{display:inline-block;background:#1c416f;border-radius:100px;padding:6px 12px;color:#c9e3ff;font-size:12px}.card{border:1px solid #3f6899;border-radius:14px;padding:16px;margin:14px 0;background:#0c2542}.question{font-weight:700;white-space:pre-wrap;line-height:1.7;font-size:19px}.answer{white-space:pre-wrap;background:#123b4e;border:1px solid #4caa97;border-radius:10px;padding:14px;margin:12px 0}.feedback{font-weight:750}.good{color:#a8f2c8}.error{color:#ffb9be}.choices{display:flex;gap:10px;flex-wrap:wrap}.choices button{min-width:105px}.actions{display:flex;gap:10px;flex-wrap:wrap}@media(max-width:600px){.grid{grid-template-columns:1fr}.panel{padding:14px}}
+</style></head><body><main>
+<header><strong>Yoshi.Lab / AI MATERIALS</strong><a href="./index.html">← ホーム</a></header><h1>📘 AI教材トレーニング</h1><p class="muted">先生が公開した問題で学習しよう。ここでの解答は練習用で、XPやランキングには加算されません。</p>
+<section class="panel"><div class="grid"><label>科目<select id="subject"><option value="英C">英語コミュニケーション</option><option value="論表">論理表現</option></select></label><label>Lesson / Part<select id="unit"></select></label><label>問題の種類<select id="type"><option value="vocabulary">単語・熟語</option><option value="cloze">文法・穴埋め</option><option value="qa">本文Q&A</option><option value="trueFalse">True / False</option><option value="discussion">Discussion</option></select></label><div style="display:flex;align-items:end"><button class="primary" id="start" disabled>練習開始</button></div></div><p id="status" class="muted" role="status">教材を読み込んでいます…</p></section>
+<section id="practice" class="panel hidden"><span id="progress" class="badge"></span><div class="card"><p id="prompt" class="question"></p><div id="inputArea"></div><div id="answer" class="answer hidden"></div><p id="feedback" class="feedback" aria-live="polite"></p><div class="actions"><button id="reveal">答え・解説を見る</button><button id="next" class="primary hidden">次の問題へ</button></div></div></section>
+</main><script>
+'use strict';
+const $=id=>document.getElementById(id);const types=['vocabulary','cloze','qa','trueFalse','discussion'];
+let data=[],queue=[],position=0,shown=false;
+const clean=s=>String(s??'').trim();
+const safeGroup=g=>g&&['英C','論表'].includes(g.subject)&&typeof g.id==='string'&&typeof g.name==='string'&&g.questions&&typeof g.questions==='object';
+function units(){const subject=$('subject').value,groups=data.filter(g=>g.subject===subject);$('unit').replaceChildren();for(let i=0;i<groups.length;i++){const option=document.createElement('option');option.value=String(data.indexOf(groups[i]));option.textContent='Lesson '+groups[i].id+' / Part '+groups[i].name;$('unit').append(option)}$('start').disabled=!groups.length;$('practice').classList.add('hidden');$('status').textContent=groups.length?groups.length+'パートの教材が利用できます':'この科目には公開されたAI教材がありません'}
+async function load(){try{const r=await fetch('./studio-content.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const v=await r.json();if(!Array.isArray(v)||!v.every(safeGroup))throw Error('教材の形式が不正です');data=v;units()}catch(e){$('status').textContent='教材を読み込めませんでした：'+e.message}}
+function item(){return queue[position]}
+function reveal(){
+ if(shown)return;shown=true;const q=item(),type=$('type').value;
+ $('answer').replaceChildren();const lines=[['答え・例',q.answer],['日本語訳・解説',q.translation]];
+ if(type==='cloze'){lines.unshift(['完成した英文',q.question.replace(/\(([^()]*)\)/g,'$1')])}
+ for(const [name,value] of lines){const p=document.createElement('p'),strong=document.createElement('strong');strong.textContent=name+'：';p.append(strong,document.createTextNode(clean(value)));$('answer').append(p)}
+ $('answer').classList.remove('hidden');$('next').classList.remove('hidden');$('reveal').classList.add('hidden');
+ if(position===queue.length-1)$('next').textContent='終了';else $('next').textContent='次の問題へ';
+}
+function showItem(){
+ shown=false;const q=item(),type=$('type').value;$('progress').textContent=(position+1)+' / '+queue.length;
+ $('prompt').textContent=type==='cloze'?clean(q.question).replace(/\([^()]+\)/g,'（　　）'):q.question;
+ $('inputArea').replaceChildren();$('answer').classList.add('hidden');$('feedback').textContent='';$('reveal').classList.remove('hidden');$('next').classList.add('hidden');
+ if(type==='trueFalse'){const div=document.createElement('div');div.className='choices';for(const v of ['True','False']){const button=document.createElement('button');button.textContent=v;button.addEventListener('click',()=>{if(shown)return;$('feedback').textContent=v===q.answer?'正解！':'もう一度本文を確認しよう';$('feedback').className='feedback '+(v===q.answer?'good':'error');reveal()});div.append(button)}$('inputArea').append(div)}
+ else{const field=document.createElement('textarea');field.placeholder=type==='vocabulary'?'日本語の意味を考えてみよう':type==='cloze'?'空欄に入る語句を考えてみよう':type==='discussion'?'自分の意見を書いてみよう':'英語で答えてみよう';field.setAttribute('aria-label','自分の答え');$('inputArea').append(field)}
+}
+$('subject').addEventListener('change',units);
+for(const id of ['unit','type'])$(id).addEventListener('change',()=>$('practice').classList.add('hidden'));
+$('start').addEventListener('click',()=>{const group=data[Number($('unit').value)],type=$('type').value;if(!$('unit').value||!group||group.subject!==$('subject').value||!types.includes(type)){ $('status').textContent='教材を選んでください';return}
+ const list=group.questions[type];if(!Array.isArray(list)||!list.length){$('status').textContent='この種類はまだ公開されていません';return}
+ queue=list.filter(q=>q&&clean(q.question)&&clean(q.answer)&&clean(q.translation));if(!queue.length){$('status').textContent='有効な問題がありません';return}
+ position=0;$('practice').classList.remove('hidden');$('status').textContent=queue.length+'問の練習を開始しました';showItem()});
+$('reveal').addEventListener('click',reveal);
+$('next').addEventListener('click',()=>{if(position+1>=queue.length){$('practice').classList.add('hidden');$('status').textContent='練習完了！別の問題にも挑戦してみよう';return}position++;showItem()});
+load();
+</script></body></html>

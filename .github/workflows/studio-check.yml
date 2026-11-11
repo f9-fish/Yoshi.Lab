@@ -1,0 +1,28 @@
+name: AI教材スタジオの検証
+on:
+  pull_request:
+    paths:
+      - 'studio-functions/**'
+      - 'teacher-studio.html'
+      - 'studio-study.html'
+      - 'studio-content.json'
+      - 'studio-config.js'
+      - '.github/workflows/studio-check.yml'
+  push:
+    paths:
+      - 'studio-functions/**'
+      - 'studio-content.json'
+permissions:
+  contents: read
+jobs:
+  studio-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test studio-functions/tests/*.test.cjs
+      - run: node --check studio-functions/index.js
+      - run: node --check studio-functions/studio-core.cjs
+      - run: node --check studio-config.js
