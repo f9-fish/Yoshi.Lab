@@ -5,6 +5,7 @@ on:
       - 'material-generation/**'
       - 'apps-script/material-generation-client.gs'
       - 'apps-script/material-generation-preflight.gs'
+      - 'apps-script/material-generation-phase4.gs'
       - 'apps-script/material-generation-preflight-appsscript.example.json'
       - 'apps-script/material-generation-appsscript.example.json'
       - 'apps-script/writing-sync.gs'
@@ -18,6 +19,7 @@ on:
       - 'material-generation/**'
       - 'apps-script/material-generation-client.gs'
       - 'apps-script/material-generation-preflight.gs'
+      - 'apps-script/material-generation-phase4.gs'
       - 'apps-script/material-generation-preflight-appsscript.example.json'
       - 'apps-script/material-generation-appsscript.example.json'
       - '.github/workflows/material-generation-check.yml'
@@ -46,3 +48,7 @@ jobs:
       - run: node --check material-generation/phase3/http.cjs
       - run: node --check material-generation/phase3/gcs-store.cjs
       - run: node --check material-generation/phase3/schema-check.cjs
+      - run: node --check material-generation/phase4/test01.cjs
+      - run: node --check material-generation/phase4/verify-model.cjs
+      - run: node --check material-generation/phase4/review.cjs
+      - run: bash -n material-generation/ops/test01/phase4-cloud-shell.sh

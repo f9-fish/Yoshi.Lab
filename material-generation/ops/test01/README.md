@@ -1,3 +1,5 @@
+Phase 4の生成・GCS/Secret・手動更新・品質確認は [PHASE4.md](PHASE4.md) を使用してください。以下の接続確認段階の手順は実施済みで、再実行は不要です。
+
 確定済みCloud Run環境での手動実行は [Cloud Shell手順](CLOUD-SHELL.md) を参照してください。`preflight.env.yaml` は管理者から提示されたOAuth audience設定済みです。以下の初期設定説明にある空欄は、未設定プロジェクト向けの説明です。
 
 # 作成済みTEST01を使う接続準備（生成・追記はまだ無効）

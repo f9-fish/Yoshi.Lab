@@ -17,23 +17,26 @@ function mgTest01Schema_(){
  });
  return {spreadsheetId:MG_TEST01_ID_,schemasOk:issues.length===0,tabs:tabs,groups:groups,issues:issues,writes:0,generationEnabled:false,testAppendAllowed:false};
 }
-function mgInspectTest01Sheet(){var report=mgTest01Schema_();console.log(JSON.stringify(report));SpreadsheetApp.getUi().alert(report.schemasOk?'5タブの列構成は一致しています。本文内容はログへ出していません。':'列構成を確認してください：'+report.issues.join('／'));return report;}
+function mgInspectTest01Sheet(){var report=mgTest01Schema_();console.log(JSON.stringify(report));mgTest01Notice_(report.schemasOk?'5タブの列構成は一致しています。本文内容はログへ出していません。':'列構成を確認してください：'+report.issues.join('／'));return report;}
 function mgShowAppsScriptAudience(){
  // Metadata discovery only, NOT an authentication decision. Never print/return the token.
  var token=ScriptApp.getIdentityToken();if(!token)throw Error('openidスコープと本人の承認が必要です');var parts=token.split('.');if(parts.length!==3)throw Error('本人トークンの形式が不正です');
  var encoded=parts[1];while(encoded.length%4)encoded+='=';var data=JSON.parse(Utilities.newBlob(Utilities.base64DecodeWebSafe(encoded)).getDataAsString('UTF-8'));
  if(typeof data.aud!=='string'||!data.aud.endsWith('.apps.googleusercontent.com'))throw Error('Apps Scriptのaudienceを確認できません');
- var result={audience:data.aud,issuer:String(data.iss||''),signatureVerified:false,note:'認証判定には使いません。サーバーで署名検証します。'};console.log(JSON.stringify(result));SpreadsheetApp.getUi().alert('サーバーのMG_GOOGLE_AUDIENCEへ設定する値：\n'+result.audience+'\n本人トークン全体は共有しないでください');return result;
+ var result={audience:data.aud,issuer:String(data.iss||''),signatureVerified:false,note:'認証判定には使いません。サーバーで署名検証します。'};console.log(JSON.stringify(result));mgTest01Notice_('サーバーのMG_GOOGLE_AUDIENCEへ設定する値：\n'+result.audience+'\n本人トークン全体は共有しないでください');return result;
 }
 function mgCheckTest01Connection(){
  var p=PropertiesService.getScriptProperties();if(p.getProperty('MG_PREFLIGHT_ENABLED')!=='true'||p.getProperty('MG_MODE')!=='TEST'||p.getProperty('MG_ENABLED')==='true'||p.getProperty('MG_TEST_APPEND_ENABLED')==='true')throw Error('接続確認だけを有効にし、生成・追記は無効にしてください');
  var report=mgTest01Schema_();if(!report.schemasOk)throw Error('列構成が不一致です。先に読取確認をしてください');
  var url=p.getProperty('MG_SERVER_URL')||'';if(!/^https:\/\/[A-Za-z0-9.-]+(?::443)?(?:\/[A-Za-z0-9/_-]*)?$/.test(url)||url.toLowerCase().indexOf('studioapi-bfaa4wjjga-an.a.run.app')>=0)throw Error('専用の接続確認HTTPSサーバーが必要です');
  var result=mgCall_({url:url.replace(/\/$/,'')},'preflight',{sourceSpreadsheetId:MG_TEST01_ID_,targetSpreadsheetId:MG_TEST01_ID_,tabs:report.tabs});
- if(result.mode!=='PREFLIGHT'||result.generationEnabled!==false||result.testAppendAllowed!==false||result.publishEnabled!==false||result.testSpreadsheetId!==MG_TEST01_ID_)throw Error('サーバーが接続確認専用状態ではありません');
- console.log(JSON.stringify(result));SpreadsheetApp.getUi().alert('署名・教員権限・5タブの読取結果を確認しました。生成・追記・公開は無効です。');return result;
+ if(result.authenticated!==true||result.teacherVerified!==true||result.vocabularyAppendAllowed!==false||result.mode!=='PREFLIGHT'||result.generationEnabled!==false||result.testAppendAllowed!==false||result.publishEnabled!==false||result.testSpreadsheetId!==MG_TEST01_ID_)throw Error('サーバーが接続確認専用状態ではありません');
+ console.log(JSON.stringify(result));mgTest01Notice_('署名・教員権限・5タブの読取結果を確認しました。生成・追記・公開は無効です。');return result;
 }
 function installMaterialPreparationMenu(){
  var book=SpreadsheetApp.getActiveSpreadsheet();if(!book||book.getId()!==MG_TEST01_ID_)throw Error('TEST01ブックだけにメニューを追加できます');
  SpreadsheetApp.getUi().createMenu('AI教材・接続準備').addItem('安全な初期設定を入れる','mgInstallTest01Defaults').addItem('5タブの列を読取確認','mgInspectTest01Sheet').addItem('OAuth audienceだけを確認','mgShowAppsScriptAudience').addItem('認証と接続だけを確認','mgCheckTest01Connection').addToUi();
 }
+
+// Editor execution has no spreadsheet UI. A missing dialog never invalidates a successful check.
+function mgTest01Notice_(message){try{SpreadsheetApp.getUi().alert(message);}catch(e){console.log('ダイアログ表示なし。確認結果は実行ログを参照してください。');}}

@@ -1,3 +1,5 @@
+Phase 4は [PHASE4.md](PHASE4.md) と `phase4-cloud-shell.sh` を使用します。この文書のpreflight再デプロイは不要です。
+
 # TEST01：Cloud Shellで手動ビルド・デプロイ
 
 確定済みの `yoshi-lab-db3eb` / `asia-northeast1` / `yoshilab-material-test01` だけを対象にします。スプレッドシートは作成済みのIDを使い、再作成しません。GitHubトリガー、Firebaseデプロイ、Apps Script編集、Sheets追記は行いません。

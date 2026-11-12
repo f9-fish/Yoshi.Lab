@@ -14,7 +14,7 @@ function prompt({type,source,settings}){
  const instructions={
  vocabulary:'Extract worthwhile high-school words/phrases actually occurring in the passage. Supply the exact observed sourceExpression, contextual Japanese meaning, a short hint and optional reliable Japanese reading. Leave reading empty rather than inventing katakana. Avoid filling the count with elementary words.',
  qa:'English comprehension questions answerable from the passage. Balance Who/What/When/Where/Why/How, facts and reasons. Provide a natural modelAnswer, representative acceptedAnswers and Japanese explanation with textual evidence. Do not invent facts.',
- writing:'Create an ORIGINAL short story in '+settings.genre+' with opening, development, unexpected twist and ending, NOT translations or copies of passage sentences or existing commercial examples. Reuse important vocabulary/grammar learned from the source in new situations. Default challenge is between Eiken pre-2 and grade 2, not elementary short sentences. Each sequential item is exactly ONE natural English sentence paired with precise, independently understandable Japanese. All four acts 起承転結 must occur in order. Supply exact requiredExpressions actually present in EVERY registered answer (inflected forms as used), grammar hint, lexical hint, Japanese explanation and learning targets. Evidence links to the source of the learning target, not to fictional story facts. Prioritize natural grammar over forced story/target density.',
+ writing:'Create an ORIGINAL short story in '+settings.genre+' with opening, development, unexpected twist and ending, NOT translations or copies of passage sentences or existing commercial examples. Reuse important vocabulary/grammar learned from the source in new situations. Default challenge is between Eiken pre-2 and grade 2, not elementary short sentences. For writing 10 items, the entire connected story is exactly 10 sentences (within the requested 8–12 sentence range). Provide at least one valid accepted answer and one required expression for every item. Each sequential item is exactly ONE natural English sentence paired with precise, independently understandable Japanese. All four acts 起承転結 must occur in order. Supply exact requiredExpressions actually present in EVERY registered answer (inflected forms as used), grammar hint, lexical hint, Japanese explanation and learning targets. Evidence links to the source of the learning target, not to fictional story facts. Prioritize natural grammar over forced story/target density.',
  trueFalse:'Statements for passage comprehension: balanced True and False, each supported by exact source evidence. False MUST contradict explicit passage information, never merely be Not Given. reasonKind must be supported for True, contradicted for False. Give a clear Japanese explanation, do not rely only on trivial word substitutions.',
  discussion:'Preserve Discussion as optional practice: open-ended English questions grounded in the topic, one plausible model response (not a unique answer), Japanese explanation and source evidence.'
  };
@@ -28,7 +28,7 @@ async function boundedJSON(response,maxBytes){
  try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>maxBytes){await reader.cancel();throw Error('AIの応答サイズが上限を超えました');}chunks.push(Buffer.from(value));}}finally{reader.releaseLock();}
  return parseServiceJSON(Buffer.concat(chunks).toString('utf8'));
 }
-function createGeminiGenerator({apiKey,model,fetchImpl=globalThis.fetch,timeoutMs=55000,maxResponseBytes=512000,signal}={}){
+function createGeminiGenerator({apiKey,model,fetchImpl=globalThis.fetch,timeoutMs=55000,maxResponseBytes=512000,signal,includeMetadata=false}={}){
  need(typeof apiKey==='string'&&apiKey.trim(),'サーバー側のGeminiキーが未設定です');
  need(typeof model==='string'&&/^gemini-[a-z0-9._-]+$/i.test(model.trim()),'確認済みのモデルIDを明示してください（既定値はありません）');
  need(typeof fetchImpl==='function'&&Number.isInteger(timeoutMs)&&timeoutMs>0&&timeoutMs<=90000&&Number.isInteger(maxResponseBytes)&&maxResponseBytes>0&&maxResponseBytes<=1000000,'通信設定が不正です');
@@ -41,7 +41,7 @@ function createGeminiGenerator({apiKey,model,fetchImpl=globalThis.fetch,timeoutM
    const result=await boundedJSON(response,maxResponseBytes),candidate=result.candidates?.[0];
    need(candidate&&candidate.finishReason==='STOP','AI応答が未完了・拒否・打ち切りです。再確認してください');
    const output=candidate.content?.parts?.filter(p=>!p.thought).map(p=>p.text||'').join('');need(output,'AIのJSON回答が空です');
-   try{return JSON.parse(output);}catch{throw Error('AI回答が正しいJSONではありません');}
+   try{const data=JSON.parse(output);if(includeMetadata)data._generation={requestedModelId:model.trim(),actualModelId:typeof result.modelVersion==='string'?result.modelVersion:null,generatedAt:new Date().toISOString(),usage:Object.fromEntries(['promptTokenCount','candidatesTokenCount','thoughtsTokenCount','totalTokenCount'].filter(k=>Number.isSafeInteger(result.usageMetadata?.[k])&&result.usageMetadata[k]>=0).map(k=>[k,result.usageMetadata[k]]))};return data;}catch{throw Error('AI回答が正しいJSONではありません');}
   }catch(error){if(error.name==='AbortError')throw Error('AI生成が中断・タイムアウトしました');throw error;}
   finally{clearTimeout(timer);}
  };

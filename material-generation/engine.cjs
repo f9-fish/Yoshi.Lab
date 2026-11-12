@@ -3,7 +3,7 @@ const {TYPES,buildSource,settingsFor,validateResult,hash,need,key}=require('./co
 const STATES=Object.freeze(['未生成','生成待ち','生成中','要確認','生成完了','エラー']);
 function similarity(a,b){const chars=s=>new Set(key(s).match(/.{1,2}/gu)||[]),x=chars(a),y=chars(b);const union=new Set([...x,...y]);return union.size?[...x].filter(c=>y.has(c)).length/union.size:0;}
 function label(c){return c.payload.word||c.payload.japanese||c.payload.question;}
-async function generateBatch({master,selection,settings={},checkpoint=null,existingCandidates=[]},{generate,onProgress=()=>{},maxKindsPerRun=5}){
+async function generateBatch({master,selection,settings={},checkpoint=null,existingCandidates=[]},{generate,onProgress=()=>{},maxKindsPerRun=5,preserveInvalidResults=false}){
  need(typeof generate==='function','生成アダプタを明示してください');const source=buildSource(master,selection),config=settingsFor(source,settings),batchId='B-'+hash([source.hash,config.hash]).slice(0,24);
  if(checkpoint)need(checkpoint.batchId===batchId&&checkpoint.sourceHash===source.hash&&checkpoint.settingsHash===config.hash,'本文または設定が変わっています。古い生成途中データは利用できません');
  need(Number.isInteger(maxKindsPerRun)&&maxKindsPerRun>=1&&maxKindsPerRun<=5,'1回の生成種類数は1〜5です');
@@ -16,6 +16,7 @@ async function generateBatch({master,selection,settings={},checkpoint=null,exist
    const cached=checkpoint?.rawResults?.[type];
    if(cached===undefined&&calls>=maxKindsPerRun){pending++;results[type]={requested:config.counts[type],pending:true};continue;}
    let raw=cached;if(raw===undefined){calls++;raw=await generate({type,source,settings:config});}
+   if(preserveInvalidResults)rawResults[type]=raw; // Phase 4 keeps the one paid response even if invalid.
    const validated=validateResult(type,raw,source,config);rawResults[type]=raw;
    const duplicates=[],kept=[];
    for(const c of validated.candidates){
