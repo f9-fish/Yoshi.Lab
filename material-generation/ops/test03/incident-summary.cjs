@@ -11,9 +11,20 @@ function replay(job){
  const raw=results.writing,out={rawWritingPresent:true,rawQuestionCount:Array.isArray(raw?.items)?raw.items.length:null,actualModelId:model(raw?._generation?.actualModelId)};
  try{const source=C.buildSource(job.input?.master,job.input?.selection),config=C.settingsFor(source,job.input?.settings);const valid=C.validateResult('writing',raw,source,config);return {...out,validationPassed:true,candidateCount:valid.candidates.length,shortage:valid.shortage};}catch(e){return {...out,validationPassed:false,code:validationCode(e.message)};}
 }
+function providerFailureCode(diagnostic){
+ if(diagnostic.event==='timeout')return 'CLIENT_TIMEOUT';
+ if(diagnostic.event==='cancelled')return 'CLIENT_CANCELLED';
+ if(diagnostic.event==='network_error')return 'NETWORK_FAILURE';
+ if(diagnostic.event==='http_error'){
+  if(diagnostic.httpStatus===503&&diagnostic.providerStatus==='UNAVAILABLE')return 'UPSTREAM_UNAVAILABLE';
+  const codes={400:'UPSTREAM_HTTP_400',401:'UPSTREAM_HTTP_401',403:'UPSTREAM_HTTP_403',404:'UPSTREAM_HTTP_404',408:'UPSTREAM_HTTP_408',429:'UPSTREAM_HTTP_429',500:'UPSTREAM_HTTP_500',502:'UPSTREAM_HTTP_502',503:'UPSTREAM_HTTP_503',504:'UPSTREAM_HTTP_504'};return codes[diagnostic.httpStatus]||'UPSTREAM_HTTP_OTHER';
+ }
+ if(diagnostic.finishReason==='MAX_TOKENS')return 'OUTPUT_TRUNCATED';
+ return 'RESPONSE_INVALID_OR_INCOMPLETE';
+}
 function errorSummary(e){
- const diagnostic=sanitizeDiagnostic(e?.diagnostic),code=e?.validation?safeValidationCode(e.validation.code):validationCode(e?.message);let stage='unknown';
- if(diagnostic)stage=['timeout','network_error','cancelled'].includes(diagnostic.event)?'transport':diagnostic.event==='http_error'?'provider_http':'provider_response';
+ const diagnostic=sanitizeDiagnostic(e?.diagnostic);let code=e?.validation?safeValidationCode(e.validation.code):validationCode(e?.message);let stage='unknown';
+ if(diagnostic){stage=['timeout','network_error','cancelled'].includes(diagnostic.event)?'transport':diagnostic.event==='http_error'?'provider_http':'provider_response';code=providerFailureCode(diagnostic);}
  else if(code!=='UNCLASSIFIED')stage='material_validation';
  return {writing:e?.type==='writing',stage,code,...(diagnostic?{diagnostic}:{})};
 }
@@ -26,7 +37,9 @@ function summarize(kind,v){
  if(kind==='job'){
   // Refuse to replay an unexpected object: do not analyze another teacher's job accidentally.
   if(v.id!==JOB)return {section:kind,jobMatches:false};
-  return {section:kind,jobMatches:true,environmentMatches:v.environment==='TEST03',state:['生成待ち','生成中','要確認','エラー'].includes(v.state)?v.state:'unknown',revision:integer(v.revision),createdAt:timestamp(v.createdAt),candidateCount:Array.isArray(v.report?.candidates)?v.report.candidates.length:null,errors:Array.isArray(v.report?.errors)?v.report.errors.slice(0,10).map(errorSummary):[],savedResponseCheck:replay(v)};
+  const errors=Array.isArray(v.report?.errors)?v.report.errors.slice(0,10).map(errorSummary):[],savedResponseCheck=replay(v);
+  const nextAction=errors.some(e=>e.code==='UPSTREAM_UNAVAILABLE')?'HOLD_NEW_GENERATION_REVIEW_PROVIDER':savedResponseCheck.rawWritingPresent?'REVIEW_SAVED_RESPONSE_OFFLINE':'REVIEW_DIAGNOSTICS_NO_RETRY';
+  return {section:kind,nextAction,jobMatches:true,environmentMatches:v.environment==='TEST03',state:['生成待ち','生成中','要確認','エラー'].includes(v.state)?v.state:'unknown',revision:integer(v.revision),createdAt:timestamp(v.createdAt),candidateCount:Array.isArray(v.report?.candidates)?v.report.candidates.length:null,errors,savedResponseCheck};
  }
  if(kind==='gemini-logs')return {section:kind,records:Array.isArray(v)?v.slice(0,100).map(e=>({timestamp:timestamp(e.timestamp),revision:revision(e.resource?.labels?.revision_name),diagnostic:sanitizeDiagnostic(e.jsonPayload)})):[]};
  if(kind==='validation-logs')return {section:kind,records:Array.isArray(v)?v.slice(0,100).map(e=>({timestamp:timestamp(e.timestamp),revision:revision(e.resource?.labels?.revision_name),validationRejected:e.jsonPayload?.event==='rejected',writing:e.jsonPayload?.type==='writing',code:safeValidationCode(e.jsonPayload?.code)})):[]};

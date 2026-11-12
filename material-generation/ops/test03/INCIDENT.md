@@ -2,9 +2,24 @@
 
 対象は `JOB-dcb7e4afbc33a3565fb44a022b5cdcb2`、TEST03、gemini-3.8-flash/LOW/90秒、Cloud Run180秒。管理者報告は「エラー・生成0・検証エラー1」です。
 
-**この件の原因はまだ未確定です。** Codexの環境にはgcloud/GCP認証/実行IDがなく、実Cloudのログ・GCSは直接読めません。ジョブのerrorsにはHTTP/timeoutだけでなく、取得済みJSONの教材検証エラーも入ります。生成0でも、10問の生JSONが私有GCSに保存済みの可能性があります。タイムアウトと推測して再試行しません。
+**管理者が共有した診断結果により、今回の失敗は上流GeminiのHTTP503 / UNAVAILABLEと確認できました。** 約3.05秒で応答しているため、90秒のクライアント期限や教材検証が今回の失敗箇所ではありません。過負荷・一時停止など503の内訳は未特定です。CodexにはGCP認証がなく、以下は管理者の安全な診断出力を根拠にしています。
 
-## 管理者操作：Cloud Shellで次を1ブロック実行
+## 確認された診断結果
+
+- 時刻：2026-11-12 23:18:08 JST（API診断ログ）。
+- revision：yoshilab-material-test03-00002-h94。配置設定と失敗時ログのrevisionが一致。
+- profile=writing-low-latency-v1、thinkingLevel=LOW、timeoutMs=90000、Cloud Run=180秒。サービス/実行SA/バケット/単一試行/Secret参照/追記無効の照合はすべて正常。秘密値の直接設定はなし。
+- event=http_error、httpStatus=503、providerCode=503、providerStatus=UNAVAILABLE。
+- elapsedMs=3054、headersElapsedMs=3047、requestBytes=5242、sourceRows=6、maxOutputTokens=12000。
+- rawWritingPresent=false、candidateCount=0。保存済みの教材回答JSONはなく、教材の文法/出典/指定語検証には到達していない。
+- attempted=true、retryAttempted=false。生成stepのCloud Run応答はHTTP200・約4.57秒で、エラー状態を含むジョブの返却に成功。
+- readFailures=0、generationRequested=false、cloudChanges=false。
+
+旧表示のcode=UNCLASSIFIEDは教材検証文言の分類表に上流HTTPエラーがなかった表示上の不足で、別の未知エラーの発生を示しません。診断要約では今回の503+UNAVAILABLEをUPSTREAM_UNAVAILABLEとし、nextAction=HOLD_NEW_GENERATION_REVIEW_PROVIDER（新規生成を止め上流の状況を確認）を出すよう修正しました。既存ジョブのエラー内容やattemptedを書き換えるものではありません。
+
+公開ステータスページ <https://aistudio.google.com/status> も認証なしで取得しましたが、静的応答から当該時刻/モデルの障害情報は確認できませんでした。「障害なし」とも「公式に障害確認済み」とも判断しません。使用量の応答がないため実際のGemini料金もこのログからは判断できません。
+
+## 使用した読み取り診断（完了済み・再実行不要）
 
 ホーム/既存repoのどちらにいても実行できます。既存checkoutを変更せず、新しい一時ディレクトリに診断コードを取得し、読み取りだけを行います。audience/Secret番号/フラグの入力やApps Script編集は不要です。
 
@@ -54,6 +69,8 @@ Cloud RunのHTTP200はジョブ返却の成功であり、Gemini/教材検証の
 
 ## 次回の生成テスト
 
-実データの診断結果が来るまでは、TEST04等の作成、別モデル/timeoutへの切替、上限増加は行いません。原因が教材検証なら、既存JSONを非公開ローカルで調べることで新しい有料生成を避けられる可能性があります。
+今回の503は90秒より大幅に短い約3秒で返っているため、タイムアウトの追加延長、出力上限変更、教材検証の緩和、IAM追加をこの結果だけで行いません。LOWや設定が実際に受理された範囲のすべてまで503だけで証明はできませんが、クライアントの待ち時間不足を示すログではありません。モデル名の推測置換や自動fallbackも行いません。
 
-次の実生成が必要な場合は、原因に応じた修正をテストし、独立環境の設定/費用/1試行承認を具体的に確認してから進めます。既存TEST01〜03の再利用や試行記録リセットはしません。今回の診断は新環境・新しい生成の承認とは扱いません。
+TEST01〜03は消費済みの記録を保持し、新しいTEST04や追加のGeminiリクエストは作成/送信しません。次は上流の利用状況・障害情報・プロジェクト側のAPIメトリクスを管理者が確認するか、必要ならメタデータだけで提供元へ照会する段階です。今回Codexは問い合わせ送信もしていません。キー/本文/教員情報を渡す必要はありません。
+
+今後新しい生成を試す場合は、利用可能なモデル/設定を証拠に基づいて確認し、具体的な独立試行環境・費用・1試行を管理者が別途承認した後だけ実施します。エラーを成功扱いする修正、既存試行の初期化、成功するまでの再送はしません。
