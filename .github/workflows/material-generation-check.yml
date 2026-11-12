@@ -1,0 +1,31 @@
+name: 教科書本文AI生成エンジンの検証
+on:
+  pull_request:
+    paths:
+      - 'material-generation/**'
+      - 'apps-script/writing-sync.gs'
+      - 'apps-script/pair-text-qa-sync.gs'
+      - 'apps-script/ai-extension-publish.gs'
+      - 'writing-training.js'
+      - 'pair-reading-tf.js'
+      - '.github/workflows/material-generation-check.yml'
+  push:
+    paths:
+      - 'material-generation/**'
+      - '.github/workflows/material-generation-check.yml'
+permissions:
+  contents: read
+jobs:
+  offline-engine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test --test-isolation=none material-generation/tests/*.test.cjs
+      - run: node --check material-generation/core.cjs
+      - run: node --check material-generation/engine.cjs
+      - run: node --check material-generation/append-plan.cjs
+      - run: node --check material-generation/gemini.cjs
+      - run: node material-generation/examples/demo.cjs
