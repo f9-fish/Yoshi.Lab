@@ -7,6 +7,7 @@ v=m['key_summary']([k]);assert v['keys'][0]['authKeyServiceAccountBound'];assert
 test('request counts calculate a project generation-only error rate, without counting GetModel as generation',()=>{py(`def s(code,n,method):return {'metric':{'labels':{'response_code':code}},'resource':{'labels':{'method':method}},'points':[{'value':{'int64Value':str(n)}}]}
 v=m['metric_summary']('request-count',{'timeSeries':[s('200',3,'google.ai.GenerativeService.GenerateContent'),s('503',2,'google.ai.GenerativeService.GenerateContent'),s('200',9,'GetModel')]});assert v['generateContentRequestCount']==5;assert v['generateContent5xxRate']==0.4;assert v['allApiMethodCountsByCode']['200']==12;assert v['scope']=='PROJECT_AGGREGATE_NOT_TEST_ONLY'`);});
 test('missing metrics, pagination and unknown codes never become a healthy zero error rate',()=>{py(`assert m['metric_summary']('request-count',{})['generateContent5xxRate'] is None
+assert m['metric_summary']('request-count',{})['generateContentRequestCount'] is None
 s={'resource':{'labels':{'method':'x.GenerateContent'}},'metric':{'labels':{'response_code':'PRIVATE'}},'points':[{'value':{'int64Value':'1'}}]}
 assert m['metric_summary']('request-count',{'timeSeries':[s]})['generateContent5xxRate'] is None
 s['metric']['labels']['response_code']='503'
@@ -25,8 +26,23 @@ def cloud(args):
  raise AssertionError(args)
 class R:returncode=0;stdout=b'PRIVATE-TOKEN';stderr=b''
 def run(args,**kw):assert args==['gcloud','auth','print-access-token'];return R()
-g=m['main'].__globals__;g['gcloud']=cloud;g['subprocess'].run=run;g['monitoring_get']=lambda *a:{'timeSeries':[]}
+g=m['main'].__globals__;g['gcloud']=cloud;g['subprocess'].run=run;g['monitoring_get']=lambda *a,**kw:{'timeSeries':[]}
 g['main']()
 assert len(calls)==7;assert all(a[0] in ['billing','services','storage'] for a in calls);assert not any('access' in a or 'get-key-string' in a for a in calls)`);assert.ok(!out.includes('PRIVATE'));assert.ok(out.includes('"geminiRequestSent":false'));});
 test('failed read does not echo Cloud CLI errors or silently enable APIs or broaden IAM',()=>{const out=py(`def fail():raise RuntimeError('PRIVATE-ACCOUNT-KEY-TEXT')
 m['read']('metadata',fail)`);assert.ok(out.includes('READ_FAILED'));assert.ok(!out.includes('PRIVATE'));});
+
+test('explicit API project redirects only metadata/metrics reads, keeping historical buckets in runtime project',()=>{py(`calls=[];projects=[]
+def cloud(args):
+ calls.append(args)
+ if args[:3]==['billing','projects','describe']:assert args[3]=='gemini-source-123';return {'billingEnabled':True}
+ if args[:2]==['services','list'] or args[:3]==['services','api-keys','list']:assert '--project=gemini-source-123' in args;return []
+ if args[:2]==['storage','cat']:assert args[2].startswith('gs://yoshi-lab-db3eb-material-test');return {}
+ raise AssertionError(args)
+class R:returncode=0;stdout=b'PRIVATE-TOKEN';stderr=b''
+def run(args,**kw):return R()
+def metrics(*args,**kw):projects.append(kw['project']);return {}
+g=m['main'].__globals__;g['gcloud']=cloud;g['subprocess'].run=run;g['monitoring_get']=metrics
+g['main']('gemini-source-123');assert projects==['gemini-source-123']*4
+assert not m['valid_project']('PRIVATE/TOKEN');assert not m['valid_project']('https://other');assert m['valid_project']('gemini-source-123')`);});
+test('invalid API project CLI input is rejected without echoing it or calling Cloud tools',()=>{const r=spawnSync('python3',['-B','material-generation/ops/research-503-20261112/audit.py','--api-project','PRIVATE-SECRET/INVALID'],{cwd:path.resolve(__dirname,'../..'),encoding:'utf8'});assert.equal(r.status,2);assert.ok(!r.stdout.includes('PRIVATE'));assert.ok(!r.stderr.includes('PRIVATE'));assert.equal(r.stdout,'');});

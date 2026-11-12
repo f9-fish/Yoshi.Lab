@@ -10,6 +10,22 @@
 4. 10問でもHTTPは1回、送信ボディ5,242 bytes。巨大入力の証拠はなく、503を件数に起因すると断定できません。出力上限や生成負荷が容量確保へ影響する可能性は未検証です。
 5. 新しい環境を増やす前に、既存のAPIメトリクスとキーのプロジェクトを確認します。同じキー/プロジェクトを使う限り、Cloud Run/SA/バケットを分離してもGeminiの利用枠は分離されません。
 
+## 2026-11-13：管理者の読み取り監査結果
+
+管理者が34b736ccのaudit.pyを実行し、次を共有しました。秘密値取得・Geminiリクエスト・Cloud変更・試行記録変更はいずれもfalseです。
+
+- yoshi-lab-db3ebはbillingEnabled=true。ただしGeminiキーprojectとの対応は未確認。
+- generativeLanguageEnabled=false。API Keys metadataには1件だけあり、apiRestricted=true、browserRestricted=true、Generative Languageの明示許可なし、GenerateContent許可なし、auth keyのSAバインドなし。
+- この一覧のキーはサーバー用Geminiキーの条件に適合していません。ただし**Secret内のキーと同一かどうかは未確認**で、これを今回使用したキーだとは断定しません。既存Web/Firebase用途の可能性があるため制限解除/変更はしません。
+- request-count/latency/output/quotaはすべてseriesCount=0で、5xx率や使用量はnull。実キーの別projectを見ている可能性や未収集があるため「リクエスト0」「エラー0」「無課金」とは判断しません。
+- TEST01 attemptedAt=2026-11-12T03:48:30.538Z＝**11月12日12:48:30.538 JST**。TEST03 attemptedAt=14:18:04.643Z＝**23:18:04.643 JST**。両方attempted=trueで対象ジョブ一致。
+- これでTEST01の時刻は判明。取得済みCloud公式フィードの掲載分には両時刻を覆う事象はありませんが、Developer API専用の動的履歴は取得未完なので公式障害との因果関係は依然未確定です。
+- 管理者はSecretへ登録したキーの所属projectを「不明」と回答。秘密値を読まない条件では、この紐付けを確定できません。作成記録やAI Studioの非秘密project情報が得られるまで、新規API有効化/キー変更/再生成は行いません。
+
+今回、監査ツールに `--api-project` の明示指定を追加しました。所属が判明した場合だけ、そのprojectのbilling/API/キーmetadata/metricsを読み、TEST01/03の時刻は常に元のyoshi-lab-db3ebのバケットから読む構成です。gcloudの既定projectを変更せず、秘密値や生成APIを使いません。**不明な現在は同じ監査を再実行する必要はありません。** project名の仮値をそのまま入力しないでください。
+
+また、欠測時のgenerateContentRequestCountを0からnullへ変更しました。0件と未取得を区別する表示修正で、既存の監査結果や試行記録は書き換えません。
+
 ## 1. Google公式の稼働状況・障害履歴
 
 確認した一次情報：
@@ -31,7 +47,7 @@ Cloud incidents.jsonの取得時点の掲載8件には、TEST03の2026-11-12 14:
 
 | 試行 | 実測/報告 | 公式履歴との照合 |
 |---|---|---|
-| TEST01 / JOB-b888236ffcfcd39446e41e5e09e4fd70 | HTTP503、生成0、約31秒。正確なUTC/JST時刻は未共有 | 正確な時間照合は未完。下のread-only監査でcreatedAt/attemptedAtだけを取得可能 |
+| TEST01 / JOB-b888236ffcfcd39446e41e5e09e4fd70 | HTTP503、生成0、約31秒。試行開始2026-11-12 12:48:30.538 JST = 03:48:30.538 UTC（11/13共有） | 取得できたCloud公開フィードに時間重複なし。Developer API専用の動的履歴は未取得 |
 | TEST03 / JOB-dcb7e4afbc33a3565fb44a022b5cdcb2 | 2026-11-12 23:18:08.213665 JST = 14:18:08.213665 UTC。503/UNAVAILABLE、3.054秒 | 取得できたCloud公開フィードに時間重複なし。Developer API専用の動的履歴は未取得なので一致/不一致を確定しない |
 
 TEST03は23:18:04.643 JSTにattemptedを保存、Cloud Runのstepは約4.57秒でHTTP200。APIエラーを含むジョブを正常に返した経路です。候補0、rawWritingPresent=falseなので、品質確認できる回答JSONもありません。課金の有無はusage応答がなく、このログだけでは分かりません。
@@ -98,7 +114,7 @@ serviceruntimeはすべてのAPI/キー種別で必ず収集されるとは限�
 
 ## 7. 最小限の追加操作（必要な場合だけ）
 
-このCodex環境にはGCP認証/gcloudがなく、非公開のプロジェクトmetrics/key metadataは未取得です。既存Cloud Shellのrepoで、次の**1行**にまとめられます。
+このCodex環境にはGCP認証/gcloudがなく、非公開データの直接取得はできません。以下の既知projectの監査は11/13に管理者が実行済みです。再実行は不要で、参考手順として残します。
 
 ```bash
 git pull --ff-only && python3 -B material-generation/ops/research-503-20261112/audit.py
@@ -112,6 +128,6 @@ Secretと実キーresourceの対応が不明なら、追加で必要なのは**�
 
 ## 調査上の限界と変更範囲
 
-実Cloudの監査は未実施、TEST01の正確な時刻は未確認、実Secretとキーprojectの照合は未確認、Developer API公式の動的履歴は未取得です。これらを完了済みとは報告しません。
+Codexによる実Cloud直接取得は未実施ですが、11/13に管理者から共有された監査結果とTEST01の正確な試行時刻は上に記録しました。実Secretとキーprojectの照合は未確認、Developer API公式の動的履歴は未取得です。これらを完了済みとは報告しません。
 
 追加物はこの調査文書・read-only audit.py・そのテストだけです。生成engine/モデル/プロファイル/timeout/IAM/既存Apps Script/TEST01〜03の記録を変更しません。研究結果のPR記録は行いますが、mainへマージせず、外部への問い合わせ送信も行いません。

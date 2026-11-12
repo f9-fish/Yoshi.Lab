@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Read-only metadata/metrics audit. No Secret payload, key-string or Gemini endpoint access."""
-import datetime as dt
 import fnmatch
 import json
 import math
@@ -88,7 +87,7 @@ def metric_summary(kind, data):
         known_codes = all(k != 'unknown' for k in generation_codes)
         complete_rate = out['complete'] and generation_total > 0 and known_codes
         out.update(allApiMethodCountsByCode=codes, generateContentCountsByCode=generation_codes,
-                   generateContentRequestCount=generation_total,
+                   generateContentRequestCount=generation_total if series and out['complete'] else None,
                    generateContent5xxRate=failures / generation_total if complete_rate else None,
                    rateIsComplete=complete_rate)
     elif kind == 'request-latency':
@@ -120,10 +119,16 @@ def gcloud(args):
     return json.loads(result.stdout)
 
 
-def monitoring_get(metric, extra, token, fetch=urllib.request.urlopen):
+def valid_project(project):
+    return isinstance(project, str) and bool(re.fullmatch(r'[a-z][a-z0-9-]{4,28}[a-z0-9]', project))
+
+
+def monitoring_get(metric, extra, token, fetch=urllib.request.urlopen, project=PROJECT):
+    if not valid_project(project):
+        raise ValueError('INVALID_PROJECT')
     params = {'filter': f'metric.type="{metric}" AND {extra}', 'interval.startTime': START,
               'interval.endTime': END, 'view': 'FULL', 'pageSize': '10000'}
-    url = 'https://monitoring.googleapis.com/v3/projects/' + PROJECT + '/timeSeries?' + urllib.parse.urlencode(params)
+    url = 'https://monitoring.googleapis.com/v3/projects/' + project + '/timeSeries?' + urllib.parse.urlencode(params)
     request = urllib.request.Request(url, headers={'Authorization': 'Bearer ' + token}, method='GET')
     # No retry or redirect: even an unexpected endpoint must not receive the token.
     class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -150,15 +155,17 @@ def read(section, operation):
         emit({'section': section, 'readStatus': 'READ_FAILED'})
 
 
-def main():
+def main(api_project=PROJECT):
+    if not valid_project(api_project):
+        raise ValueError('INVALID_PROJECT')
     # Every operation is a GET/list/cat/describe. No Secret versions access, getKeyString,
     # lookupKey, Gemini API/model endpoint, service enable, IAM mutation or generation.
-    read('billing', lambda: {'section': 'billing', 'project': PROJECT,
-         'billingEnabled': gcloud(['billing', 'projects', 'describe', PROJECT, '--format=json']).get('billingEnabled') is True,
+    read('billing', lambda: {'section': 'billing', 'project': api_project,
+         'billingEnabled': gcloud(['billing', 'projects', 'describe', api_project, '--format=json']).get('billingEnabled') is True,
          'geminiKeyProjectConfirmed': False})
     read('enabled-api', lambda: {'section': 'enabled-api',
-         'generativeLanguageEnabled': any(s.get('config', {}).get('name') == SERVICE for s in gcloud(['services', 'list', '--enabled', '--project=' + PROJECT, '--format=json']))})
-    read('api-key-metadata', lambda: key_summary(gcloud(['services', 'api-keys', 'list', '--project=' + PROJECT, '--format=json'])))
+         'generativeLanguageEnabled': any(s.get('config', {}).get('name') == SERVICE for s in gcloud(['services', 'list', '--enabled', '--project=' + api_project, '--format=json']))})
+    read('api-key-metadata', lambda: key_summary(gcloud(['services', 'api-keys', 'list', '--project=' + api_project, '--format=json'])))
     for env, job in [('TEST01', 'JOB-b888236ffcfcd39446e41e5e09e4fd70'), ('TEST03', 'JOB-dcb7e4afbc33a3565fb44a022b5cdcb2')]:
         suffix = env.lower()
         prefix = 'material-generation-test' if env == 'TEST01' else 'material-generation-test03'
@@ -182,10 +189,18 @@ def main():
         emit({'section': 'metrics', 'readStatus': 'AUTH_UNAVAILABLE'})
     else:
         for kind, metric, extra in METRICS:
-            read(kind, lambda kind=kind, metric=metric, extra=extra: metric_summary(kind, monitoring_get(metric, extra, token)))
+            read(kind, lambda kind=kind, metric=metric, extra=extra: metric_summary(kind, monitoring_get(metric, extra, token, project=api_project)))
     emit({'section': 'boundary', 'secretPayloadRead': False, 'geminiRequestSent': False,
-          'cloudChanges': False, 'testRecordsChanged': False, 'windowStartUtc': START, 'windowEndUtc': END})
+          'cloudChanges': False, 'testRecordsChanged': False, 'apiProject': api_project,
+          'runtimeProject': PROJECT, 'windowStartUtc': START, 'windowEndUtc': END})
 
 
 if __name__ == '__main__':
-    main()
+    args = sys.argv[1:]
+    if not args:
+        main()
+    elif len(args) == 2 and args[0] == '--api-project' and valid_project(args[1]):
+        main(args[1])
+    else:
+        print('確認済みのプロジェクトIDを --api-project で指定してください。入力値は表示しません。', file=sys.stderr)
+        sys.exit(2)
