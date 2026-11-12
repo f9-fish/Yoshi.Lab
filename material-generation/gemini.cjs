@@ -1,7 +1,9 @@
 'use strict';
 // Server adapter only. A caller supplies a secret and a verified runtime model ID.
-// No environment fallback, deployment, retries, logs, publication or persistence.
+// No environment fallback, deployment, retries, publication or persistence.
+// Diagnostics use an explicit callback with fixed, allowlisted metadata only.
 const {need}=require('./core.cjs');
+const {sanitizeDiagnostic}=require('./gemini-diagnostics.cjs');
 const string={type:'STRING'},strings={type:'ARRAY',items:string};
 const evidence={type:'ARRAY',items:{type:'OBJECT',properties:{sourceId:string,quote:string},required:['sourceId','quote']}};
 function schema(type){
@@ -28,22 +30,37 @@ async function boundedJSON(response,maxBytes){
  try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>maxBytes){await reader.cancel();throw Error('AIの応答サイズが上限を超えました');}chunks.push(Buffer.from(value));}}finally{reader.releaseLock();}
  return parseServiceJSON(Buffer.concat(chunks).toString('utf8'));
 }
-function createGeminiGenerator({apiKey,model,fetchImpl=globalThis.fetch,timeoutMs=55000,maxResponseBytes=512000,signal,includeMetadata=false}={}){
+function createGeminiGenerator({apiKey,model,fetchImpl=globalThis.fetch,timeoutMs=55000,maxResponseBytes=512000,signal,includeMetadata=false,log=()=>{}}={}){
  need(typeof apiKey==='string'&&apiKey.trim(),'サーバー側のGeminiキーが未設定です');
  need(typeof model==='string'&&/^gemini-[a-z0-9._-]+$/i.test(model.trim()),'確認済みのモデルIDを明示してください（既定値はありません）');
  need(typeof fetchImpl==='function'&&Number.isInteger(timeoutMs)&&timeoutMs>0&&timeoutMs<=90000&&Number.isInteger(maxResponseBytes)&&maxResponseBytes>0&&maxResponseBytes<=1000000,'通信設定が不正です');
  return async request=>{
   const payload={contents:[{role:'user',parts:[{text:prompt(request)}]}],generationConfig:{temperature:.35,responseMimeType:'application/json',responseSchema:schema(request.type),maxOutputTokens:12000}};
+  // Official 3.8 guidance deprecates custom sampling parameters; this is not a 503 retry.
+  if(model.trim()==='gemini-3.8-flash')delete payload.generationConfig.temperature;
+  const body=JSON.stringify(payload),started=Date.now(),diagnostic={event:'network_error',modelId:model.trim(),type:request.type,timeoutMs,requestBytes:Buffer.byteLength(body),sourceRows:request.source.rows.length,maxOutputTokens:payload.generationConfig.maxOutputTokens};
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeoutMs);
   try{
-   const response=await fetchImpl('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model.trim())+':generateContent',{method:'POST',signal:signal?AbortSignal.any([signal,controller.signal]):controller.signal,headers:{'Content-Type':'application/json','x-goog-api-key':apiKey},body:JSON.stringify(payload)});
-   need(response.ok,'AIサービスが応答しませんでした（HTTP '+response.status+'）');
+   const response=await fetchImpl('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model.trim())+':generateContent',{method:'POST',signal:signal?AbortSignal.any([signal,controller.signal]):controller.signal,headers:{'Content-Type':'application/json','x-goog-api-key':apiKey},body,redirect:'error'});
+   diagnostic.httpStatus=response.status;
+   if(!response.ok){
+    diagnostic.event='http_error';
+    const retryAfter=response.headers?.get('retry-after');if(/^\d{1,5}$/.test(retryAfter||''))diagnostic.retryAfterSeconds=Number(retryAfter);
+    // Keep only canonical status/code, never message/details, headers or response text.
+    try{const errorBody=await boundedJSON(response,16384);diagnostic.providerStatus=errorBody?.error?.status;diagnostic.providerCode=errorBody?.error?.code;}catch{}
+    throw Error('AIサービスが応答しませんでした（HTTP '+response.status+'）');
+   }
+   diagnostic.event='invalid_response';
    const result=await boundedJSON(response,maxResponseBytes),candidate=result.candidates?.[0];
    need(candidate&&candidate.finishReason==='STOP','AI応答が未完了・拒否・打ち切りです。再確認してください');
    const output=candidate.content?.parts?.filter(p=>!p.thought).map(p=>p.text||'').join('');need(output,'AIのJSON回答が空です');
-   try{const data=JSON.parse(output);if(includeMetadata)data._generation={requestedModelId:model.trim(),actualModelId:typeof result.modelVersion==='string'?result.modelVersion:null,generatedAt:new Date().toISOString(),usage:Object.fromEntries(['promptTokenCount','candidatesTokenCount','thoughtsTokenCount','totalTokenCount'].filter(k=>Number.isSafeInteger(result.usageMetadata?.[k])&&result.usageMetadata[k]>=0).map(k=>[k,result.usageMetadata[k]]))};return data;}catch{throw Error('AI回答が正しいJSONではありません');}
-  }catch(error){if(error.name==='AbortError')throw Error('AI生成が中断・タイムアウトしました');throw error;}
-  finally{clearTimeout(timer);}
+   try{const data=JSON.parse(output);if(includeMetadata)data._generation={requestedModelId:model.trim(),actualModelId:typeof result.modelVersion==='string'?result.modelVersion:null,generatedAt:new Date().toISOString(),usage:Object.fromEntries(['promptTokenCount','candidatesTokenCount','thoughtsTokenCount','totalTokenCount'].filter(k=>Number.isSafeInteger(result.usageMetadata?.[k])&&result.usageMetadata[k]>=0).map(k=>[k,result.usageMetadata[k]]))};diagnostic.event='success';return data;}catch{throw Error('AI回答が正しいJSONではありません');}
+  }catch(error){
+   let failure=error;
+   if(diagnostic.event!=='http_error'&&(controller.signal.aborted||signal?.aborted||error.name==='AbortError')){diagnostic.event=signal?.aborted?'cancelled':'timeout';failure=Error('AI生成が中断・タイムアウトしました');}
+   else if(diagnostic.event==='network_error')failure=Error('AIサービスとの通信に失敗しました');
+   diagnostic.elapsedMs=Date.now()-started;failure.geminiDiagnostic=sanitizeDiagnostic(diagnostic);throw failure;
+  }finally{clearTimeout(timer);diagnostic.elapsedMs=Date.now()-started;try{log(sanitizeDiagnostic(diagnostic));}catch{}}
  };
 }
 module.exports={schema,prompt,createGeminiGenerator};

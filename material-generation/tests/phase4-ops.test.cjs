@@ -6,7 +6,7 @@ function run(stage,{confirm=true,pap='enforced',version='1',extra=[]}={}){
  const write=(name,body)=>fs.writeFileSync(path.join(dir,name),'#!/usr/bin/env bash\nset -eu\n'+body,{mode:0o700});
  write('git','if [[ "$1" == diff ]]; then exit 0; fi\nif [[ "$1" == rev-parse ]]; then echo aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa; exit 0; fi\nexec '+JSON.stringify(spawnSync('which',['git'],{encoding:'utf8'}).stdout.trim())+' "$@"\n');
  write('curl','echo 401\n');
- write('node','echo "model metadata verified (mock)"\n');
+ write('node','cat >/dev/null\necho "model metadata verified (mock)"\n');
  write('gcloud',`printf '%s\\n' "$*" >> "$OPS_LOG"
 case "$*" in
   'run services describe '* )

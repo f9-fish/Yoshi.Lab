@@ -1,5 +1,6 @@
 'use strict';
 const {TYPES,buildSource,settingsFor,validateResult,hash,need,key}=require('./core.cjs');
+const {sanitizeDiagnostic}=require('./gemini-diagnostics.cjs');
 const STATES=Object.freeze(['未生成','生成待ち','生成中','要確認','生成完了','エラー']);
 function similarity(a,b){const chars=s=>new Set(key(s).match(/.{1,2}/gu)||[]),x=chars(a),y=chars(b);const union=new Set([...x,...y]);return union.size?[...x].filter(c=>y.has(c)).length/union.size:0;}
 function label(c){return c.payload.word||c.payload.japanese||c.payload.question;}
@@ -27,7 +28,7 @@ async function generateBatch({master,selection,settings={},checkpoint=null,exist
    }
    candidates.push(...kept);results[type]={requested:config.counts[type],generated:validated.candidates.length,retained:kept.length,shortage:validated.shortage,duplicates:duplicates.length,shortageReason:validated.reason,warnings:validated.warnings};
    warnings.push(...validated.warnings.map(w=>type+'：'+w));
-  }catch(e){errors.push({type,message:e.message});results[type]={requested:config.counts[type],error:e.message};}
+  }catch(e){const diagnostic=sanitizeDiagnostic(e.geminiDiagnostic);errors.push({type,message:e.message,...(diagnostic?{diagnostic}:{})});results[type]={requested:config.counts[type],error:e.message};}
  }
  const state=errors.length?'エラー':pending?'生成待ち':'要確認';await onProgress({state,batchId});
  return {schemaVersion:1,batchId,sourceHash:source.hash,settingsHash:config.hash,state,candidates,results,errors,warnings,checkpoint:{batchId,sourceHash:source.hash,settingsHash:config.hash,rawResults},requiresTeacherReview:true,publishEnabled:false};

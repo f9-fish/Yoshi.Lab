@@ -52,3 +52,6 @@ jobs:
       - run: node --check material-generation/phase4/verify-model.cjs
       - run: node --check material-generation/phase4/review.cjs
       - run: bash -n material-generation/ops/test01/phase4-cloud-shell.sh
+      - run: node --check material-generation/gemini-diagnostics.cjs
+      - run: node --check material-generation/phase4/diagnose-503.cjs
+      - run: bash -n material-generation/ops/test01/diagnose-503.sh

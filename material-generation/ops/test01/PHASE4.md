@@ -1,5 +1,7 @@
 # Phase 4：既存TEST01で英作文10問を1ジョブだけ生成
 
+503発生後の確認は [INCIDENT-503.md](INCIDENT-503.md) を参照してください。既存の予約・試行記録を維持し、生成手順を再実行しません。
+
 この文書をPhase 4の実行手順として使用します。以前のREADMEの「接続確認を再デプロイ」「Driveフォルダ作成」「追記許可」は今回は不要です。
 
 対象は既存 `yoshi-lab-db3eb / asia-northeast1 / yoshilab-material-test01`、専用実行ID、既存TEST01シートだけです。studioapi・Functions・本番Apps Script・本番シート・mainは変更しません。GitHubトリガーも作りません。
