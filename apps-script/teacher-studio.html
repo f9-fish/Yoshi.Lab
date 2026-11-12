@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ja">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yoshi.Lab｜AI教材スタジオ</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;background:#0b1428;color:#edf4ff;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 85% 0,#26375d 0,transparent 36%),#0b1428}
+.shell{max-width:1060px;margin:0 auto;padding:26px 16px 65px}
+header{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:24px}
+.brand{color:#8bbdff;font-size:14px;font-weight:900;letter-spacing:.13em}.brand span{color:#fff}
+h1{font-size:clamp(26px,4vw,36px);margin:6px 0}h2{font-size:20px;margin:0 0 16px}
+.sub{color:#afbfdb;font-size:14px;line-height:1.6}
+.pill{display:inline-block;border-radius:99px;padding:7px 12px;border:1px solid #496188;background:#1b2e4c;font-size:12px;font-weight:800;color:#b7d7ff}
+.panel{background:#18243d;border:1px solid #344565;border-radius:18px;padding:20px;margin-top:16px;box-shadow:0 12px 32px #060d1d40}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.number{font-size:26px;font-weight:850;margin-top:6px}
+.stat{padding:16px;border-radius:14px;background:#111d34;border:1px solid #304362}
+label{display:block;font-weight:750;margin-bottom:7px;font-size:13px}
+select,button{font:inherit;color:#fff;border-radius:10px;border:1px solid #546987;background:#10213b;min-height:43px;padding:9px 12px}
+select{width:100%}button{cursor:pointer;font-weight:800}button:hover:not(:disabled){filter:brightness(1.14)}button:disabled{opacity:.45;cursor:not-allowed}
+button.primary{background:#8fc2ff;border-color:#8fc2ff;color:#081a35}button.small{min-height:37px;padding:7px 10px;font-size:12px}
+button.active{background:#315e84;border-color:#91cbff}
+.control{display:grid;grid-template-columns:1fr 1fr;gap:12px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.card{background:#101d33;border:1px solid #354865;padding:16px;border-radius:14px;margin-top:11px}
+.card h3{font-size:17px;line-height:1.6;margin:9px 0}.answer{color:#b5e6cf;white-space:pre-wrap}.muted{color:#a5b7d4;font-size:13px;line-height:1.65;white-space:pre-wrap}
+.badge{color:#bdd5f5;font-size:12px;background:#28395a;border-radius:99px;padding:5px 9px}
+.alert{color:#ffd1a6;background:#352a2d;border:1px solid #7f5a4f;padding:13px;border-radius:12px;line-height:1.6}
+.error{color:#ffb7be}.success{color:#b5eccb}.hidden{display:none!important}
+.line{border-top:1px solid #364766;margin:16px 0}.empty{color:#a9b9d5;padding:16px 0}
+@media(max-width:720px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.control{grid-template-columns:1fr}.shell{padding:17px 12px 50px}.panel{padding:16px}}
+</style></head>
+<body><main class="shell">
+<header><div><div class="brand">YOSHI<span>.LAB</span> / TEACHER</div><h1>AI教材スタジオ</h1><div class="sub">教科書本文とAI生成教材を、ひとつの場所で管理。</div></div><div class="pill">🔒 先生専用</div></header>
+<div class="alert">現在は安全な第1段階です。教材一覧と採用・却下に対応。AI生成・転記・公開はまだ実行できません。教科書本文を外部AIへ送信しません。</div>
+<section class="panel"><h2>教材の状況</h2><div id="stats" class="grid"></div><p id="status" class="sub" role="status">教材を読み込み中…</p><div class="row"><button id="reload" class="small" type="button">↻ 最新の状態を読み込む</button></div></section>
+<section class="panel"><h2>STEP 1｜Lessonを選ぶ</h2><div class="control"><div><label for="lesson">対象のLesson・Part</label><select id="lesson"><option>読み込み中…</option></select></div><div><label for="type">教材の種類</label><select id="type"><option value="">すべて</option><option>単語・熟語</option><option>文法・穴埋め</option><option>本文Q&A</option><option>True / False</option><option>Discussion</option></select></div></div><p id="lessonStatus" class="sub"></p></section>
+<section class="panel"><div class="row" style="justify-content:space-between"><h2>STEP 2｜確認・採用</h2><span id="count" class="pill"></span></div><p class="sub">「転記済」の問題は二重登録防止のためここから変更できません。新規の候補だけ採用・却下を選べます。</p><div id="candidates"></div></section>
+<section class="panel"><h2>STEP 3｜公開チェック</h2><p class="sub">一括公開は次の開発段階。現在は各シートの公開件数を表示するだけで、同期やGitHubの書き込みは行いません。</p><div class="row"><span class="badge">既存の公開方法を維持</span><button disabled type="button">一括公開（準備中）</button></div></section>
+</main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);let data={lessons:[],candidates:[],totals:{}},saving=false;
+function el(tag,text,className){const x=document.createElement(tag);if(text!==undefined)x.textContent=String(text);if(className)x.className=className;return x;}
+function run(fn,...args){return new Promise((resolve,reject)=>{google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[fn](...args);});}
+function message(s,bad){$('status').textContent=s;$('status').className=bad?'error':'sub';}
+function lessonKey(q){return JSON.stringify([q.subject,q.lesson,q.part]);}
+function drawStats(){
+ $('stats').replaceChildren();
+ [['登録本文',data.totals.master],['AI生成候補',data.totals.candidates],['文法下書き',data.totals.grammar],['発展教材公開',data.totals.publishedExtension]].forEach(([label,value])=>{
+  const card=el('div',undefined,'stat');card.append(el('div',label,'muted'),el('div',value||0,'number'));$('stats').append(card);
+ });
+}
+function drawLesson(){
+ const selected=$('lesson').value;$('lesson').replaceChildren();
+ for(const x of data.lessons){const opt=el('option',x.subject+' Lesson '+x.lesson+' / Part '+x.part);opt.value=x.key;$('lesson').append(opt);}
+ if(data.lessons.some(x=>x.key===selected))$('lesson').value=selected;
+ else if(data.lessons.length)$('lesson').value=data.lessons[0].key;
+ const x=data.lessons.find(x=>x.key===$('lesson').value);
+ $('lessonStatus').textContent=x?'本文 '+x.sourceCount+'件 ／ AI候補 '+x.candidateCount+'件 ／ 文法下書き '+x.grammarCount+'件 ／ 発展教材 '+x.extensionCount+'件':'Lessonがまだ登録されていません。';
+ drawCandidates();
+}
+function drawCandidates(){
+ const key=$('lesson').value,type=$('type').value;
+ const rows=data.candidates.filter(c=>lessonKey(c)===key&&(!type||c.type===type));
+ const root=$('candidates');root.replaceChildren();$('count').textContent=rows.length+'問';
+ if(!rows.length){root.append(el('p','この条件の教材候補はありません。','empty'));return;}
+ for(const c of rows){
+  const card=el('article',undefined,'card');
+  const top=el('div',undefined,'row');top.append(el('span',c.type,'badge'),el('span',c.review||'未確認','badge'),el('span',c.id,'muted'));
+  card.append(top,el('h3',c.question),el('div','解答・意味：'+c.answer,'answer'));
+  if(c.explanation)card.append(el('p',c.explanation,'muted'));
+  const row=el('div',undefined,'row');row.style.marginTop='12px';
+  if(c.review==='転記済')row.append(el('span','✓ 転記済（編集不可）','success'));
+  else for(const [value,label] of [['採用','✓ 採用'],['却下','× 却下'],['未確認','保留']]){
+    const btn=el('button',label,'small'+(c.review===value?' active':''));btn.type='button';btn.disabled=saving;btn.addEventListener('click',()=>save(c,value));row.append(btn);
+  }
+  card.append(row);root.append(card);
+ }
+}
+async function save(candidate,next){
+ if(saving||candidate.review===next)return;saving=true;drawCandidates();message('更新中…');
+ try{
+  const result=await run('reviewTeacherStudioCandidate',candidate.id,next);
+  candidate.review=result.review;message('更新しました：'+candidate.id+' → '+next);
+ }catch(e){message('保存できませんでした：'+(e.message||e),true);}
+ finally{saving=false;drawCandidates();}
+}
+async function load(){
+ $('reload').disabled=true;message('読み込み中…');
+ try{const d=await run('getTeacherStudioDashboard');if(!d||!Array.isArray(d.lessons)||!Array.isArray(d.candidates))throw Error('データ形式が不正です');
+  data=d;drawStats();drawLesson();message('最新のシートから取得しました。公開操作・外部AI送信は行っていません。');
+ }catch(e){message('読み込みに失敗しました：'+(e.message||e),true);}
+ finally{$('reload').disabled=false;}
+}
+$('reload').addEventListener('click',load);$('lesson').addEventListener('change',drawLesson);$('type').addEventListener('change',drawCandidates);
+load();
+})();
+</script></body></html>
