@@ -10,5 +10,5 @@ function checkInput(body,source,config){
 function checkOptions({allowedTestIds,allowedSourceIds,testAppendEnabled,preflightOnly}){
  if(preflightOnly||testAppendEnabled||allowedTestIds.length!==1||allowedTestIds[0]!==TEST_ID||allowedSourceIds.length!==1||allowedSourceIds[0]!==TEST_ID)throw Error('Phase 4はTEST01専用・追記無効で実行してください');
 }
-function keyFor(environment='TEST01'){if(!['TEST01','TEST02'].includes(environment))throw Error('未承認のテスト環境です');return 'PHASE4-'+environment;}
+function keyFor(environment='TEST01'){if(!['TEST01','TEST02','TEST03'].includes(environment))throw Error('未承認のテスト環境です');return 'PHASE4-'+environment;}
 module.exports={TEST_ID,SINGLE_KEY,SETTINGS,checkInput,checkOptions,keyFor};

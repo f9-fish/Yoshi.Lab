@@ -1,7 +1,7 @@
 'use strict';
 const {checkSchemas}=require('./schema-check.cjs');
 const {buildSource,settingsFor,hash,MASTER}=require('../core.cjs'),{generateBatch}=require('../engine.cjs'),{planAppend}=require('../append-plan.cjs'),{PRODUCTION_IDS,TABS,fault,checkTarget}=require('./policy.cjs');
-function createService({enabled=false,allowedTestIds=[],allowedSourceIds=PRODUCTION_IDS,verifyIdentity,checkTeacher,store,generate,mock=false,clock=()=>Date.now(),dailyLimit=10,testAppendEnabled=false,preflightOnly=false,singleJob=false,singleJobEnvironment='TEST01',generationApproved=singleJobEnvironment!=='TEST02'}={}){
+function createService({enabled=false,allowedTestIds=[],allowedSourceIds=PRODUCTION_IDS,verifyIdentity,checkTeacher,store,generate,mock=false,clock=()=>Date.now(),dailyLimit=10,testAppendEnabled=false,preflightOnly=false,singleJob=false,singleJobEnvironment='TEST01',generationApproved=singleJobEnvironment==='TEST01'}={}){
  if(enabled&&(!allowedTestIds.length||allowedTestIds.some(id=>PRODUCTION_IDS.includes(id))))throw Error('本番と異なるテスト用IDが必要です');
  if(enabled&&(typeof verifyIdentity!=='function'||typeof checkTeacher!=='function'||(!preflightOnly&&(!store||(!mock&&!store.persistent)||typeof generate!=='function'))))throw Error('認証・永続保存・生成設定が未完了です');
  if(!Number.isInteger(dailyLimit)||dailyLimit<1||dailyLimit>100)throw Error('利用上限が不正です');
@@ -18,7 +18,7 @@ function createService({enabled=false,allowedTestIds=[],allowedSourceIds=PRODUCT
   if(['enqueue','step'].includes(action)&&!generationApproved)throw fault(403,'この環境の生成1試行はまだ承認されていません');
   if(action==='enqueue'){
    checkTarget(body.targetSpreadsheetId,allowedTestIds);if(!allowedSourceIds.includes(body.sourceSpreadsheetId)&&!allowedTestIds.includes(body.sourceSpreadsheetId))throw fault(403,'未承認の読み取り元です');
-   const source=buildSource(body.master,body.selection),config=settingsFor(source,body.settings),batchId='B-'+hash([source.hash,config.hash]).slice(0,24),id='JOB-'+hash([owner,batchId,body.targetSpreadsheetId,...(singleJob&&singleJobEnvironment==='TEST02'?['TEST02']:[])]).slice(0,32);
+   const source=buildSource(body.master,body.selection),config=settingsFor(source,body.settings),batchId='B-'+hash([source.hash,config.hash]).slice(0,24),id='JOB-'+hash([owner,batchId,body.targetSpreadsheetId,...(singleJob&&singleJobEnvironment!=='TEST01'?[singleJobEnvironment]:[])]).slice(0,32);
    if(singleJob)phase4.checkInput(body,source,config);
    return store.lock(singleJob?singleKey:id,async()=>{
     if(singleJob){const claim=await store.read(singleKey);if(claim&&claim.jobId!==id)throw fault(409,'Phase 4の1ジョブは登録済みです。別ジョブ・再生成は禁止です');if(!claim)await store.write(singleKey,{jobId:id,attempted:false});}
