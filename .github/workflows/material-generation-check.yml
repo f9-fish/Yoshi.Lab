@@ -62,3 +62,4 @@ jobs:
       - run: node --check material-generation/phase4/deployment.cjs
       - run: node --check material-generation/ops/test02/config.cjs
       - run: bash -n material-generation/ops/test02/cloud-shell.sh
+      - run: node --check material-generation/gemini-profile.cjs

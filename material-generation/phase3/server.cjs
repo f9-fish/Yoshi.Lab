@@ -20,7 +20,7 @@ async function main(){
   }else if(env.MG_STORE_BACKEND==='file'){
    if(env.K_SERVICE||!env.MG_STATE_DIR)throw Error('Cloud RunでFileStoreは使えません。永続保存先を確認してください');const {FileStore}=require('./file-store.cjs');options.store=new FileStore(env.MG_STATE_DIR);
   }else throw Error('永続保存方式を明示してください');
-  const {createGeminiGenerator}=require('../gemini.cjs');options.generate=createGeminiGenerator({apiKey:env.MG_GEMINI_API_KEY,model:env.MG_GEMINI_MODEL,includeMetadata:options.singleJob,log:entry=>console.info(JSON.stringify(entry))});options.dailyLimit=Number(env.MG_DAILY_LIMIT||10);options.testAppendEnabled=env.MG_TEST_APPEND_ENABLED==='true';
+  const {createGeminiGenerator}=require('../gemini.cjs');options.generate=createGeminiGenerator({apiKey:env.MG_GEMINI_API_KEY,model:env.MG_GEMINI_MODEL,profile:env.MG_GEMINI_PROFILE||'legacy',includeMetadata:options.singleJob,log:entry=>console.info(JSON.stringify(entry))});options.dailyLimit=Number(env.MG_DAILY_LIMIT||10);options.testAppendEnabled=env.MG_TEST_APPEND_ENABLED==='true';
  }
  const server=require('node:http').createServer(handler(createService(options)));server.requestTimeout=120000;
  server.listen(Number(env.PORT||8080),env.MG_BIND_HOST||'127.0.0.1',()=>console.log(preflight?'接続確認専用サーバーを開始しました（生成・追記・公開なし）':'テスト用生成サーバーを開始しました（本番・公開なし）'));
