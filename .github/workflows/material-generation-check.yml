@@ -69,3 +69,6 @@ jobs:
       - run: node --check material-generation/gemini-profile.cjs
       - run: node --check material-generation/ops/test03/config.cjs
       - run: bash -n material-generation/ops/test03/cloud-shell.sh
+      - run: node --check material-generation/validation-diagnostics.cjs
+      - run: node --check material-generation/ops/test03/incident-summary.cjs
+      - run: bash -n material-generation/ops/test03/diagnose.sh

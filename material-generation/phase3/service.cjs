@@ -1,7 +1,7 @@
 'use strict';
 const {checkSchemas}=require('./schema-check.cjs');
 const {buildSource,settingsFor,hash,MASTER}=require('../core.cjs'),{generateBatch}=require('../engine.cjs'),{planAppend}=require('../append-plan.cjs'),{PRODUCTION_IDS,TABS,fault,checkTarget}=require('./policy.cjs');
-function createService({enabled=false,allowedTestIds=[],allowedSourceIds=PRODUCTION_IDS,verifyIdentity,checkTeacher,store,generate,mock=false,clock=()=>Date.now(),dailyLimit=10,testAppendEnabled=false,preflightOnly=false,singleJob=false,singleJobEnvironment='TEST01',generationApproved=singleJobEnvironment==='TEST01'}={}){
+function createService({enabled=false,allowedTestIds=[],allowedSourceIds=PRODUCTION_IDS,verifyIdentity,checkTeacher,store,generate,mock=false,clock=()=>Date.now(),dailyLimit=10,testAppendEnabled=false,preflightOnly=false,singleJob=false,singleJobEnvironment='TEST01',generationApproved=singleJobEnvironment==='TEST01',validationLog=()=>{}}={}){
  if(enabled&&(!allowedTestIds.length||allowedTestIds.some(id=>PRODUCTION_IDS.includes(id))))throw Error('本番と異なるテスト用IDが必要です');
  if(enabled&&(typeof verifyIdentity!=='function'||typeof checkTeacher!=='function'||(!preflightOnly&&(!store||(!mock&&!store.persistent)||typeof generate!=='function'))))throw Error('認証・永続保存・生成設定が未完了です');
  if(!Number.isInteger(dailyLimit)||dailyLimit<1||dailyLimit>100)throw Error('利用上限が不正です');
@@ -36,7 +36,7 @@ function createService({enabled=false,allowedTestIds=[],allowedSourceIds=PRODUCT
    if(singleJob){const claim=await store.read(singleKey);if(!claim||claim.jobId!==id||claim.attempted||current.revision!==0)throw fault(409,'Phase 4は1回だけです。成否にかかわらず再生成しません');await store.write(singleKey,{...claim,attempted:true,attemptedAt:new Date(clock()).toISOString()});}
    await quota(owner);current.state='生成中';current.revision++;await store.write(id,current);
    try{
-    const report=await generateBatch({...current.input,checkpoint:current.report?.checkpoint||null},{generate,maxKindsPerRun:1,preserveInvalidResults:singleJob});if(singleJob){report.generation=report.checkpoint.rawResults.writing?._generation||null;report.phase4=true;}current.report=report;current.state=report.state;await store.write(id,current);return publicJob(current);
+    const report=await generateBatch({...current.input,checkpoint:current.report?.checkpoint||null},{generate,maxKindsPerRun:1,preserveInvalidResults:singleJob,validationLog});if(singleJob){report.generation=report.checkpoint.rawResults.writing?._generation||null;report.phase4=true;}current.report=report;current.state=report.state;await store.write(id,current);return publicJob(current);
    }catch{current.state='エラー';await store.write(id,current);throw fault(502,'生成処理を完了できませんでした。ジョブを再取得してください');}
   });
   if(action==='plan'){
