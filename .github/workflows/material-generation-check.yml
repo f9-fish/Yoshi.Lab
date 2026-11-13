@@ -1,0 +1,77 @@
+name: 教科書本文AI生成エンジンの検証
+on:
+  pull_request:
+    paths:
+      - 'material-generation/**'
+      - 'apps-script/material-generation-client.gs'
+      - 'apps-script/material-generation-preflight.gs'
+      - 'apps-script/material-generation-phase4.gs'
+      - 'apps-script/material-generation-test02.gs'
+      - 'apps-script/material-generation-test02-appsscript.example.json'
+      - 'apps-script/material-generation-test03.gs'
+      - 'apps-script/material-generation-test03-appsscript.example.json'
+      - 'apps-script/material-generation-preflight-appsscript.example.json'
+      - 'apps-script/material-generation-appsscript.example.json'
+      - 'apps-script/writing-sync.gs'
+      - 'apps-script/pair-text-qa-sync.gs'
+      - 'apps-script/ai-extension-publish.gs'
+      - 'writing-training.js'
+      - 'pair-reading-tf.js'
+      - '.github/workflows/material-generation-check.yml'
+  push:
+    paths:
+      - 'material-generation/**'
+      - 'apps-script/material-generation-client.gs'
+      - 'apps-script/material-generation-preflight.gs'
+      - 'apps-script/material-generation-phase4.gs'
+      - 'apps-script/material-generation-test02.gs'
+      - 'apps-script/material-generation-test02-appsscript.example.json'
+      - 'apps-script/material-generation-test03.gs'
+      - 'apps-script/material-generation-test03-appsscript.example.json'
+      - 'apps-script/material-generation-preflight-appsscript.example.json'
+      - 'apps-script/material-generation-appsscript.example.json'
+      - '.github/workflows/material-generation-check.yml'
+permissions:
+  contents: read
+jobs:
+  offline-engine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci --prefix material-generation --ignore-scripts --no-audit --no-fund
+      - run: node --test --test-isolation=none material-generation/tests/*.test.cjs
+      - run: node --check material-generation/core.cjs
+      - run: node --check material-generation/engine.cjs
+      - run: node --check material-generation/append-plan.cjs
+      - run: node --check material-generation/gemini.cjs
+      - run: node material-generation/examples/demo.cjs
+      - run: node --check material-generation/phase3/server.cjs
+      - run: node --check material-generation/phase3/service.cjs
+      - run: node --check material-generation/phase3/auth-step.cjs
+      - run: node --check material-generation/phase3/auth.cjs
+      - run: node --check material-generation/phase3/file-store.cjs
+      - run: node --check material-generation/phase3/http.cjs
+      - run: node --check material-generation/phase3/gcs-store.cjs
+      - run: node --check material-generation/phase3/schema-check.cjs
+      - run: node --check material-generation/phase4/test01.cjs
+      - run: node --check material-generation/phase4/verify-model.cjs
+      - run: node --check material-generation/phase4/review.cjs
+      - run: bash -n material-generation/ops/test01/phase4-cloud-shell.sh
+      - run: node --check material-generation/gemini-diagnostics.cjs
+      - run: node --check material-generation/phase4/diagnose-503.cjs
+      - run: bash -n material-generation/ops/test01/diagnose-503.sh
+      - run: node --check material-generation/phase4/deployment.cjs
+      - run: node --check material-generation/ops/test02/config.cjs
+      - run: bash -n material-generation/ops/test02/cloud-shell.sh
+      - run: node --check material-generation/gemini-profile.cjs
+      - run: node --check material-generation/ops/test03/config.cjs
+      - run: bash -n material-generation/ops/test03/cloud-shell.sh
+      - run: node --check material-generation/validation-diagnostics.cjs
+      - run: node --check material-generation/ops/test03/incident-summary.cjs
+      - run: bash -n material-generation/ops/test03/diagnose.sh
+      - run: python3 -B -c "import ast,pathlib; ast.parse(pathlib.Path('material-generation/ops/research-503-20261112/audit.py').read_text())"
+      - run: python3 -B material-generation/tests/isolated-provision.test.py
+      - run: bash -n material-generation/ops/isolated-project/cloud-shell.sh
