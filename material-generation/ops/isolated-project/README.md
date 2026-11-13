@@ -15,15 +15,15 @@
 | 実行 | Cloud Shell、Node24、既存package-lockの依存。Cloud Run/Build/Artifact Registry/Apps Script/Firebaseの新規構築は不要 |
 | 本文 | 生成段階だけ、既存TEST03保存ジョブの6文snapshotを読み取り専用で再利用。シート/API/Apps Scriptへの接続なし |
 
-将来有効化を確認するサービスはgenerativelanguage.googleapis.com、apikeys.googleapis.com、secretmanager.googleapis.com、storage.googleapis.com。新projectの管理/SA作成にはCloud Resource Manager / IAM等の管理APIも必要になり得るため、必要性を確認し、新project内に限定する。
+一括構築は新project内だけでService Usage / Cloud Resource Manager / IAM / API Keys / Secret Manager / Cloud Storage / Generative Languageの7 APIを有効化する。Cloud Run/Build/Firebase APIの有効化は行わない。
 
-新規API有効化・課金・SA/キー作成・Secret登録・IAM付与には管理者の別途承認が必要。runnerに作成/有効化/IAM編集の機能はない。管理者が設定を終え、費用と各リクエストを明示承認した時だけ将来の実行コマンドを使う。
+新規API有効化・課金・SA/キー作成・Secret登録・IAM付与には管理者の別途承認が必要。runnerに作成/有効化/IAM編集の機能はなく、構築は別の承認制provision.pyに分離する。管理者が設定を終え、費用と各リクエストを明示承認した時だけ将来の実行コマンドを使う。
 
 ### 現行認証と最小権限
 
 [Google公式APIキー説明](https://ai.google.dev/gemini-api/docs/api-key)は、2026-05-28以降AI Studioの新規キーをサービスアカウントに紐付くauth keyとし、Generative Language APIへの制限を説明している。Cloud Run実行SAとAPIキーに紐付くSAは別概念。今回新Runは作らず、旧実行SAの権限を広げない。
 
-将来の作成は新projectを明示してAI Studioへimportし、そのproject内で行う。公式に挙げられる作成権限は resourcemanager.projects.get / apikeys.keys.create / serviceusage.services.enable / iam.serviceAccounts.create / iam.serviceAccountApiKeyBindings.create。既存projectへのOwner/Editor付与で解決しない。課金接続・新project/GCS/Secret作成権限は管理者のプロビジョニング権限として分離する。
+将来の作成は新projectを明示し、provision.pyからGoogle公式CLIの`gcloud services api-keys create --service-account=... --api-target=service=generativelanguage.googleapis.com`で行う。AI Studioでの手動キー発行/コピーは不要。公式に挙げられる作成権限は resourcemanager.projects.get / apikeys.keys.create / serviceusage.services.enable / iam.serviceAccounts.create / iam.serviceAccountApiKeyBindings.create。既存projectへのOwner/Editor付与で解決しない。課金接続・新project/GCS/Secret作成権限は管理者のプロビジョニング権限として分離する。
 
 実行操作者に必要なのは新project/key metadata閲覧、新Secretのversion metadata閲覧と対象SecretだけのsecretAccessor、新バケットだけのobjectCreator/objectViewerとstorage.buckets.get。Secret containerへのroles/secretmanager.viewerはmetadata閲覧に利用可能だが、project全体のSecretアクセス権は不要。バケットの実metadata取得権限は専用カスタムrole等でstorage.buckets.getのみを与える設計とする。旧TEST03 snapshotには既に管理者が持つread権限だけを使い、新たな旧project IAM付与は行わない。権限不足は停止する。auth keyに紐付くSAへの権限は公式の作成フローを確認し、推測でOwner/Editor等を付与しない。
 
@@ -38,7 +38,7 @@ HTTP status/elapsedMs/retryAttemptedと既存の安全な生成診断を保存�
 
 ## 秘密値なしの対応記録
 
-config.example.jsonを将来Cloud Shellのprivate作業領域にコピーし、実値を記入する。APIキー値は絶対に記入しない。
+通常はprovision.pyがCloud Shellのprivate作業領域へconfig.jsonを自動生成する。config.example.jsonは形式の参照用で、手動編集は不要。APIキー値は絶対に記入しない。
 
 - projectId / projectNumber：新projectの非秘密ID。
 - keyResource：API Keys metadataの完全リソース名。**APIキー文字列ではない**。
@@ -46,36 +46,79 @@ config.example.jsonを将来Cloud Shellのprivate作業領域にコピーし、�
 - bucket / modelId：新bucket名と明示モデル。
 - provenanceConfirmed：新規キーを対象Secretの当該versionへ直接登録した記録を確認した時だけtrue。
 
-対応記録は送信前claimのprovenanceに保存し、config全体のhashを照会結果と生成結果に保持する。runnerはproject number、key resource所属、auth keyのSA所属、API制限、Secret version状態、バケット所属/PAP/UBLAを検証する。metadataだけではSecret payloadとkey resourceの同一性は証明できないため、provenanceConfirmedは**作成時の管理者記録**に依存する。getKeyString/lookupKey/既存Secret読取による照合は行わない。空のmethod制限（API内全method許可）を要求し、GetModel/GenerateContentが阻害される不明なmethodパターンは自動変更せず停止する。
+対応記録は送信前claimのprovenanceに保存し、config全体のhashを照会結果と生成結果に保持する。runnerはproject number、key resource所属、auth keyのSA所属、API制限、Secret version状態、バケット所属/PAP/UBLAを検証する。metadataだけではSecret payloadとkey resourceの同一性は証明できないため、provenanceConfirmedは**作成時の管理者記録**に依存する。構築スクリプトがその実行中に新規作成に成功したキーだけget-key-stringでメモリー内に取得し、新規Secret versionへ直接渡す。既存キーのgetKeyString、lookupKey、既存Secret読取による照合は行わない。空のmethod制限（API内全method許可）を要求し、GetModel/GenerateContentが阻害される不明なmethodパターンは自動変更せず停止する。
+
+## 一括構築スクリプト
+
+`cloud-shell.sh setup <projectId>` → `provision.py`。Python3標準ライブラリとCloud Shellのgcloudを利用し、構築だけならnpm不要。プロジェクト作成/課金接続はスクリプトに含めない。Google公式の[auth key作成フラグ](https://docs.cloud.google.com/sdk/gcloud/reference/services/api-keys/create)を使用し、組織ポリシーの緩和・standard keyへのfallbackをしない。
+
+### 誤変更を防ぐ条件
+
+- projectIdは`yoshilab-material-ai-<小文字英数字4〜9文字>`だけを許可し、旧project numberも拒否する。作成後7日以内・ACTIVE・課金設定済みであることを読み取って検査する。project番号は自動取得。
+- `MG_SETUP_APPROVED`がそのprojectIdと一致し、費用確認もtrueの時だけ構築する。既定projectを変更せず、すべてのgcloud操作でprojectを明示。
+- 新projectのAPI有効化後、キー・Secret・バケット・custom role・ユーザー作成SAがないことを一覧で検査する。Google管理のサービスエージェントのみ許可。権限不足/一覧失敗を「存在しない」と扱わない。APIが無効だと一覧取得できないため、**既存リソース検査より前に承認済み新projectのAPI有効化は行われる**。
+- GCSのcreate成功をCloud Shell間の競合防止点とし、既存バケットへIAM/設定を適用しない。キー/SA/Secret/custom roleもcreateのみ。既存キーの更新、Secretへの追加version、リソース削除/rollbackなし。
+- 固定名資源またはローカルsetup-journalが既にある場合は再実行を拒否。途中失敗時も同じコマンドを繰り返さず、記録と資源を保持して原因を確認する。API/鍵の作成等が途中まで完了している可能性がある。別名での自動やり直しや自動待機/再試行はしない。
+
+### 作成物とIAM
+
+- SA `material-ai-auth`、キーID `material-ai-gemini`。新キーだけにGenerative Language API制限を付け、指定SAへbindする。SAにproject/Secret/GCSのroleを付与しない。Gemini側の追加権限が必要な場合も自動で広げず、後の照会で停止して調査する。
+- Secret `material-ai-gemini`、version1。新キー値は捕捉した子プロセスstdoutから次の子プロセスstdinへ渡し、引数/環境変数/ファイル/公開ログへ出さない。
+- 新private GCS、東京region、PAP/UBLAを作成時に有効化。setup-v1/provenance.jsonへ非秘密configをgeneration=0で保存する。
+- 実行主体は現在のCloud Shellのactive accountを自動取得。新projectのcustom role `materialAiMetadata`（apikeys.keys.get / resourcemanager.projects.get）をその操作者へ付与。
+- custom role `materialAiBucket`（storage.buckets.get / storage.objects.create / storage.objects.get）を**新バケットだけ**に付与。削除/上書き用権限なし。新SecretだけにsecretAccessorとviewerを付与。auth keyのSAと操作者は別主体。
+- 新projectを作った管理者が既に持つOwner等の権限は削除しない。追加bindingは狭いが、操作者の既存/継承権限まで最小化した証明にはならない。旧projectのIAMを追加/変更しない。
+- 操作者には新projectでAPI有効化、SA/key/Secret/bucket/custom role作成、対象IAM変更、API key取得等の構築権限が必要。権限不足/組織ポリシー拒否時は停止する。スクリプトは自分自身へのOwner/Editor付与や組織ポリシー変更を行わない。
+
+構築後にproject/課金/API有効性、SA、key所属/bind/API制限、Secretと唯一の有効version、GCS所属/東京/PAP/UBLA、roleのpermission完全一致、必要なIAM binding、公開principalの不在をmetadataで自動確認する。Geminiへの通信は行わない。`check`は同じ確認を読み取り専用で実行し、キー文字列やSecret payloadにはアクセスしない。**これは設定検証であり、Gemini疎通・有効な利用枠・課金tier・組織からの継承権限の検証ではない。**
+
+ローカル記録は`~/.config/yoshilab-material/<projectId>/`（directory0700/files0600）。config.jsonとsetup-journal.jsonを自動生成し、手動JSON編集・project番号の転記・キー値コピーは不要。configは構築後検査に成功した時だけ出力。途中失敗ではsetup-journalの固定step名を確認し、秘密値を含まないそのstepとエラーcodeだけを共有する。キーや生のgcloudログは貼らない。
 
 ## 管理者の最短手順
 
-### 今できる操作（Cloud変更・Gemini送信なし）
-
-既存のPRブランチcheckout内で、以下1行だけ。planは認証・依存インストールすら不要。
+**申請承認待ちの今は実行不要。** 調査/準備内容だけを表示するなら、既存checkout内で以下。Cloud認証・Cloud変更・Gemini送信はない。
 
 ```bash
-git pull --ff-only && node material-generation/ops/isolated-project/runner.cjs plan
+git pull --ff-only && bash material-generation/ops/isolated-project/cloud-shell.sh plan
 ```
 
-### 将来の承認後だけ行う準備
+### 1. プロジェクト作成と課金設定（管理者が別途実施）
 
-1. 上記新projectの作成/課金・必要API有効化・auth key作成・新Secretへの非表示登録・privateバケット/IAM設定を管理者が承認して実施。新projectの実ID/キーresource/Secret versionを同時に記録。**今回は行わない**。
-2. `config.example.json`を`/tmp/material-ai-config.json`へコピーして非秘密値だけ記入、権限0600。provenanceConfirmedを確認する。既存キーをコピーしない。
-3. Node24を確認し、`npm ci --prefix material-generation --ignore-scripts --no-audit --no-fund`。依存取得はCloudリソースを作らない。
-4. モデルGETの1試行を明示承認した場合だけ、下記の最初のコマンドを実行。成功した後も自動生成しない。
+作成上限の申請が承認されたら、上記命名規則の新projectを作り、課金設定を完了する。スクリプトはこの2操作を行わない。既存projectを流用しない。以下の入力プロンプトでは**新project IDだけ**を入力する（秘密値は入力しない）。
+
+### 2. 一括構築（新project/IAM/料金を承認後だけ）
+
+既存PRブランチcheckout内で、更新後に以下を実行する。Node24は後の照会/生成に必要。
 
 ```bash
-MG_ISOLATED_APPROVED=verify-model MG_COST_CONFIRMED=true node material-generation/ops/isolated-project/runner.cjs verify-model /tmp/material-ai-config.json
+git pull --ff-only
+read -r -p '新しい専用プロジェクトID: ' MG_AI_PROJECT
+MG_SETUP_APPROVED="$MG_AI_PROJECT" MG_COST_CONFIRMED=true bash material-generation/ops/isolated-project/cloud-shell.sh setup "$MG_AI_PROJECT"
 ```
 
-成功結果と料金/利用枠を確認し、**10問の有料生成を別途承認した場合だけ**：
+成功時は自動検査済み。追加確認が必要な場合だけ、読み取り専用で以下を実行する。
 
 ```bash
-MG_ISOLATED_APPROVED=generate-ten MG_COST_CONFIRMED=true node material-generation/ops/isolated-project/runner.cjs generate-ten /tmp/material-ai-config.json
+bash material-generation/ops/isolated-project/cloud-shell.sh check "$MG_AI_PROJECT"
 ```
 
-既存TEST03の固定snapshotはprivateなメモリーにだけ読むため、シートや本文の手動コピー不要。旧GCSの権限がない場合は停止し、既存環境の権限を広げない。別途承認済みのprivateなmaster配列JSONがある場合のみ第4引数で指定可能（固定の6文/科目/単元を検査）。生成後の品質確認にはprivate reportをローカルで参照し、本文を公開ログ/PR/チャットへ出さない。10件でも自然さ/和英対応/難易度等は教員が確認する。失敗時の出力を確認したら止め、コマンドを繰り返さない。
+途中失敗した場合、setupを繰り返したり、資源/記録を削除したりしない。APIが有効になった後の反映遅延等でも自動再試行しない。`setup-journal.json`のstepと安全なエラーcodeを基に別途確認する。
+
+### 3. モデルGETの1試行（別途承認後だけ）
+
+```bash
+MG_ISOLATED_APPROVED=verify-model MG_COST_CONFIRMED=true bash material-generation/ops/isolated-project/cloud-shell.sh verify-model "$MG_AI_PROJECT"
+```
+
+必要なNode依存は初回に既存lockfileから自動導入（npm lifecycle script無効）。キー入力やJSON編集は不要。成功後も自動生成しない。
+
+### 4. 英作文10問の1試行（成功結果・費用確認後、さらに別途承認）
+
+```bash
+MG_ISOLATED_APPROVED=generate-ten MG_COST_CONFIRMED=true bash material-generation/ops/isolated-project/cloud-shell.sh generate-ten "$MG_AI_PROJECT"
+```
+
+既存TEST03の固定snapshotはprivateなメモリーにだけ読むため、シートや本文の手動コピー不要。旧GCSの権限がない場合は停止し、既存環境の権限を広げない。別途承認済みのprivateなmaster配列JSONがある場合のみrunner.cjsの第4引数で指定可能（6文/科目/単元を検査）。生成後の品質確認にはprivate reportをローカルで参照し、本文を公開ログ/PR/チャットへ出さない。自然さ/和英対応/難易度等は教員確認が必要。失敗したら止め、照会/生成コマンドを繰り返さない。
 
 ## 費用・制限・影響
 
@@ -85,4 +128,8 @@ MG_ISOLATED_APPROVED=generate-ten MG_COST_CONFIRMED=true node material-generatio
 
 ## オフライン検証結果
 
-Node24：教材生成関連189件成功、失敗0、スキップ0（新規12件）。studio-functions23件成功、失敗0、スキップ0。既存アプリ414件中408件成功、既存Q&A関連6件失敗、スキップ0。実Cloud/認証キー/Gemini成功は未確認。秘密値なしのモックでモデルGET・503の非再試行・失敗後のclaim保持・成功receipt必須・10問生成と既存validation・privateな結果保存・旧snapshotの固定読取先を確認。
+前回307fd248の検証：Node24で教材生成関連189件成功、失敗0、スキップ0（新規12件）。studio-functions23件成功、失敗0、スキップ0。既存アプリ414件中408件成功、既存Q&A関連6件失敗、スキップ0。実Cloud/認証キー/Gemini成功は未確認。秘密値なしのモックでモデルGET・503の非再試行・失敗後のclaim保持・成功receipt必須・10問生成と既存validation・privateな結果保存・旧snapshotの固定読取先を確認。
+
+### 今回の一括構築準備の検証
+
+Pythonの新規18件成功、失敗0、スキップ0。既存Node教材生成189件成功、studio-functions23件成功。既存アプリ414件中408成功・6失敗・スキップ0で、前回と同じQ&A関連6件。bash構文・Python構文・diffチェック成功。構築の成功/拒否、既存資源検出、権限/一覧失敗、競合バケット、Secret登録失敗、作成失敗後の非再試行、キー非出力、metadataだけのcheck、承認なしCLIの停止をモックで確認した。新規Cloudリソース作成・API有効化・課金設定・IAM付与・キー/Secret値取得・Gemini送信はこの開発作業では未実施。実CloudでのAPI仕様/IAM伝播/組織ポリシー/課金tier/利用枠は管理者承認後に確認する。

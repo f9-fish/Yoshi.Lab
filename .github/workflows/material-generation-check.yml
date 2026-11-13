@@ -73,3 +73,5 @@ jobs:
       - run: node --check material-generation/ops/test03/incident-summary.cjs
       - run: bash -n material-generation/ops/test03/diagnose.sh
       - run: python3 -B -c "import ast,pathlib; ast.parse(pathlib.Path('material-generation/ops/research-503-20261112/audit.py').read_text())"
+      - run: python3 -B material-generation/tests/isolated-provision.test.py
+      - run: bash -n material-generation/ops/isolated-project/cloud-shell.sh
