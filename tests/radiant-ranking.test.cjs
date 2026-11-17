@@ -143,3 +143,43 @@ for(const count of [2,3,11])test(`all three screens agree with ${count} masters 
     for(const file of ['index.html','mypage.html'])assert.equal(await rankSurface(file,h.board,'s'+i),expected,file);
   }
 });
+
+test('rank buttons separate radiant, master and every diamond division using global season positions', async () => {
+  const extra = {};
+  for (const [id, xp] of [['d3',7000],['d2',8667],['d1',10334],['low',6999]]) {
+    extra[id] = {name:id,classNumber:2,seasonId:'current',seasonXP:xp,totalXP:999999};
+  }
+  extra.old = {name:'past diamond',seasonId:'past',seasonXP:11000};
+  const h=harness({count:12,extra});
+  await h.evaluate('refresh()');
+  assert.equal(h.$('radiantRows').children.length,10);
+  const names=()=>h.$('radiantRows').children.map(row=>row.children[1].children[0].textContent);
+  const badges=()=>h.$('radiantRows').children.map(row=>row.children[1].children[1].textContent);
+  h.$('showMaster').onclick();
+  assert.deepEqual(names(),['Student 10','Student 11']);
+  assert.deepEqual(badges(),['マスター','マスター']);
+  assert.equal(h.$('showMaster').classList.contains('active'),true);
+  assert.equal(h.$('showRadiant').classList.contains('active'),false);
+  assert.equal(h.$('rankTitle').textContent,'レディアント');
+  h.$('showDiamond').onclick();
+  assert.deepEqual(names(),['d1','d2','d3']);
+  assert.deepEqual(badges(),['ダイヤモンド Ⅰ','ダイヤモンド Ⅱ','ダイヤモンド Ⅲ']);
+  for(const id of ['rankAll','rankTotal','rankClass','rankWeek'])h.$(id).onclick();
+  assert.deepEqual(names(),['d1','d2','d3']);
+  h.$('showRadiant').onclick();
+  assert.equal(h.$('radiantRows').children.length,10);
+  assert.ok(badges().every(name=>name==='レディアント'));
+});
+
+test('empty rank groups show guidance and selecting a rank does not fetch or write data', async () => {
+  const h=harness({count:1});
+  await h.evaluate('refresh()');
+  for(const key of ['leaderboard','syncXP','records','profile'])h.api[key]=()=>{throw Error('Rank buttons must only change display');};
+  for(const id of ['showMaster','showDiamond']){
+    h.$(id).onclick();
+    assert.equal(h.$('radiantRows').children.length,0);
+    assert.equal(h.$('radiantRows').textContent,'現在このランクのプレイヤーはいません。');
+  }
+  h.$('showRadiant').onclick();
+  assert.equal(h.$('radiantRows').children.length,1);
+});
