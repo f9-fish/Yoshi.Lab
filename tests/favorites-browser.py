@@ -80,8 +80,11 @@ with sync_playwright() as playwright:
         quiz.locator('#start').click()
         star = quiz.locator('.favorite-toggle')
         expect(star).to_have_attribute('aria-pressed', 'false')
+        unsaved_color = star.evaluate("button => getComputedStyle(button).backgroundColor")
         star.click()
         expect(star).to_have_attribute('aria-pressed', 'true')
+        expect(star).to_have_text('✓ 登録済み')
+        assert star.evaluate("button => getComputedStyle(button).backgroundColor") != unsaved_color
 
         library = context.new_page()
         library.goto(SITE + 'index.html?view=subjects')
@@ -89,8 +92,9 @@ with sync_playwright() as playwright:
         expect(shortcut).to_be_visible()
         assert shortcut.evaluate("""link => {
           const pair = document.querySelector('#pairFeature .pair-start');
-          const properties = ['backgroundImage', 'borderRadius', 'padding', 'fontFamily', 'transform'];
+          const properties = ['borderRadius', 'padding', 'fontFamily', 'transform'];
           return link.parentElement.nextElementSibling === pair.parentElement &&
+            getComputedStyle(link).backgroundImage !== getComputedStyle(pair).backgroundImage &&
             properties.every(key => getComputedStyle(link)[key] === getComputedStyle(pair)[key]);
         }""")
         shortcut.click()
@@ -135,6 +139,8 @@ with sync_playwright() as playwright:
 
         library.locator('#favoriteList li').filter(has_text=EIKEN['sentence']).get_by_role('button', name='登録解除').click()
         expect(star).to_have_attribute('aria-pressed', 'false')
+        expect(star).to_have_text('☆ お気に入り')
+        assert star.evaluate("button => getComputedStyle(button).backgroundColor") == unsaved_color
         expect(library.locator('#favoriteList li')).to_have_count(1)
         library.evaluate("window.mockUser('other')")
         expect(library.locator('#favoriteStatus')).to_contain_text('まだありません')
