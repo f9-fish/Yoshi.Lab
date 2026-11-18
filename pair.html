@@ -657,10 +657,14 @@ function showPairQAFavorite(view){
  if(context===favoriteQAContext)return;
  favoriteQAContext=context;F.show($('english'),null);
  if(!context)return;
- favoriteQACatalog??=Q.fetchSource('qa').catch(()=>{favoriteQACatalog=null;return [];});
+ favoriteQACatalog??=Q.fetchSource('qa').then(rows=>{
+  if(!Array.isArray(rows))throw Error('本文Q&Aの教材形式が不正です');
+  return rows;
+ }).catch(()=>{favoriteQACatalog=null;return null;});
  favoriteQACatalog.then(rows=>{
   if(context!==favoriteQAContext)return;
-  const candidates=rows.filter(q=>q.status==='公開'&&q.subject===view.subject&&normLesson(q.lesson)===normLesson(view.lesson)&&
+  if(!rows){favoriteQAContext='';return;}
+  const candidates=rows.filter(q=>q?.status==='公開'&&q.subject===view.subject&&normLesson(q.lesson)===normLesson(view.lesson)&&
    normPart(q.part)===normPart(view.part)&&Q.clean(q.question)===Q.clean(view.question)&&
    (!view.modelAnswer||Q.clean(q.modelAnswer)===Q.clean(view.modelAnswer)));
   if(candidates.length===1)F.show($('english'),Q.ref('qa','qa',candidates[0].id));

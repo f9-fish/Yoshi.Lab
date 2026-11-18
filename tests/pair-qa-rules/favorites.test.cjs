@@ -12,7 +12,7 @@ const google={firebase:{sign_in_provider:'google.com'},email_verified:true};
 before(async()=>{
  env=await initializeTestEnvironment({
   projectId:'demo-yoshi-favorites',
-  database:{host:'127.0.0.1',port:9009,rules:readFileSync('../../firebase-favorites.rules.proposed.json','utf8')}
+  database:{host:'127.0.0.1',port:9009,rules:readFileSync(process.env.FAVORITES_RULES_FILE||'../../firebase-favorites.rules.proposed.json','utf8')}
  });
 });
 after(async()=>{await env?.cleanup();});

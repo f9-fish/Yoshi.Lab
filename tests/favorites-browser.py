@@ -6,6 +6,7 @@ from urllib.parse import unquote, urlparse
 from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
+SITE = "https://local.test/Yoshi.Lab/"
 EIKEN = json.loads((ROOT / "eiken_2.json").read_text())[0]
 
 SDK = {
@@ -54,10 +55,10 @@ def route(request):
     if url.hostname == 'www.gstatic.com' and url.path.rsplit('/', 1)[-1] in SDK:
         request.fulfill(body=SDK[url.path.rsplit('/', 1)[-1]], content_type='text/javascript')
         return
-    if url.hostname != 'local.test':
+    if url.hostname != 'local.test' or not url.path.startswith('/Yoshi.Lab/'):
         request.abort()
         return
-    path = (ROOT / unquote(url.path).lstrip('/')).resolve()
+    path = (ROOT / unquote(url.path.removeprefix('/Yoshi.Lab/'))).resolve()
     if path.name == 'eiken_2.json':
         request.fulfill(json=[EIKEN])
         return
@@ -73,7 +74,7 @@ with sync_playwright() as playwright:
         context = browser.new_context(viewport={'width': width, 'height': 900}, service_workers='block')
         context.route('**/*', route)
         quiz = context.new_page()
-        quiz.goto('https://local.test/eiken.html')
+        quiz.goto(SITE + 'eiken.html')
         quiz.locator('[data-grade="2"]').click()
         quiz.locator('#start').click()
         star = quiz.locator('.favorite-toggle')
@@ -82,7 +83,9 @@ with sync_playwright() as playwright:
         expect(star).to_have_attribute('aria-pressed', 'true')
 
         library = context.new_page()
-        library.goto('https://local.test/favorites.html')
+        library.goto(SITE + 'index.html?view=subjects')
+        library.locator('.favorites-home-link').click()
+        expect(library).to_have_url(SITE + 'favorites.html')
         expect(library.locator('#favoriteList li')).to_have_count(1)
         first_text = json.loads((ROOT / 'lessons.json').read_text())[0]['cards'][0]
         text_key = library.evaluate("""async ([en,ja])=>{

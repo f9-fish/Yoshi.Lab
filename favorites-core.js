@@ -21,7 +21,8 @@ globalThis.YoshiFavoriteQuestions = (() => {
  const eiken = (grade,id) => ref(grade==='2級'?'eikenTwo':'eikenPre','eiken',id);
  const wordbook = (mode,q) => mode==='reorder'?ref('wordbook','reorder',q.word.id,q.prompt,q.answer):
   ref('wordbook',mode==='choice'?'wordChoice':'spelling',q.word.id);
- const extension = q => ref('extension',q.type==='True / False'?'trueFalse':'discussion',q.id);
+ const extension = q => q?.type==='True / False'?ref('extension','trueFalse',q.id):
+  q?.type==='Discussion'?ref('extension','discussion',q.id):null;
  const studioFormats = {vocabulary:'studioVocab',cloze:'studioCloze',qa:'qa',trueFalse:'trueFalse',discussion:'discussion'};
  const studio = (group,type,q) => ref('studio',studioFormats[type],group.subject,group.id,group.name,q.question,q.answer);
  async function key(reference){

@@ -27,3 +27,32 @@ cd tests/pair-qa-rules
 ```
 
 クラウド環境でホームディレクトリが読み取り専用の場合は、`FIREBASE_EMULATORS_PATH` と `XDG_CONFIG_HOME` を書き込み可能な場所に指定します。初回ダウンロードには `storage.googleapis.com` が必要です。
+
+## 本番導入前の確認とロールバック
+
+管理者が読み取り専用で取得した最新版を `/path/to/production-rules.json` に保存し、リポジトリのルートから次を実行します。Rulesのエクスポート、統合版、差分はリポジトリの外で保管します。
+
+```sh
+umask 077
+rules_dir=$(mktemp -d)
+cp /path/to/production-rules.json "$rules_dir/before.json"
+node scripts/merge-favorites-rules.cjs "$rules_dir/before.json" "$rules_dir/after.json"
+git diff --no-index -- "$rules_dir/before.json" "$rules_dir/after.json"
+```
+
+`git diff --no-index` は差分がある場合に終了コード1を返します。整形による差分が見づらい場合は、両方を同じJSONフォーマッターで正規化して比較します。統合スクリプトは現行ファイルを維持し、ルートで広い許可があり得る場合や、同名ブロックがある場合には中止します。
+
+```sh
+export FAVORITES_RULES_FILE="$rules_dir/after.json"
+(cd tests/pair-qa-rules &&
+  ./node_modules/.bin/firebase emulators:exec --project demo-yoshi-favorites \
+    --config ../../firebase.favorites-emulator.json --only database \
+    'node --test favorites.test.cjs')
+```
+
+GitHub ActionsはリポジトリにあるRulesのスナップショットを使って統合テストします。本番エクスポートが別の内容なら、上記のコマンドでその統合版を検証します。ローカルのEmulator取得に失敗した場合は、公式Firebase CLIが取得できる環境で同じコマンドを実行します。
+
+1. 統合版の検証成功後、管理者が公開直前のRulesを再取得し、バックアップ取得後に別の変更がないか確認します。差分があれば統合と検証をやり直します。
+2. 承認後にRealtime DatabaseのRules画面で統合版を公開し、PR #80をマージします。GitHub Pagesの公開元が対象ブランチのルートであることと、公開ジョブの成功を確認します。
+3. サイトのサブパス配下でホームから `favorites.html` を開き、CSS・JSと教材が取得できることを確認します。本番での書き込み確認が承認されている場合は、テスト専用Googleアカウントでお気に入りだけを登録・解除します。
+4. ロールバック時は、Pagesの公開元でお気に入りの変更をrevertします。Rulesを戻す場合は、以後のRules変更がなければバックアップを復元します。変更があれば現在のRulesからお気に入りのブロックだけを外します。Realtime Database内のお気に入り、学習記録、XP、Daily、ランキングのデータは削除しません。
