@@ -1,8 +1,8 @@
 import './practice-xp.js';
 import {initializeApp,getApps,getApp} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js';
 import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged,signOut,browserLocalPersistence,setPersistence} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js';
-import {getDatabase,ref,push,set,get,runTransaction,remove} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js';
-const app=getApps().length?getApp():initializeApp({apiKey:'AIzaSyDhm9zeUsgvF6_lbwcRj57VWXzYPA3LEzM',authDomain:'yoshi-lab-db3eb.firebaseapp.com',databaseURL:'https://yoshi-lab-db3eb-default-rtdb.firebaseio.com',projectId:'yoshi-lab-db3eb',storageBucket:'yoshi-lab-db3eb.firebasestorage.app',messagingSenderId:'543561154900',appId:'1:543561154900:web:b9ba898d1d44a385f848c1'});
+import {getDatabase,ref,push,set,get,runTransaction,remove,onValue} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js';
+const app=getApps().some(app=>app.name==='[DEFAULT]')?getApp():initializeApp({apiKey:'AIzaSyDhm9zeUsgvF6_lbwcRj57VWXzYPA3LEzM',authDomain:'yoshi-lab-db3eb.firebaseapp.com',databaseURL:'https://yoshi-lab-db3eb-default-rtdb.firebaseio.com',projectId:'yoshi-lab-db3eb',storageBucket:'yoshi-lab-db3eb.firebasestorage.app',messagingSenderId:'543561154900',appId:'1:543561154900:web:b9ba898d1d44a385f848c1'});
 const auth=getAuth(app),db=getDatabase(app),provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:'select_account'});
 let current=null,authReady=false;const listeners=new Set();let lastAccessUid='',lastAccessAt=0;
 async function recordLastAccess(u){if(!u||!u.emailVerified)return;const now=Date.now();if(lastAccessUid===u.uid&&now-lastAccessAt<5*60*1000)return;lastAccessUid=u.uid;lastAccessAt=now;try{const profile=await get(ref(db,'studentProfiles/'+u.uid));if(!profile.exists()||auth.currentUser?.uid!==u.uid)return;await set(ref(db,'lastAccess/'+u.uid),{at:Date.now()})}catch(e){console.warn('最終アクセス記録:',e.message)}}
@@ -140,5 +140,26 @@ api.saveWordbookResult=async function({sessionId,stage,units,wordbookMode,right,
  if(!saved||saved.subject!=='単語帳'||saved.lesson!==stage||saved.xpMode!=='wordbook'||saved.wordbookMode!==wordbookMode||saved.xpPolicyV3!==true||
   JSON.stringify(saved.wordbookUnits)!==JSON.stringify(selected)||saved.right!==right||saved.total!==total||saved.completedSet!==completedSet)throw Error('同じセットIDに異なる記録があります');
  return saved;
+};
+api.watchQuestionFavorites=function(receive,fail){
+ const u=current;
+ if(!u)return ()=>{};
+ let active=true,unsubscribe;
+ u.getIdTokenResult().then(token=>{
+  if(!active||current!==u)return;
+  if(token.signInProvider!=='google.com'||!u.emailVerified)throw Error('Googleログインが必要です');
+  unsubscribe=onValue(ref(db,'questionFavorites/'+u.uid),snapshot=>{
+   if(active&&current===u)receive(snapshot.val());
+  },error=>{if(active&&current===u)fail(error);});
+ }).catch(error=>{if(active&&current===u)fail(error);});
+ return()=>{active=false;unsubscribe?.();};
+};
+api.setQuestionFavorite=async function(key,saved){
+ if(typeof key!=='string'||!/^[a-zA-Z]+~[a-zA-Z]+~[a-f0-9]{64}$/.test(key)||typeof saved!=='boolean')throw Error('無効な問題IDです');
+ const u=current;
+ if(!u)throw Error('Googleログインが必要です');
+ const token=await u.getIdTokenResult();
+ if(current!==u||token.signInProvider!=='google.com'||!u.emailVerified)throw Error('ログイン状態を確認してください');
+ await set(ref(db,'questionFavorites/'+u.uid+'/'+key),saved?true:null);
 };
 window.YoshiAccount=api;setPersistence(auth,browserLocalPersistence).catch(e=>console.warn('ログイン保持設定:',e));onAuthStateChanged(auth,u=>{authReady=true;current=u&&u.emailVerified?u:null;listeners.forEach(fn=>fn(current));if(current)void recordLastAccess(current);document.dispatchEvent(new Event('yoshi-auth-ready'))});getRedirectResult(auth).catch(e=>console.warn('Googleログイン:',e));

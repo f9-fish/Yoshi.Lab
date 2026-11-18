@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>お気に入り | Yoshi.Lab</title>
+<link rel="stylesheet" href="./favorites.css">
+</head>
+<body class="favorites-page">
+<main>
+ <nav aria-label="ナビゲーション"><a href="./index.html?view=subjects">← Yoshi.Lab ホーム</a></nav>
+ <h1>☆ お気に入り</h1>
+ <p>お気に入りに登録した問題を復習できます。復習でXPは加算されません。</p>
+ <button id="favoriteLogin" type="button" hidden>Googleでログイン</button>
+ <p id="favoriteStatus" role="status">ログイン状態を確認中…</p>
+ <section id="favoriteLibrary" aria-label="お気に入り一覧" hidden>
+  <div class="favorite-panel favorite-actions">
+   <label>科目<select id="filterSubject"><option value="">すべて</option></select></label>
+   <label>問題形式<select id="filterFormat"><option value="">すべて</option></select></label>
+   <button id="reviewAll" type="button" disabled>表示中の問題を連続で解く</button>
+  </div>
+  <ul id="favoriteList"></ul>
+ </section>
+ <section id="favoriteReview" class="favorite-panel" aria-label="お気に入り復習" hidden>
+  <button id="backToFavorites" type="button">← 一覧へ</button>
+  <p id="reviewProgress" role="status"></p>
+  <h2 id="reviewPrompt" tabindex="-1"></h2>
+  <p id="reviewContext"></p>
+  <form id="reviewForm">
+   <div id="reviewFields"></div>
+   <div id="reviewChoices" class="favorite-actions"></div>
+   <div class="favorite-actions">
+    <button id="checkFavorite" type="submit">解答する</button>
+    <button id="reviewHint" type="button">ヒント</button>
+    <button id="favoriteSpeak" type="button">読み上げ</button>
+   </div>
+  </form>
+  <p id="reviewHintText"></p>
+  <p id="reviewJudgment" role="status"></p>
+  <div id="reviewAnswer" hidden></div>
+  <button id="nextFavorite" type="button" hidden>次の問題へ</button>
+ </section>
+</main>
+<script src="./answer-variants.js"></script>
+<script src="./wordbook-data.js"></script>
+<script src="./eiken-training.js"></script>
+<script src="./writing-training.js"></script>
+<script src="./weekly-daily.js"></script>
+<script src="./favorites-core.js"></script>
+<script src="./favorites-ui.js"></script>
+<script src="./favorites-catalog.js"></script>
+<script type="module" src="./account.js?v=question-favorites-1"></script>
+<script src="./favorites-page.js"></script>
+</body>
+</html>

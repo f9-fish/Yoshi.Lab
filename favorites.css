@@ -1,0 +1,21 @@
+.favorite-control{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin:.65rem 0;color:#ffe59b}
+.favorite-control[hidden]{display:none}
+.favorite-toggle,.favorites-home-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.45rem .85rem;border:1px solid #9b8150;border-radius:12px;background:#26334c;color:#ffe59b;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+.favorite-toggle[aria-pressed="true"]{background:#604820;border-color:#efc46c}
+.favorite-toggle:disabled{opacity:.6;cursor:default}
+.favorites-home-link{margin-top:.8rem}
+.favorites-page{margin:0;background:radial-gradient(ellipse at top,#293f60,#10192b 70%);color:#f3f7ff;font:16px system-ui,sans-serif;min-height:100vh}
+.favorites-page main{box-sizing:border-box;width:min(100%,850px);margin:auto;padding:clamp(16px,4vw,36px)}
+.favorites-page a{color:#ffe59b}
+.favorites-page h1{margin-bottom:.3em}
+.favorites-page .favorite-panel{padding:clamp(12px,3vw,24px);margin:1rem 0;border-radius:18px;border:1px solid #526385;background:#1b2b45;overflow-wrap:anywhere}
+.favorites-page .favorite-actions{display:flex;flex-wrap:wrap;align-items:end;gap:.65rem}
+.favorites-page button,.favorites-page select,.favorites-page input,.favorites-page textarea{box-sizing:border-box;max-width:100%;min-height:44px;padding:.5rem .7rem;border:1px solid #7286ad;border-radius:10px;background:#293e60;color:inherit;font:inherit}
+.favorites-page button{cursor:pointer}
+.favorites-page button:disabled{opacity:.62;cursor:default}
+.favorites-page label{display:grid;gap:.3rem}
+.favorites-page ul{list-style:none;padding:0}
+.favorites-page #reviewAnswer,.favorites-page #reviewContext,.favorites-page #reviewPrompt{white-space:pre-wrap}
+.favorites-page #reviewFields{display:grid;gap:.65rem}
+.favorites-page #reviewForm{margin:.8rem 0}
+.favorites-page :focus-visible,.favorite-toggle:focus-visible,.favorites-home-link:focus-visible{outline:3px solid #ffd77e;outline-offset:3px}

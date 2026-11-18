@@ -1,0 +1,15 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "questionFavorites": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid && auth.token.firebase.sign_in_provider === 'google.com' && auth.token.email_verified === true",
+        "$questionKey": {
+          ".write": "auth != null && auth.uid === $uid && auth.token.firebase.sign_in_provider === 'google.com' && auth.token.email_verified === true && $questionKey.matches(/^[a-zA-Z]+~[a-zA-Z]+~[a-f0-9]{64}$/)",
+          ".validate": "newData.val() === true"
+        }
+      }
+    }
+  }
+}
