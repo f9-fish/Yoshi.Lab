@@ -90,6 +90,8 @@ with sync_playwright() as playwright:
         library.goto(SITE + 'index.html?view=subjects')
         shortcut = library.locator('.favorites-home-link')
         expect(shortcut).to_be_visible()
+        expect(shortcut).to_have_accessible_name('お気に入りを練習')
+        assert shortcut.evaluate('link => link.scrollWidth <= link.clientWidth')
         assert shortcut.evaluate("""link => {
           const pair = document.querySelector('#pairFeature .pair-start');
           const properties = ['borderRadius', 'padding', 'fontFamily', 'transform'];

@@ -62,10 +62,21 @@
 }
 
 body.home-dashboard:not(.welcome-active):has(#subjects) #favoritesFeature .pair-start {
- background:linear-gradient(100deg,#633889,#302052)!important;
- border-color:#d6b2ff!important;
- box-shadow:0 0 12px #b988f577,inset 0 0 12px #e0bfff33!important;
+ background:linear-gradient(100deg,#8e302e,#4c181a)!important;
+ border-color:#ffaaa1!important;
+ box-shadow:0 0 12px #fb756a66,inset 0 0 12px #ffb0a333!important;
 }
 body.home-dashboard:not(.welcome-active):has(#subjects) #favoritesFeature .pair-start:hover {
- background:linear-gradient(100deg,#7545a0,#3e2963)!important;
+ background:linear-gradient(100deg,#a23b36,#602124)!important;
+}
+body.home-dashboard:not(.welcome-active):has(#subjects) #pairFeature .pair-start {
+ background:linear-gradient(100deg,#444548,#212224)!important;
+ border-color:#d9d9d9!important;
+ box-shadow:0 0 12px #e2e2e255,inset 0 0 12px #ffffff22!important;
+}
+body.home-dashboard:not(.welcome-active):has(#subjects) #pairFeature .pair-start:hover {
+ background:linear-gradient(100deg,#555659,#303133)!important;
+}
+@media(max-width:480px){
+ body.home-dashboard:not(.welcome-active):has(#subjects) #favoritesFeature .pair-english{display:none}
 }
