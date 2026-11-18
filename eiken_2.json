@@ -47,13 +47,13 @@
     "sentence": "The government introduced measures to (　　) air pollution.",
     "choices": [
       "suggests",
-      "improve",
+      "participate",
       "justify",
       "reduce"
     ],
     "choiceMeanings": [
       "示唆する・提案する",
-      "改善する・向上させる",
+      "参加する",
       "正当化する",
       "減らす"
     ],
@@ -67,13 +67,13 @@
     "grade": "2級",
     "sentence": "The scientist gathered data to (　　) her theory.",
     "choices": [
-      "announce",
+      "respond",
       "support",
       "introduced",
       "increase"
     ],
     "choiceMeanings": [
-      "発表する",
+      "応答する・対応する",
       "支える・支持する",
       "導入した・紹介した",
       "増やす"
@@ -109,13 +109,13 @@
     "grade": "2級",
     "sentence": "The report (　　) several serious problems with the current system.",
     "choices": [
-      "confirm",
+      "participate",
       "expand",
       "highlights",
       "opposed"
     ],
     "choiceMeanings": [
-      "確認する",
+      "参加する",
       "拡大する",
       "強調する・浮き彫りにする",
       "反対した"
@@ -130,14 +130,14 @@
     "grade": "2級",
     "sentence": "The committee decided to (　　) the proposal after a long debate.",
     "choices": [
-      "preserve",
-      "encourage",
+      "respond",
+      "participate",
       "calculate",
       "reject"
     ],
     "choiceMeanings": [
-      "保存する・保護する",
-      "励ます・促す",
+      "応答する・対応する",
+      "参加する",
       "計算する",
       "拒否する・却下する"
     ],
@@ -151,16 +151,16 @@
     "grade": "2級",
     "sentence": "The charity aims to (　　) access to education in rural areas.",
     "choices": [
-      "minimize",
+      "participate",
       "suggests",
       "improve",
-      "reduce"
+      "respond"
     ],
     "choiceMeanings": [
-      "最小限にする",
+      "参加する",
       "示唆する・提案する",
       "改善する・向上させる",
-      "減らす"
+      "応答する・対応する"
     ],
     "answer": 3,
     "correctWord": "improve",
@@ -173,13 +173,13 @@
     "sentence": "The new policy could (　　) the number of people who use bicycles.",
     "choices": [
       "announce",
-      "support",
+      "participate",
       "increase",
       "introduced"
     ],
     "choiceMeanings": [
       "発表する",
-      "支える・支持する",
+      "参加する",
       "増やす",
       "導入した・紹介した"
     ],
@@ -196,13 +196,13 @@
       "explain",
       "adapt",
       "convince",
-      "preserve"
+      "respond"
     ],
     "choiceMeanings": [
       "説明する",
       "適応する・適合させる",
       "納得させる",
-      "保存する・保護する"
+      "応答する・対応する"
     ],
     "answer": 1,
     "correctWord": "explain",
@@ -258,14 +258,14 @@
     "choices": [
       "minimize",
       "suggests",
-      "improve",
-      "justify"
+      "participate",
+      "respond"
     ],
     "choiceMeanings": [
       "最小限にする",
       "示唆する・提案する",
-      "改善する・向上させる",
-      "正当化する"
+      "参加する",
+      "応答する・対応する"
     ],
     "answer": 1,
     "correctWord": "minimize",
@@ -301,13 +301,13 @@
       "preserve",
       "adapt",
       "convince",
-      "explain"
+      "participate"
     ],
     "choiceMeanings": [
       "保存する・保護する",
       "適応する・適合させる",
       "納得させる",
-      "説明する"
+      "参加する"
     ],
     "answer": 1,
     "correctWord": "preserve",
@@ -342,13 +342,13 @@
     "choices": [
       "promote",
       "identify",
-      "calculate",
+      "participate",
       "reject"
     ],
     "choiceMeanings": [
       "促進する",
       "特定する・識別する",
-      "計算する",
+      "参加する",
       "拒否する・却下する"
     ],
     "answer": 1,
@@ -427,13 +427,13 @@
       "respond",
       "evaluate",
       "retain",
-      "restrict"
+      "participate"
     ],
     "choiceMeanings": [
       "応答する・対応する",
       "評価する",
       "保持する・引き留める",
-      "制限する"
+      "参加する"
     ],
     "answer": 2,
     "correctWord": "evaluate",
@@ -448,13 +448,13 @@
       "maintain",
       "demonstrate",
       "negotiate",
-      "strengthen"
+      "participate"
     ],
     "choiceMeanings": [
       "維持する",
       "実証する・示す",
       "交渉する",
-      "強化する"
+      "参加する"
     ],
     "answer": 1,
     "correctWord": "maintain",
@@ -511,13 +511,13 @@
       "emphasize",
       "establish",
       "facilitate",
-      "restrict"
+      "respond"
     ],
     "choiceMeanings": [
       "強調する",
       "設立する",
       "促進する・円滑にする",
-      "制限する"
+      "応答する・対応する"
     ],
     "answer": 2,
     "correctWord": "establish",
@@ -552,13 +552,13 @@
     "choices": [
       "allocate",
       "adapt",
-      "preserve",
+      "participate",
       "recognize"
     ],
     "choiceMeanings": [
       "割り当てる・配分する",
       "適応する・適合させる",
-      "保存する・保護する",
+      "参加する",
       "認識する"
     ],
     "answer": 4,
@@ -592,13 +592,13 @@
     "grade": "2級",
     "sentence": "The experiment will (　　) how heat affects the material.",
     "choices": [
-      "justify",
+      "participate",
       "demonstrate",
       "enhance",
       "sustain"
     ],
     "choiceMeanings": [
-      "正当化する",
+      "参加する",
       "実証する・示す",
       "高める・向上させる",
       "維持する・持続させる"
@@ -658,13 +658,13 @@
       "anticipate",
       "estimate",
       "emphasize",
-      "restrict"
+      "respond"
     ],
     "choiceMeanings": [
       "予測する",
       "見積もる",
       "強調する",
-      "制限する"
+      "応答する・対応する"
     ],
     "answer": 3,
     "correctWord": "emphasize",
@@ -679,13 +679,13 @@
       "resolve",
       "restrict",
       "allocate",
-      "maintain"
+      "participate"
     ],
     "choiceMeanings": [
       "解決する",
       "制限する",
       "割り当てる・配分する",
-      "維持する"
+      "参加する"
     ],
     "answer": 2,
     "correctWord": "restrict",
@@ -700,13 +700,13 @@
       "assess",
       "facilitate",
       "allocate",
-      "generate"
+      "participate"
     ],
     "choiceMeanings": [
       "評価する・査定する",
       "促進する・円滑にする",
       "割り当てる・配分する",
-      "生み出す・発生させる"
+      "参加する"
     ],
     "answer": 1,
     "correctWord": "assess",
@@ -742,13 +742,13 @@
       "adapt",
       "compensate",
       "justify",
-      "establish"
+      "respond"
     ],
     "choiceMeanings": [
       "適応する・適合させる",
       "補償する",
       "正当化する",
-      "設立する"
+      "応答する・対応する"
     ],
     "answer": 3,
     "correctWord": "justify",
@@ -763,13 +763,13 @@
       "withdraw",
       "retain",
       "distinguish",
-      "acquire"
+      "respond"
     ],
     "choiceMeanings": [
       "撤退する・取り下げる",
       "保持する・引き留める",
       "区別する",
-      "習得する・獲得する"
+      "応答する・対応する"
     ],
     "answer": 2,
     "correctWord": "retain",
@@ -784,13 +784,13 @@
       "negotiate",
       "enhance",
       "expand",
-      "recognize"
+      "participate"
     ],
     "choiceMeanings": [
       "交渉する",
       "高める・向上させる",
       "拡大する",
-      "認識する"
+      "参加する"
     ],
     "answer": 1,
     "correctWord": "negotiate",
@@ -823,13 +823,13 @@
     "grade": "2級",
     "sentence": "The team worked together to (　　) the technical problem.",
     "choices": [
-      "eliminate",
+      "respond",
       "preserve",
       "resolve",
       "demonstrate"
     ],
     "choiceMeanings": [
-      "取り除く",
+      "応答する・対応する",
       "保存する・保護する",
       "解決する",
       "実証する・示す"
@@ -867,13 +867,13 @@
     "choices": [
       "regulate",
       "generate",
-      "sustain",
+      "participate",
       "allocate"
     ],
     "choiceMeanings": [
       "規制する",
       "生み出す・発生させる",
-      "維持する・持続させる",
+      "参加する",
       "割り当てる・配分する"
     ],
     "answer": 1,
@@ -930,13 +930,13 @@
     "choices": [
       "compensate",
       "enhance",
-      "evaluate",
+      "respond",
       "allocate"
     ],
     "choiceMeanings": [
       "補償する",
       "高める・向上させる",
-      "評価する",
+      "応答する・対応する",
       "割り当てる・配分する"
     ],
     "answer": 2,
@@ -971,14 +971,14 @@
     "sentence": "The factory aims to (　　) unnecessary waste from production.",
     "choices": [
       "expand",
-      "investigate",
-      "justify",
+      "participate",
+      "respond",
       "eliminate"
     ],
     "choiceMeanings": [
       "拡大する",
-      "調査する",
-      "正当化する",
+      "参加する",
+      "応答する・対応する",
       "取り除く"
     ],
     "answer": 4,
@@ -994,13 +994,13 @@
       "persuade",
       "contribute",
       "estimate",
-      "retain"
+      "participate"
     ],
     "choiceMeanings": [
       "説得する",
       "貢献する",
       "見積もる",
-      "保持する・引き留める"
+      "参加する"
     ],
     "answer": 3,
     "correctWord": "estimate",
@@ -1034,13 +1034,13 @@
     "sentence": "The teacher asked the student to (　　) the meaning of the statement.",
     "choices": [
       "clarify",
-      "maintain",
+      "participate",
       "acquire",
       "anticipate"
     ],
     "choiceMeanings": [
       "明確にする",
-      "維持する",
+      "参加する",
       "習得する・獲得する",
       "予測する"
     ],
@@ -1055,13 +1055,13 @@
     "sentence": "Regular practice can (　　) the relationship between team members.",
     "choices": [
       "allocate",
-      "recognize",
+      "participate",
       "resolve",
       "strengthen"
     ],
     "choiceMeanings": [
       "割り当てる・配分する",
-      "認識する",
+      "参加する",
       "解決する",
       "強化する"
     ],
@@ -1120,13 +1120,13 @@
       "expand",
       "allocate",
       "participate",
-      "adapt"
+      "respond"
     ],
     "choiceMeanings": [
       "拡大する",
       "割り当てる・配分する",
       "参加する",
-      "適応する・適合させる"
+      "応答する・対応する"
     ],
     "answer": 1,
     "correctWord": "expand",
@@ -1162,13 +1162,13 @@
       "allocate",
       "emphasize",
       "preserve",
-      "negotiate"
+      "respond"
     ],
     "choiceMeanings": [
       "割り当てる・配分する",
       "強調する",
       "保存する・保護する",
-      "交渉する"
+      "応答する・対応する"
     ],
     "answer": 3,
     "correctWord": "preserve",
@@ -1182,13 +1182,13 @@
     "choices": [
       "contribute",
       "reveal",
-      "restrict",
+      "participate",
       "implement"
     ],
     "choiceMeanings": [
       "貢献する",
       "明らかにする",
-      "制限する",
+      "参加する",
       "実施する・導入する"
     ],
     "answer": 2,
@@ -1202,15 +1202,15 @@
     "sentence": "The community needs support to (　　) its cultural traditions.",
     "choices": [
       "sustain",
-      "establish",
-      "assess",
-      "eliminate"
+      "participate",
+      "respond",
+      "withdraw"
     ],
     "choiceMeanings": [
       "維持する・持続させる",
-      "設立する",
-      "評価する・査定する",
-      "取り除く"
+      "参加する",
+      "応答する・対応する",
+      "撤退する・取り下げる"
     ],
     "answer": 1,
     "correctWord": "sustain",
@@ -1244,13 +1244,13 @@
     "sentence": "Before publishing the article, the editor must (　　) the facts.",
     "choices": [
       "recognize",
-      "justify",
+      "participate",
       "verify",
       "generate"
     ],
     "choiceMeanings": [
       "認識する",
-      "正当化する",
+      "参加する",
       "検証する",
       "生み出す・発生させる"
     ],
