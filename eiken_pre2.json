@@ -1279,5 +1279,845 @@
     "correctWord": "share",
     "translation": "その姉妹は新居で寝室を共有している。",
     "explanation": "share＝共有する"
+  },
+  {
+    "id": "P2-062",
+    "grade": "準2級",
+    "sentence": "Please (　　) your email address before clicking the registration button.",
+    "choices": [
+      "confirm",
+      "arrive",
+      "belong",
+      "depend"
+    ],
+    "choiceMeanings": [
+      "確認する",
+      "到着する",
+      "所属する",
+      "～次第である"
+    ],
+    "answer": 1,
+    "correctWord": "confirm",
+    "translation": "登録ボタンを押す前にメールアドレスを確認してください。",
+    "explanation": "confirm＝確認する"
+  },
+  {
+    "id": "P2-063",
+    "grade": "準2級",
+    "sentence": "He called his friend to (　　) for being late.",
+    "choices": [
+      "borrow",
+      "apologize",
+      "attend",
+      "repair"
+    ],
+    "choiceMeanings": [
+      "借りる",
+      "謝る",
+      "出席する",
+      "修理する"
+    ],
+    "answer": 2,
+    "correctWord": "apologize",
+    "translation": "彼は遅刻を謝るため友達に電話した。",
+    "explanation": "apologize for＝～について謝る"
+  },
+  {
+    "id": "P2-064",
+    "grade": "準2級",
+    "sentence": "Is this seat (　　), or is someone using it?",
+    "choices": [
+      "arrive",
+      "borrow",
+      "available",
+      "attend"
+    ],
+    "choiceMeanings": [
+      "到着する",
+      "借りる",
+      "利用できる・空いている",
+      "出席する"
+    ],
+    "answer": 3,
+    "correctWord": "available",
+    "translation": "この席は空いていますか、それとも誰か使っていますか。",
+    "explanation": "available＝利用できる・空いている"
+  },
+  {
+    "id": "P2-065",
+    "grade": "準2級",
+    "sentence": "We took the bus (　　) of walking in the rain.",
+    "choices": [
+      "during",
+      "because",
+      "without",
+      "instead"
+    ],
+    "choiceMeanings": [
+      "～の間に",
+      "～なので",
+      "～なしで",
+      "代わりに"
+    ],
+    "answer": 4,
+    "correctWord": "instead",
+    "translation": "雨の中を歩く代わりにバスに乗った。",
+    "explanation": "instead of＝～の代わりに"
+  },
+  {
+    "id": "P2-066",
+    "grade": "準2級",
+    "sentence": "I (　　) to return the book by next Monday.",
+    "choices": [
+      "promise",
+      "arrive",
+      "belong",
+      "depend"
+    ],
+    "choiceMeanings": [
+      "約束する",
+      "到着する",
+      "所属する",
+      "～次第である"
+    ],
+    "answer": 1,
+    "correctWord": "promise",
+    "translation": "私は次の月曜までに本を返すと約束します。",
+    "explanation": "promise to do＝～すると約束する"
+  },
+  {
+    "id": "P2-067",
+    "grade": "準2級",
+    "sentence": "It is (　　) to bring your student ID to the exam.",
+    "choices": [
+      "arrive",
+      "necessary",
+      "borrow",
+      "attend"
+    ],
+    "choiceMeanings": [
+      "到着する",
+      "必要な",
+      "借りる",
+      "出席する"
+    ],
+    "answer": 2,
+    "correctWord": "necessary",
+    "translation": "試験には学生証を持参する必要がある。",
+    "explanation": "necessary＝必要な"
+  },
+  {
+    "id": "P2-068",
+    "grade": "準2級",
+    "sentence": "In my (　　), the new school rule is fair.",
+    "choices": [
+      "arrival",
+      "permission",
+      "opinion",
+      "attention"
+    ],
+    "choiceMeanings": [
+      "到着",
+      "許可",
+      "意見",
+      "注意"
+    ],
+    "answer": 3,
+    "correctWord": "opinion",
+    "translation": "私の意見では、新しい校則は公平だ。",
+    "explanation": "in my opinion＝私の意見では"
+  },
+  {
+    "id": "P2-069",
+    "grade": "準2級",
+    "sentence": "The lights went out (　　) during the storm.",
+    "choices": [
+      "careful",
+      "quiet",
+      "usual",
+      "suddenly"
+    ],
+    "choiceMeanings": [
+      "注意深い",
+      "静かな",
+      "いつもの",
+      "突然"
+    ],
+    "answer": 4,
+    "correctWord": "suddenly",
+    "translation": "嵐の間に突然明かりが消えた。",
+    "explanation": "suddenly＝突然"
+  },
+  {
+    "id": "P2-070",
+    "grade": "準2級",
+    "sentence": "We don't have (　　) chairs for all the visitors.",
+    "choices": [
+      "enough",
+      "belong",
+      "depend",
+      "few"
+    ],
+    "choiceMeanings": [
+      "十分な",
+      "所属する",
+      "～次第である",
+      "少ない"
+    ],
+    "answer": 1,
+    "correctWord": "enough",
+    "translation": "訪問者全員分の椅子が十分にない。",
+    "explanation": "enough＋名詞＝十分な～"
+  },
+  {
+    "id": "P2-071",
+    "grade": "準2級",
+    "sentence": "I made an (　　) with the dentist for Thursday.",
+    "choices": [
+      "accident",
+      "appointment",
+      "argument",
+      "experiment"
+    ],
+    "choiceMeanings": [
+      "事故",
+      "予約",
+      "口論",
+      "実験"
+    ],
+    "answer": 2,
+    "correctWord": "appointment",
+    "translation": "木曜日に歯科医の予約をした。",
+    "explanation": "make an appointment＝予約する"
+  },
+  {
+    "id": "P2-072",
+    "grade": "準2級",
+    "sentence": "You need your parents' (　　) to join this trip.",
+    "choices": [
+      "arrival",
+      "temperature",
+      "permission",
+      "distance"
+    ],
+    "choiceMeanings": [
+      "到着",
+      "気温",
+      "許可",
+      "距離"
+    ],
+    "answer": 3,
+    "correctWord": "permission",
+    "translation": "この旅行に参加するには保護者の許可が必要だ。",
+    "explanation": "permission＝許可"
+  },
+  {
+    "id": "P2-073",
+    "grade": "準2級",
+    "sentence": "Please read the instructions (　　) before starting.",
+    "choices": [
+      "careful",
+      "care",
+      "careless",
+      "carefully"
+    ],
+    "choiceMeanings": [
+      "注意深い",
+      "注意",
+      "不注意な",
+      "注意深く"
+    ],
+    "answer": 4,
+    "correctWord": "carefully",
+    "translation": "始める前に説明書を注意深く読んでください。",
+    "explanation": "carefully＝注意深く"
+  },
+  {
+    "id": "P2-074",
+    "grade": "準2級",
+    "sentence": "(　　) it was cold, we played soccer outside.",
+    "choices": [
+      "although",
+      "arrive",
+      "belong",
+      "depend"
+    ],
+    "choiceMeanings": [
+      "～だけれども",
+      "到着する",
+      "所属する",
+      "～次第である"
+    ],
+    "answer": 1,
+    "correctWord": "although",
+    "translation": "寒かったが、私たちは外でサッカーをした。",
+    "explanation": "although＝～だけれども"
+  },
+  {
+    "id": "P2-075",
+    "grade": "準2級",
+    "sentence": "We should protect the natural (　　) for future generations.",
+    "choices": [
+      "appointment",
+      "environment",
+      "belong",
+      "depend"
+    ],
+    "choiceMeanings": [
+      "予約",
+      "環境",
+      "所属する",
+      "～次第である"
+    ],
+    "answer": 2,
+    "correctWord": "environment",
+    "translation": "私たちは将来の世代のため自然環境を守るべきだ。",
+    "explanation": "environment＝環境"
+  },
+  {
+    "id": "P2-076",
+    "grade": "準2級",
+    "sentence": "We bought fresh vegetables at a (　　) market near our house.",
+    "choices": [
+      "arrive",
+      "belong",
+      "local",
+      "attend"
+    ],
+    "choiceMeanings": [
+      "到着する",
+      "所属する",
+      "地元の",
+      "出席する"
+    ],
+    "answer": 3,
+    "correctWord": "local",
+    "translation": "家の近くの地元の市場で新鮮な野菜を買った。",
+    "explanation": "local＝地元の"
+  },
+  {
+    "id": "P2-077",
+    "grade": "準2級",
+    "sentence": "I enjoy outdoor sports, (　　) tennis.",
+    "choices": [
+      "because",
+      "although",
+      "unless",
+      "especially"
+    ],
+    "choiceMeanings": [
+      "～なので",
+      "～だけれども",
+      "～でない限り",
+      "特に"
+    ],
+    "answer": 4,
+    "correctWord": "especially",
+    "translation": "私は屋外スポーツ、特にテニスが好きだ。",
+    "explanation": "especially＝特に"
+  },
+  {
+    "id": "P2-078",
+    "grade": "準2級",
+    "sentence": "My sister chose tea (　　) of coffee.",
+    "choices": [
+      "instead",
+      "until",
+      "during",
+      "among"
+    ],
+    "choiceMeanings": [
+      "代わりに",
+      "～まで",
+      "～の間",
+      "～の間で"
+    ],
+    "answer": 1,
+    "correctWord": "instead",
+    "translation": "姉はコーヒーの代わりに紅茶を選んだ。",
+    "explanation": "instead of＝～の代わりに"
+  },
+  {
+    "id": "P2-079",
+    "grade": "準2級",
+    "sentence": "My teacher gave me useful (　　) about studying abroad.",
+    "choices": [
+      "equipment",
+      "advice",
+      "weather",
+      "traffic"
+    ],
+    "choiceMeanings": [
+      "設備",
+      "助言",
+      "天気",
+      "交通"
+    ],
+    "answer": 2,
+    "correctWord": "advice",
+    "translation": "先生は留学について役立つ助言をくれた。",
+    "explanation": "advice＝助言"
+  },
+  {
+    "id": "P2-080",
+    "grade": "準2級",
+    "sentence": "She wants to learn a (　　) language at university.",
+    "choices": [
+      "arrive",
+      "belong",
+      "foreign",
+      "depend"
+    ],
+    "choiceMeanings": [
+      "到着する",
+      "所属する",
+      "外国の",
+      "～次第である"
+    ],
+    "answer": 3,
+    "correctWord": "foreign",
+    "translation": "彼女は大学で外国語を学びたい。",
+    "explanation": "foreign＝外国の"
+  },
+  {
+    "id": "P2-081",
+    "grade": "準2級",
+    "sentence": "The train was so (　　) that we could hardly move.",
+    "choices": [
+      "arrive",
+      "attend",
+      "borrow",
+      "crowded"
+    ],
+    "choiceMeanings": [
+      "到着する",
+      "出席する",
+      "借りる",
+      "混雑した"
+    ],
+    "answer": 4,
+    "correctWord": "crowded",
+    "translation": "電車はとても混んでいて、ほとんど動けなかった。",
+    "explanation": "crowded＝混雑した"
+  },
+  {
+    "id": "P2-082",
+    "grade": "準2級",
+    "sentence": "The police arrived soon after the traffic (　　).",
+    "choices": [
+      "accident",
+      "appointment",
+      "invitation",
+      "discussion"
+    ],
+    "choiceMeanings": [
+      "事故",
+      "予約",
+      "招待",
+      "話し合い"
+    ],
+    "answer": 1,
+    "correctWord": "accident",
+    "translation": "交通事故の直後に警察が到着した。",
+    "explanation": "traffic accident＝交通事故"
+  },
+  {
+    "id": "P2-083",
+    "grade": "準2級",
+    "sentence": "If you smell smoke, leave the building (　　).",
+    "choices": [
+      "immediate",
+      "immediately",
+      "improvement",
+      "important"
+    ],
+    "choiceMeanings": [
+      "即座の",
+      "直ちに",
+      "改善",
+      "重要な"
+    ],
+    "answer": 2,
+    "correctWord": "immediately",
+    "translation": "煙のにおいがしたら直ちに建物を出てください。",
+    "explanation": "immediately＝直ちに"
+  },
+  {
+    "id": "P2-084",
+    "grade": "準2級",
+    "sentence": "I don't know (　　) he will come to the party or not.",
+    "choices": [
+      "because",
+      "although",
+      "whether",
+      "unless"
+    ],
+    "choiceMeanings": [
+      "～なので",
+      "～だけれども",
+      "～かどうか",
+      "～でない限り"
+    ],
+    "answer": 3,
+    "correctWord": "whether",
+    "translation": "彼がパーティーに来るかどうかわからない。",
+    "explanation": "whether ... or not＝～かどうか"
+  },
+  {
+    "id": "P2-085",
+    "grade": "準2級",
+    "sentence": "The (　　) dropped below zero last night.",
+    "choices": [
+      "appointment",
+      "permission",
+      "invitation",
+      "temperature"
+    ],
+    "choiceMeanings": [
+      "予約",
+      "許可",
+      "招待",
+      "気温"
+    ],
+    "answer": 4,
+    "correctWord": "temperature",
+    "translation": "昨夜は気温が零度未満になった。",
+    "explanation": "temperature＝気温"
+  },
+  {
+    "id": "P2-086",
+    "grade": "準2級",
+    "sentence": "After waiting for two hours, the bus (　　) arrived.",
+    "choices": [
+      "finally",
+      "final",
+      "finish",
+      "finished"
+    ],
+    "choiceMeanings": [
+      "ついに",
+      "最後の",
+      "終える",
+      "終わった"
+    ],
+    "answer": 1,
+    "correctWord": "finally",
+    "translation": "2時間待って、ついにバスが来た。",
+    "explanation": "finally＝ついに"
+  },
+  {
+    "id": "P2-087",
+    "grade": "準2級",
+    "sentence": "We stayed indoors (　　) the heavy rain.",
+    "choices": [
+      "because",
+      "during",
+      "although",
+      "unless"
+    ],
+    "choiceMeanings": [
+      "～なので",
+      "～の間に",
+      "～だけれども",
+      "～でない限り"
+    ],
+    "answer": 2,
+    "correctWord": "during",
+    "translation": "激しい雨の間、屋内にいた。",
+    "explanation": "during＋名詞＝～の間に"
+  },
+  {
+    "id": "P2-088",
+    "grade": "準2級",
+    "sentence": "Could you leave a (　　) for my mother?",
+    "choices": [
+      "temperature",
+      "distance",
+      "message",
+      "permission"
+    ],
+    "choiceMeanings": [
+      "気温",
+      "距離",
+      "伝言",
+      "許可"
+    ],
+    "answer": 3,
+    "correctWord": "message",
+    "translation": "母に伝言を残してもらえますか。",
+    "explanation": "leave a message＝伝言を残す"
+  },
+  {
+    "id": "P2-089",
+    "grade": "準2級",
+    "sentence": "Is it (　　) to change my reservation to Friday?",
+    "choices": [
+      "arrive",
+      "attend",
+      "borrow",
+      "possible"
+    ],
+    "choiceMeanings": [
+      "到着する",
+      "出席する",
+      "借りる",
+      "可能な"
+    ],
+    "answer": 4,
+    "correctWord": "possible",
+    "translation": "予約を金曜に変更することは可能ですか。",
+    "explanation": "possible＝可能な"
+  },
+  {
+    "id": "P2-090",
+    "grade": "準2級",
+    "sentence": "(　　), we missed the last train home.",
+    "choices": [
+      "unfortunately",
+      "unfortunate",
+      "fortune",
+      "fortunate"
+    ],
+    "choiceMeanings": [
+      "残念ながら",
+      "不運な",
+      "幸運",
+      "幸運な"
+    ],
+    "answer": 1,
+    "correctWord": "unfortunately",
+    "translation": "残念ながら帰宅する最終電車に乗り遅れた。",
+    "explanation": "unfortunately＝残念ながら"
+  },
+  {
+    "id": "P2-091",
+    "grade": "準2級",
+    "sentence": "What is the main (　　) for your decision?",
+    "choices": [
+      "temperature",
+      "reason",
+      "distance",
+      "appointment"
+    ],
+    "choiceMeanings": [
+      "気温",
+      "理由",
+      "距離",
+      "予約"
+    ],
+    "answer": 2,
+    "correctWord": "reason",
+    "translation": "その決定の主な理由は何ですか。",
+    "explanation": "reason for＝～の理由"
+  },
+  {
+    "id": "P2-092",
+    "grade": "準2級",
+    "sentence": "We walked (　　) the tunnel to reach the other side.",
+    "choices": [
+      "because",
+      "although",
+      "through",
+      "unless"
+    ],
+    "choiceMeanings": [
+      "～なので",
+      "～だけれども",
+      "～を通り抜けて",
+      "～でない限り"
+    ],
+    "answer": 3,
+    "correctWord": "through",
+    "translation": "反対側に着くためトンネルを通り抜けた。",
+    "explanation": "through＝～を通り抜けて"
+  },
+  {
+    "id": "P2-093",
+    "grade": "準2級",
+    "sentence": "You should exercise (　　) to stay healthy.",
+    "choices": [
+      "regular",
+      "regulation",
+      "regulate",
+      "regularly"
+    ],
+    "choiceMeanings": [
+      "定期的な",
+      "規則",
+      "規制する",
+      "定期的に"
+    ],
+    "answer": 4,
+    "correctWord": "regularly",
+    "translation": "健康を保つため定期的に運動すべきだ。",
+    "explanation": "regularly＝定期的に"
+  },
+  {
+    "id": "P2-094",
+    "grade": "準2級",
+    "sentence": "Who is (　　) for cleaning this classroom today?",
+    "choices": [
+      "responsible",
+      "arrive",
+      "attend",
+      "borrow"
+    ],
+    "choiceMeanings": [
+      "責任がある",
+      "到着する",
+      "出席する",
+      "借りる"
+    ],
+    "answer": 1,
+    "correctWord": "responsible",
+    "translation": "今日この教室の掃除を担当するのは誰ですか。",
+    "explanation": "responsible for＝～を担当している"
+  },
+  {
+    "id": "P2-095",
+    "grade": "準2級",
+    "sentence": "We visited (　　) museums during our trip.",
+    "choices": [
+      "arrive",
+      "several",
+      "belong",
+      "depend"
+    ],
+    "choiceMeanings": [
+      "到着する",
+      "いくつかの",
+      "所属する",
+      "～次第である"
+    ],
+    "answer": 2,
+    "correctWord": "several",
+    "translation": "旅行中にいくつかの博物館を訪れた。",
+    "explanation": "several＝いくつかの"
+  },
+  {
+    "id": "P2-096",
+    "grade": "準2級",
+    "sentence": "You cannot enter (　　) you have a ticket.",
+    "choices": [
+      "because",
+      "arrive",
+      "unless",
+      "depend"
+    ],
+    "choiceMeanings": [
+      "～なので",
+      "到着する",
+      "～でない限り",
+      "～次第である"
+    ],
+    "answer": 3,
+    "correctWord": "unless",
+    "translation": "チケットがなければ入場できない。",
+    "explanation": "unless＝～でない限り"
+  },
+  {
+    "id": "P2-097",
+    "grade": "準2級",
+    "sentence": "The telephone was an important (　　) in communication history.",
+    "choices": [
+      "appointment",
+      "invitation",
+      "permission",
+      "invention"
+    ],
+    "choiceMeanings": [
+      "予約",
+      "招待",
+      "許可",
+      "発明"
+    ],
+    "answer": 4,
+    "correctWord": "invention",
+    "translation": "電話は通信の歴史における重要な発明だった。",
+    "explanation": "invention＝発明"
+  },
+  {
+    "id": "P2-098",
+    "grade": "準2級",
+    "sentence": "Have you seen any good movies (　　)?",
+    "choices": [
+      "recently",
+      "recent",
+      "receipt",
+      "receive"
+    ],
+    "choiceMeanings": [
+      "最近",
+      "最近の",
+      "領収書",
+      "受け取る"
+    ],
+    "answer": 1,
+    "correctWord": "recently",
+    "translation": "最近何か良い映画を見ましたか。",
+    "explanation": "recently＝最近"
+  },
+  {
+    "id": "P2-099",
+    "grade": "準2級",
+    "sentence": "I thought he was American, but he is (　　) Canadian.",
+    "choices": [
+      "actual",
+      "actually",
+      "action",
+      "active"
+    ],
+    "choiceMeanings": [
+      "実際の",
+      "実は",
+      "行動",
+      "活動的な"
+    ],
+    "answer": 2,
+    "correctWord": "actually",
+    "translation": "彼はアメリカ人だと思っていたが、実はカナダ人だ。",
+    "explanation": "actually＝実は"
+  },
+  {
+    "id": "P2-100",
+    "grade": "準2級",
+    "sentence": "All the safety (　　) must be checked before the game.",
+    "choices": [
+      "appointment",
+      "permission",
+      "equipment",
+      "temperature"
+    ],
+    "choiceMeanings": [
+      "予約",
+      "許可",
+      "装備",
+      "気温"
+    ],
+    "answer": 3,
+    "correctWord": "equipment",
+    "translation": "試合前にすべての安全装備を点検しなければならない。",
+    "explanation": "equipment＝装備"
+  },
+  {
+    "id": "P2-101",
+    "grade": "準2級",
+    "sentence": "The school festival was very (　　), attracting hundreds of visitors.",
+    "choices": [
+      "arrive",
+      "belong",
+      "depend",
+      "successful"
+    ],
+    "choiceMeanings": [
+      "到着する",
+      "所属する",
+      "～次第である",
+      "成功した"
+    ],
+    "answer": 4,
+    "correctWord": "successful",
+    "translation": "文化祭は大成功で何百人もの来場者を集めた。",
+    "explanation": "successful＝成功した"
   }
 ]
