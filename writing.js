@@ -31,6 +31,7 @@
  function start(id){lesson=id;set=rows.filter(q=>q.subject===subject&&q.lesson===lesson);if(!set.length)return;index=0;records=[];screen('quizScreen');renderQuestion();}
  function renderQuestion(){
   answered=false;hints=new Set();hintCount=0;const q=set[index];
+  window.YoshiFavorites?.show($('prompt'),window.YoshiFavoriteQuestions.ref('writing','writing',q.id));
   $('quizLesson').textContent=subject+' / '+W.lessonLabel(lesson)+(q.unitName&&subject==='英C'?' / '+q.unitName:'');$('questionCount').textContent=(index+1)+' / '+set.length+'問';$('quizProgress').max=set.length;$('quizProgress').value=index;
   $('prompt').textContent=q.japanese;$('required').textContent=q.requiredExpressions.length?'指定語・指定表現（すべて使用）：'+q.requiredExpressions.join(' ／ '):'指定語なし';
   $('hintContent').hidden=true;$('hintToggle').setAttribute('aria-expanded','false');$('hintToggle').disabled=!q.hints.length;$('hintToggle').textContent=q.hints.length?'💡 ヒント':'ヒント未登録';$('hintList').replaceChildren();$('moreHint').hidden=false;

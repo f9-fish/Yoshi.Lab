@@ -63,7 +63,9 @@
   index=0;show('quizScreen');renderQuestion();authUI();
  };
  function renderQuestion(){
-  const q=session.questions[index];$('quizGrade').textContent=core.grades[session.grade].label;
+  const q=session.questions[index];
+  window.YoshiFavorites?.show($('sentence'),window.YoshiFavoriteQuestions.eiken(q.grade,q.id));
+  $('quizGrade').textContent=core.grades[session.grade].label;
   $('questionCount').textContent=`QUESTION ${index+1} / ${session.questions.length}`;
   $('quizProgress').max=session.questions.length;$('quizProgress').value=index;
   $('sentence').textContent=q.sentence;$('choices').replaceChildren();$('feedback').hidden=true;$('next').hidden=true;

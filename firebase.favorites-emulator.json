@@ -1,0 +1,8 @@
+{
+  "database": { "rules": "firebase-favorites.rules.proposed.json" },
+  "emulators": {
+    "database": { "host": "127.0.0.1", "port": 9009 },
+    "ui": { "enabled": false },
+    "singleProjectMode": true
+  }
+}
