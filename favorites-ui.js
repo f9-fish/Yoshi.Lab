@@ -43,7 +43,7 @@ globalThis.YoshiFavorites = (() => {
    control={wrapper,button,message,key:null,identity:''};buttons.set(anchor,control);
    subscribe(()=>{
     const saved=keys.has(control.key);
-    button.textContent=saved?'★ お気に入り済み':'☆ お気に入り';
+    button.textContent=saved?'✓ 登録済み':'☆ お気に入り';
     button.setAttribute('aria-pressed',String(saved));
     button.disabled=!control.key||state==='loading'||pending.has(control.key);
    });

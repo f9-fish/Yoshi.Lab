@@ -1,7 +1,11 @@
 .favorite-control{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin:.65rem 0;color:#ffe59b}
 .favorite-control[hidden]{display:none}
 .favorite-toggle{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.45rem .85rem;border:1px solid #9b8150;border-radius:12px;background:#26334c;color:#ffe59b;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
-.favorite-toggle[aria-pressed="true"]{background:#604820;border-color:#efc46c}
+.favorite-control .favorite-toggle[aria-pressed="true"]{
+ background:#195945;
+ border-color:#7ce3b0;
+ color:#f1fff7;
+}
 .favorite-toggle:disabled{opacity:.6;cursor:default}
 .favorites-page{margin:0;background:radial-gradient(ellipse at top,#293f60,#10192b 70%);color:#f3f7ff;font:16px system-ui,sans-serif;min-height:100vh}
 .favorites-page main{box-sizing:border-box;width:min(100%,850px);margin:auto;padding:clamp(16px,4vw,36px)}
@@ -55,4 +59,13 @@
 @media(max-width:480px){
  .favorite-toolbar-actions #reviewAll{width:100%}
  .favorites-page .favorite-item .favorite-actions{justify-content:space-between}
+}
+
+body.home-dashboard:not(.welcome-active):has(#subjects) #favoritesFeature .pair-start {
+ background:linear-gradient(100deg,#633889,#302052)!important;
+ border-color:#d6b2ff!important;
+ box-shadow:0 0 12px #b988f577,inset 0 0 12px #e0bfff33!important;
+}
+body.home-dashboard:not(.welcome-active):has(#subjects) #favoritesFeature .pair-start:hover {
+ background:linear-gradient(100deg,#7545a0,#3e2963)!important;
 }
