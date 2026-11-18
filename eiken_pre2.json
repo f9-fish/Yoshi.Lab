@@ -7,13 +7,13 @@
       "accept",
       "collected",
       "write",
-      "save"
+      "arrive"
     ],
     "choiceMeanings": [
       "受け入れる",
       "集めた",
       "書く",
-      "節約する・保存する"
+      "到着する"
     ],
     "answer": 1,
     "correctWord": "accept",
@@ -109,13 +109,13 @@
     "grade": "準2級",
     "sentence": "We need to (　　) water during the dry summer months.",
     "choices": [
-      "accept",
+      "belong",
       "write",
       "collected",
       "save"
     ],
     "choiceMeanings": [
-      "受け入れる",
+      "所属する・～のものである",
       "書く",
       "集めた",
       "節約する・保存する"
@@ -215,13 +215,13 @@
     "sentence": "We (　　) enough money to buy new books for the library.",
     "choices": [
       "accept",
-      "save",
+      "depend",
       "write",
       "collected"
     ],
     "choiceMeanings": [
       "受け入れる",
-      "節約する・保存する",
+      "～次第である・依存する",
       "書く",
       "集めた"
     ],
@@ -279,14 +279,14 @@
     "choices": [
       "closed",
       "answer",
-      "discuss",
-      "explain"
+      "arrive",
+      "belong"
     ],
     "choiceMeanings": [
       "閉まっている",
       "答える",
-      "話し合う",
-      "説明する"
+      "到着する",
+      "所属する・～のものである"
     ],
     "answer": 2,
     "correctWord": "answer",
@@ -384,13 +384,13 @@
     "choices": [
       "closed",
       "answer",
-      "explain",
+      "remain",
       "discuss"
     ],
     "choiceMeanings": [
       "閉まっている",
       "答える",
-      "説明する",
+      "残る",
       "話し合う"
     ],
     "answer": 4,
@@ -425,13 +425,13 @@
     "sentence": "Can I (　　) your dictionary until tomorrow?",
     "choices": [
       "borrow",
-      "repair",
+      "arrive",
       "invite",
       "protect"
     ],
     "choiceMeanings": [
       "借りる",
-      "修理する",
+      "到着する",
       "招待する",
       "守る"
     ],
@@ -445,13 +445,13 @@
     "grade": "準2級",
     "sentence": "Reading English articles every day can (　　) your vocabulary.",
     "choices": [
-      "continue",
+      "belong",
       "improve",
       "receive",
       "require"
     ],
     "choiceMeanings": [
-      "続ける",
+      "所属する・～のものである",
       "改善する・向上させる",
       "受け取る",
       "必要とする"
@@ -508,13 +508,13 @@
     "grade": "準2級",
     "sentence": "Wearing a helmet can (　　) your head during a fall.",
     "choices": [
-      "compare",
+      "arrive",
       "suggest",
       "protect",
       "encourage"
     ],
     "choiceMeanings": [
-      "比較する",
+      "到着する",
       "提案する",
       "守る",
       "励ます・促す"
@@ -553,13 +553,13 @@
       "prepare",
       "depend",
       "receive",
-      "replace"
+      "belong"
     ],
     "choiceMeanings": [
       "準備する",
       "依存する・～次第である",
       "受け取る",
-      "取り替える"
+      "所属する・～のものである"
     ],
     "answer": 1,
     "correctWord": "prepare",
@@ -571,15 +571,15 @@
     "grade": "準2級",
     "sentence": "The students hope to (　　) something new during the experiment.",
     "choices": [
-      "increase",
+      "arrive",
+      "remain",
       "depend",
-      "introduce",
       "discover"
     ],
     "choiceMeanings": [
-      "増やす",
-      "依存する・～次第である",
-      "紹介する・導入する",
+      "到着する",
+      "残る",
+      "～次第である・依存する",
       "発見する"
     ],
     "answer": 4,
@@ -593,13 +593,13 @@
     "sentence": "Although it started raining, the players decided to (　　) the game.",
     "choices": [
       "choose",
-      "save",
+      "belong",
       "continue",
       "borrow"
     ],
     "choiceMeanings": [
       "選ぶ",
-      "節約する・保存する",
+      "所属する・～のものである",
       "続ける",
       "借りる"
     ],
@@ -655,13 +655,13 @@
     "grade": "準2級",
     "sentence": "Let's (　　) the prices of these two computers.",
     "choices": [
-      "notice",
+      "depend",
       "support",
       "share",
       "compare"
     ],
     "choiceMeanings": [
-      "気づく",
+      "～次第である・依存する",
       "支える・支持する",
       "共有する",
       "比較する"
@@ -677,13 +677,13 @@
     "sentence": "You should (　　) using your phone while crossing the street.",
     "choices": [
       "allow",
-      "expect",
+      "arrive",
       "avoid",
       "improve"
     ],
     "choiceMeanings": [
       "許可する",
-      "予想する・期待する",
+      "到着する",
       "避ける",
       "改善する・向上させる"
     ],
@@ -697,13 +697,13 @@
     "grade": "準2級",
     "sentence": "The hotel will (　　) towels for all guests.",
     "choices": [
-      "suggest",
+      "belong",
       "provide",
       "remain",
       "arrive"
     ],
     "choiceMeanings": [
-      "提案する",
+      "所属する・～のものである",
       "提供する",
       "残る",
       "到着する"
@@ -719,13 +719,13 @@
     "sentence": "The school hopes to (　　) the number of students who read books.",
     "choices": [
       "increase",
-      "collect",
+      "arrive",
       "require",
       "invite"
     ],
     "choiceMeanings": [
       "増やす",
-      "集める",
+      "到着する",
       "必要とする",
       "招待する"
     ],
@@ -741,13 +741,13 @@
     "choices": [
       "return",
       "deliver",
-      "protect",
+      "remain",
       "choose"
     ],
     "choiceMeanings": [
       "返す・戻る",
       "届ける",
-      "守る",
+      "残る",
       "選ぶ"
     ],
     "answer": 4,
@@ -784,13 +784,13 @@
       "repair",
       "receive",
       "encourage",
-      "prepare"
+      "belong"
     ],
     "choiceMeanings": [
       "修理する",
       "受け取る",
       "励ます・促す",
-      "準備する"
+      "所属する・～のものである"
     ],
     "answer": 2,
     "correctWord": "receive",
@@ -804,14 +804,14 @@
     "choices": [
       "notice",
       "offer",
-      "organize",
-      "depend"
+      "depend",
+      "arrive"
     ],
     "choiceMeanings": [
       "気づく",
       "申し出る・提供する",
-      "企画する・整理する",
-      "依存する・～次第である"
+      "～次第である・依存する",
+      "到着する"
     ],
     "answer": 1,
     "correctWord": "notice",
@@ -845,13 +845,13 @@
     "sentence": "Could you (　　) a good book for my English class?",
     "choices": [
       "support",
-      "introduce",
+      "depend",
       "suggest",
       "decide"
     ],
     "choiceMeanings": [
       "支える・支持する",
-      "紹介する・導入する",
+      "～次第である・依存する",
       "提案する",
       "決める"
     ],
@@ -867,13 +867,13 @@
     "choices": [
       "expect",
       "collect",
-      "accept",
+      "arrive",
       "explain"
     ],
     "choiceMeanings": [
       "予想する・期待する",
       "集める",
-      "受け入れる",
+      "到着する",
       "説明する"
     ],
     "answer": 2,
@@ -929,13 +929,13 @@
     "sentence": "We can (　　) electricity by turning off unused lights.",
     "choices": [
       "deliver",
-      "share",
+      "belong",
       "save",
       "provide"
     ],
     "choiceMeanings": [
       "届ける",
-      "共有する",
+      "所属する・～のものである",
       "節約する・保存する",
       "提供する"
     ],
@@ -949,16 +949,16 @@
     "grade": "準2級",
     "sentence": "The restaurant will (　　) a special lunch menu tomorrow.",
     "choices": [
-      "reduce",
+      "arrive",
       "offer",
-      "improve",
-      "increase"
+      "belong",
+      "depend"
     ],
     "choiceMeanings": [
-      "減らす",
+      "到着する",
       "申し出る・提供する",
-      "改善する・向上させる",
-      "増やす"
+      "所属する・～のものである",
+      "～次第である・依存する"
     ],
     "answer": 2,
     "correctWord": "offer",
@@ -991,13 +991,13 @@
     "grade": "準2級",
     "sentence": "Many parents came to (　　) the school basketball team.",
     "choices": [
-      "organize",
+      "depend",
       "invite",
       "belong",
       "support"
     ],
     "choiceMeanings": [
-      "企画する・整理する",
+      "～次第である・依存する",
       "招待する",
       "所属する・～のものである",
       "支える・支持する"
@@ -1056,13 +1056,13 @@
     "choices": [
       "require",
       "accept",
-      "prepare",
+      "arrive",
       "allow"
     ],
     "choiceMeanings": [
       "必要とする",
       "受け入れる",
-      "準備する",
+      "到着する",
       "許可する"
     ],
     "answer": 1,
@@ -1075,13 +1075,13 @@
     "grade": "準2級",
     "sentence": "The store will (　　) the new sofa on Friday.",
     "choices": [
-      "consider",
+      "belong",
       "discover",
       "suggest",
       "deliver"
     ],
     "choiceMeanings": [
-      "よく考える・考慮する",
+      "所属する・～のものである",
       "発見する",
       "提案する",
       "届ける"
@@ -1099,13 +1099,13 @@
       "attend",
       "continue",
       "reduce",
-      "collect"
+      "arrive"
     ],
     "choiceMeanings": [
       "出席する",
       "続ける",
       "減らす",
-      "集める"
+      "到着する"
     ],
     "answer": 3,
     "correctWord": "reduce",
@@ -1139,13 +1139,13 @@
     "sentence": "Students will (　　) a charity event next month.",
     "choices": [
       "organize",
-      "improve",
+      "belong",
       "explain",
       "depend"
     ],
     "choiceMeanings": [
       "企画する・整理する",
-      "改善する・向上させる",
+      "所属する・～のものである",
       "説明する",
       "依存する・～次第である"
     ],
@@ -1161,13 +1161,13 @@
     "choices": [
       "arrive",
       "compare",
-      "save",
+      "depend",
       "replace"
     ],
     "choiceMeanings": [
       "到着する",
       "比較する",
-      "節約する・保存する",
+      "～次第である・依存する",
       "取り替える"
     ],
     "answer": 4,
@@ -1201,13 +1201,13 @@
     "grade": "準2級",
     "sentence": "She decided to (　　) the job offer after graduation.",
     "choices": [
-      "protect",
+      "arrive",
       "accept",
       "provide",
       "organize"
     ],
     "choiceMeanings": [
-      "守る",
+      "到着する",
       "受け入れる",
       "提供する",
       "企画する・整理する"
@@ -1224,13 +1224,13 @@
     "choices": [
       "consider",
       "repair",
-      "increase",
+      "arrive",
       "support"
     ],
     "choiceMeanings": [
       "よく考える・考慮する",
       "修理する",
-      "増やす",
+      "到着する",
       "支える・支持する"
     ],
     "answer": 1,
@@ -1244,13 +1244,13 @@
     "sentence": "More than fifty students will (　　) the science lecture.",
     "choices": [
       "prepare",
-      "choose",
+      "belong",
       "expect",
       "attend"
     ],
     "choiceMeanings": [
       "準備する",
-      "選ぶ",
+      "所属する・～のものである",
       "予想する・期待する",
       "出席する"
     ],
@@ -1264,13 +1264,13 @@
     "grade": "準2級",
     "sentence": "The two sisters (　　) a bedroom in their new house.",
     "choices": [
-      "discover",
+      "arrive",
       "belong",
       "share",
       "remain"
     ],
     "choiceMeanings": [
-      "発見する",
+      "到着する",
       "所属する・～のものである",
       "共有する",
       "残る"
