@@ -73,6 +73,7 @@ with sync_playwright() as playwright:
     for width in [320, 1280]:
         context = browser.new_context(viewport={'width': width, 'height': 900}, service_workers='block')
         context.route('**/*', route)
+        context.add_init_script("sessionStorage.setItem('yoshiProfilePrompted', '1')")
         quiz = context.new_page()
         quiz.goto(SITE + 'eiken.html')
         quiz.locator('[data-grade="2"]').click()
