@@ -1,9 +1,8 @@
 .favorite-control{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin:.65rem 0;color:#ffe59b}
 .favorite-control[hidden]{display:none}
-.favorite-toggle,.favorites-home-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.45rem .85rem;border:1px solid #9b8150;border-radius:12px;background:#26334c;color:#ffe59b;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+.favorite-toggle{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.45rem .85rem;border:1px solid #9b8150;border-radius:12px;background:#26334c;color:#ffe59b;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
 .favorite-toggle[aria-pressed="true"]{background:#604820;border-color:#efc46c}
 .favorite-toggle:disabled{opacity:.6;cursor:default}
-.favorites-home-link{margin-top:.8rem}
 .favorites-page{margin:0;background:radial-gradient(ellipse at top,#293f60,#10192b 70%);color:#f3f7ff;font:16px system-ui,sans-serif;min-height:100vh}
 .favorites-page main{box-sizing:border-box;width:min(100%,850px);margin:auto;padding:clamp(16px,4vw,36px)}
 .favorites-page a{color:#ffe59b}
@@ -20,25 +19,6 @@
 .favorites-page #reviewForm{margin:.8rem 0}
 .favorites-page :focus-visible,.favorite-toggle:focus-visible,.favorites-home-link:focus-visible{outline:3px solid #ffd77e;outline-offset:3px}
 
-/* Home shortcut, paired with the adjacent training card. */
-.favorites-home-link {
- display:grid;
- grid-template-columns:auto minmax(0,1fr) auto;
- gap:clamp(12px,3vw,20px);
- align-items:center;
- justify-content:normal;
- width:100%;
- box-sizing:border-box;
- margin:0 0 14px;
- padding:clamp(14px,3vw,22px);
- border:1px solid #a88449;
- border-radius:20px;
- background:linear-gradient(110deg,#3b3025,#211e26 55%,#1b2540);
- color:#fff6df;
- box-shadow:0 8px 24px #070d2460;
-}
-.favorites-home-link[hidden]{display:none}
-.favorites-home-link:hover{border-color:#ffd782;background:linear-gradient(110deg,#4b3827,#282538 72%,#202d46)}
 .favorites-home-icon {
  display:grid;
  place-items:center;
@@ -51,11 +31,6 @@
  color:#ffda85;
  font-size:24px;
 }
-.favorites-home-link strong,.favorites-home-link small{display:block}
-.favorites-home-link strong{font-size:clamp(19px,4vw,24px);line-height:1.25}
-.favorites-home-link small{margin-top:4px;color:#e9dabd;font-size:.83rem;font-weight:500}
-.favorites-home-arrow{font-size:1.8rem;color:#ffda85;line-height:1}
-
 .favorites-page{color-scheme:dark;background:radial-gradient(ellipse at top,#273958 0,#121d33 48%,#0d1527 100%);line-height:1.55}
 .favorites-page main{width:min(100%,790px)}
 .favorites-page nav a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;color:#cfdaee}
