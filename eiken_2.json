@@ -1258,5 +1258,845 @@
     "correctWord": "verify",
     "translation": "記事を公開する前に編集者は事実を検証しなければならない。",
     "explanation": "verify＝検証する"
+  },
+  {
+    "id": "G2-061",
+    "grade": "2級",
+    "sentence": "The journalist checked every date to make sure the report was (　　).",
+    "choices": [
+      "accurate",
+      "verify",
+      "estimate",
+      "investigate"
+    ],
+    "choiceMeanings": [
+      "正確な",
+      "確認する",
+      "推定する",
+      "調査する"
+    ],
+    "answer": 1,
+    "correctWord": "accurate",
+    "translation": "記者は記事が正確であることを確かめるため全ての日付を確認した。",
+    "explanation": "accurate＝正確な"
+  },
+  {
+    "id": "G2-062",
+    "grade": "2級",
+    "sentence": "The study found a (　　) difference between the two groups.",
+    "choices": [
+      "assess",
+      "significant",
+      "identify",
+      "allocate"
+    ],
+    "choiceMeanings": [
+      "評価する",
+      "重要な・有意な",
+      "特定する",
+      "割り当てる"
+    ],
+    "answer": 2,
+    "correctWord": "significant",
+    "translation": "研究は2群の間に有意な差を見つけた。",
+    "explanation": "significant＝重要な・有意な"
+  },
+  {
+    "id": "G2-063",
+    "grade": "2級",
+    "sentence": "One serious (　　) of the drought was a shortage of drinking water.",
+    "choices": [
+      "negotiate",
+      "regulate",
+      "consequence",
+      "investigate"
+    ],
+    "choiceMeanings": [
+      "交渉する",
+      "規制する",
+      "結果",
+      "調査する"
+    ],
+    "answer": 3,
+    "correctWord": "consequence",
+    "translation": "干ばつの深刻な結果の一つは飲料水不足だった。",
+    "explanation": "consequence＝結果"
+  },
+  {
+    "id": "G2-064",
+    "grade": "2級",
+    "sentence": "She was (　　) to share her personal information online.",
+    "choices": [
+      "respond",
+      "participate",
+      "depend",
+      "reluctant"
+    ],
+    "choiceMeanings": [
+      "応答する",
+      "参加する",
+      "～次第である",
+      "気が進まない"
+    ],
+    "answer": 4,
+    "correctWord": "reluctant",
+    "translation": "彼女は個人情報をオンラインで共有することに気が進まなかった。",
+    "explanation": "reluctant to do＝～するのをためらう"
+  },
+  {
+    "id": "G2-065",
+    "grade": "2級",
+    "sentence": "The journey takes (　　) three hours by train.",
+    "choices": [
+      "approximately",
+      "approximate",
+      "approximation",
+      "approach"
+    ],
+    "choiceMeanings": [
+      "およそ",
+      "おおよその",
+      "概算",
+      "近づく"
+    ],
+    "answer": 1,
+    "correctWord": "approximately",
+    "translation": "その旅は電車で約3時間かかる。",
+    "explanation": "approximately＝およそ"
+  },
+  {
+    "id": "G2-066",
+    "grade": "2級",
+    "sentence": "The police found no (　　) linking him to the crime.",
+    "choices": [
+      "negotiate",
+      "evidence",
+      "regulate",
+      "participate"
+    ],
+    "choiceMeanings": [
+      "交渉する",
+      "証拠",
+      "規制する",
+      "参加する"
+    ],
+    "answer": 2,
+    "correctWord": "evidence",
+    "translation": "警察は彼を犯罪と結び付ける証拠を見つけなかった。",
+    "explanation": "evidence＝証拠"
+  },
+  {
+    "id": "G2-067",
+    "grade": "2級",
+    "sentence": "The new machine is more energy-(　　) than the old model.",
+    "choices": [
+      "estimate",
+      "allocate",
+      "efficient",
+      "investigate"
+    ],
+    "choiceMeanings": [
+      "推定する",
+      "割り当てる",
+      "効率的な",
+      "調査する"
+    ],
+    "answer": 3,
+    "correctWord": "efficient",
+    "translation": "新しい機械は旧型より省エネルギー性能が高い。",
+    "explanation": "energy-efficient＝省エネルギーの"
+  },
+  {
+    "id": "G2-068",
+    "grade": "2級",
+    "sentence": "(　　) the heavy rain, the outdoor concert continued.",
+    "choices": [
+      "although",
+      "because",
+      "unless",
+      "despite"
+    ],
+    "choiceMeanings": [
+      "～だけれども",
+      "～なので",
+      "～でない限り",
+      "～にもかかわらず"
+    ],
+    "answer": 4,
+    "correctWord": "despite",
+    "translation": "大雨にもかかわらず野外コンサートは続いた。",
+    "explanation": "despite＋名詞＝～にもかかわらず"
+  },
+  {
+    "id": "G2-069",
+    "grade": "2級",
+    "sentence": "The newspaper claims to be (　　) of political parties.",
+    "choices": [
+      "independent",
+      "estimate",
+      "allocate",
+      "participate"
+    ],
+    "choiceMeanings": [
+      "独立した",
+      "推定する",
+      "割り当てる",
+      "参加する"
+    ],
+    "answer": 1,
+    "correctWord": "independent",
+    "translation": "その新聞は政党から独立していると主張している。",
+    "explanation": "independent of＝～から独立した"
+  },
+  {
+    "id": "G2-070",
+    "grade": "2級",
+    "sentence": "Protecting passengers' safety is our highest (　　).",
+    "choices": [
+      "regulate",
+      "priority",
+      "negotiate",
+      "respond"
+    ],
+    "choiceMeanings": [
+      "規制する",
+      "優先事項",
+      "交渉する",
+      "応答する"
+    ],
+    "answer": 2,
+    "correctWord": "priority",
+    "translation": "乗客の安全を守ることが私たちの最優先事項だ。",
+    "explanation": "priority＝優先事項"
+  },
+  {
+    "id": "G2-071",
+    "grade": "2級",
+    "sentence": "This software is updated (　　) to fix security problems.",
+    "choices": [
+      "frequent",
+      "frequency",
+      "frequently",
+      "facilitate"
+    ],
+    "choiceMeanings": [
+      "頻繁な",
+      "頻度",
+      "頻繁に",
+      "促進する"
+    ],
+    "answer": 3,
+    "correctWord": "frequently",
+    "translation": "このソフトはセキュリティ問題を直すため頻繁に更新される。",
+    "explanation": "frequently＝頻繁に"
+  },
+  {
+    "id": "G2-072",
+    "grade": "2級",
+    "sentence": "We need a (　　) source of information for the research paper.",
+    "choices": [
+      "verify",
+      "estimate",
+      "investigate",
+      "reliable"
+    ],
+    "choiceMeanings": [
+      "確認する",
+      "推定する",
+      "調査する",
+      "信頼できる"
+    ],
+    "answer": 4,
+    "correctWord": "reliable",
+    "translation": "研究論文には信頼できる情報源が必要だ。",
+    "explanation": "reliable＝信頼できる"
+  },
+  {
+    "id": "G2-073",
+    "grade": "2級",
+    "sentence": "Lack of funding was the biggest (　　) to completing the project.",
+    "choices": [
+      "obstacle",
+      "negotiate",
+      "regulate",
+      "allocate"
+    ],
+    "choiceMeanings": [
+      "障害",
+      "交渉する",
+      "規制する",
+      "割り当てる"
+    ],
+    "answer": 1,
+    "correctWord": "obstacle",
+    "translation": "資金不足は計画完成の最大の障害だった。",
+    "explanation": "obstacle to＝～への障害"
+  },
+  {
+    "id": "G2-074",
+    "grade": "2級",
+    "sentence": "After several failed attempts, the team (　　) succeeded.",
+    "choices": [
+      "eventual",
+      "eventually",
+      "event",
+      "evaluate"
+    ],
+    "choiceMeanings": [
+      "最終的な",
+      "最終的に",
+      "出来事",
+      "評価する"
+    ],
+    "answer": 2,
+    "correctWord": "eventually",
+    "translation": "何度か失敗した後、チームはついに成功した。",
+    "explanation": "eventually＝最終的に"
+  },
+  {
+    "id": "G2-075",
+    "grade": "2級",
+    "sentence": "A valid passport is a basic (　　) for international travel.",
+    "choices": [
+      "participate",
+      "negotiate",
+      "requirement",
+      "regulate"
+    ],
+    "choiceMeanings": [
+      "参加する",
+      "交渉する",
+      "必要条件",
+      "規制する"
+    ],
+    "answer": 3,
+    "correctWord": "requirement",
+    "translation": "有効なパスポートは海外旅行の基本的な必要条件だ。",
+    "explanation": "requirement＝必要条件"
+  },
+  {
+    "id": "G2-076",
+    "grade": "2級",
+    "sentence": "The new law will affect small businesses (　　) strongly.",
+    "choices": [
+      "particular",
+      "participate",
+      "participant",
+      "particularly"
+    ],
+    "choiceMeanings": [
+      "特定の",
+      "参加する",
+      "参加者",
+      "特に"
+    ],
+    "answer": 4,
+    "correctWord": "particularly",
+    "translation": "新法は特に小規模事業者に強く影響する。",
+    "explanation": "particularly＝特に"
+  },
+  {
+    "id": "G2-077",
+    "grade": "2級",
+    "sentence": "Regular feedback can be (　　) to students' learning.",
+    "choices": [
+      "beneficial",
+      "assess",
+      "allocate",
+      "investigate"
+    ],
+    "choiceMeanings": [
+      "有益な",
+      "評価する",
+      "割り当てる",
+      "調査する"
+    ],
+    "answer": 1,
+    "correctWord": "beneficial",
+    "translation": "定期的なフィードバックは生徒の学習に有益だ。",
+    "explanation": "beneficial to＝～に有益な"
+  },
+  {
+    "id": "G2-078",
+    "grade": "2級",
+    "sentence": "The researchers obtained written (　　) before using the photographs.",
+    "choices": [
+      "negotiate",
+      "permission",
+      "regulate",
+      "allocate"
+    ],
+    "choiceMeanings": [
+      "交渉する",
+      "許可",
+      "規制する",
+      "割り当てる"
+    ],
+    "answer": 2,
+    "correctWord": "permission",
+    "translation": "研究者は写真を使用する前に書面による許可を得た。",
+    "explanation": "permission＝許可"
+  },
+  {
+    "id": "G2-079",
+    "grade": "2級",
+    "sentence": "Participation in the survey is completely (　　).",
+    "choices": [
+      "estimate",
+      "negotiate",
+      "voluntary",
+      "respond"
+    ],
+    "choiceMeanings": [
+      "推定する",
+      "交渉する",
+      "任意の",
+      "応答する"
+    ],
+    "answer": 3,
+    "correctWord": "voluntary",
+    "translation": "アンケートへの参加は完全に任意だ。",
+    "explanation": "voluntary＝任意の"
+  },
+  {
+    "id": "G2-080",
+    "grade": "2級",
+    "sentence": "The engineers repaired the bridge. (　　), drivers used another route.",
+    "choices": [
+      "although",
+      "because",
+      "unless",
+      "meanwhile"
+    ],
+    "choiceMeanings": [
+      "～だけれども",
+      "～なので",
+      "～でない限り",
+      "その間に"
+    ],
+    "answer": 4,
+    "correctWord": "meanwhile",
+    "translation": "技術者が橋を修理する間、運転手は別の道を利用した。",
+    "explanation": "meanwhile＝その間に"
+  },
+  {
+    "id": "G2-081",
+    "grade": "2級",
+    "sentence": "The website must be (　　) to people with visual disabilities.",
+    "choices": [
+      "accessible",
+      "assess",
+      "allocate",
+      "investigate"
+    ],
+    "choiceMeanings": [
+      "利用できる",
+      "評価する",
+      "割り当てる",
+      "調査する"
+    ],
+    "answer": 1,
+    "correctWord": "accessible",
+    "translation": "ウェブサイトは視覚障害のある人も利用できなければならない。",
+    "explanation": "accessible to＝～が利用できる"
+  },
+  {
+    "id": "G2-082",
+    "grade": "2級",
+    "sentence": "The hospital faced a serious (　　) of trained nurses.",
+    "choices": [
+      "negotiate",
+      "shortage",
+      "regulate",
+      "participate"
+    ],
+    "choiceMeanings": [
+      "交渉する",
+      "不足",
+      "規制する",
+      "参加する"
+    ],
+    "answer": 2,
+    "correctWord": "shortage",
+    "translation": "病院は訓練を受けた看護師の深刻な不足に直面した。",
+    "explanation": "shortage of＝～の不足"
+  },
+  {
+    "id": "G2-083",
+    "grade": "2級",
+    "sentence": "The organization is funded (　　) by private donations.",
+    "choices": [
+      "primary",
+      "priority",
+      "primarily",
+      "promote"
+    ],
+    "choiceMeanings": [
+      "主要な",
+      "優先事項",
+      "主に",
+      "促進する"
+    ],
+    "answer": 3,
+    "correctWord": "primarily",
+    "translation": "その団体は主に民間の寄付で運営資金を得ている。",
+    "explanation": "primarily＝主に"
+  },
+  {
+    "id": "G2-084",
+    "grade": "2級",
+    "sentence": "Wearing a helmet is (　　) for all workers on this site.",
+    "choices": [
+      "assess",
+      "allocate",
+      "participate",
+      "mandatory"
+    ],
+    "choiceMeanings": [
+      "評価する",
+      "割り当てる",
+      "参加する",
+      "義務的な"
+    ],
+    "answer": 4,
+    "correctWord": "mandatory",
+    "translation": "この現場の全作業員はヘルメット着用が義務だ。",
+    "explanation": "mandatory＝義務的な"
+  },
+  {
+    "id": "G2-085",
+    "grade": "2級",
+    "sentence": "The committee proposed an (　　) to the original plan.",
+    "choices": [
+      "alternative",
+      "negotiate",
+      "regulate",
+      "respond"
+    ],
+    "choiceMeanings": [
+      "代替案",
+      "交渉する",
+      "規制する",
+      "応答する"
+    ],
+    "answer": 1,
+    "correctWord": "alternative",
+    "translation": "委員会は当初案に代わる案を提案した。",
+    "explanation": "alternative to＝～の代替案"
+  },
+  {
+    "id": "G2-086",
+    "grade": "2級",
+    "sentence": "The patient's condition improved (　　) over several weeks.",
+    "choices": [
+      "gradual",
+      "gradually",
+      "grade",
+      "graduate"
+    ],
+    "choiceMeanings": [
+      "徐々の",
+      "徐々に",
+      "等級",
+      "卒業する"
+    ],
+    "answer": 2,
+    "correctWord": "gradually",
+    "translation": "患者の状態は数週間かけて徐々に改善した。",
+    "explanation": "gradually＝徐々に"
+  },
+  {
+    "id": "G2-087",
+    "grade": "2級",
+    "sentence": "The device uses less electricity than (　　) models.",
+    "choices": [
+      "estimate",
+      "allocate",
+      "conventional",
+      "negotiate"
+    ],
+    "choiceMeanings": [
+      "推定する",
+      "割り当てる",
+      "従来の",
+      "交渉する"
+    ],
+    "answer": 3,
+    "correctWord": "conventional",
+    "translation": "その装置は従来型モデルより電力消費が少ない。",
+    "explanation": "conventional＝従来の"
+  },
+  {
+    "id": "G2-088",
+    "grade": "2級",
+    "sentence": "The scientist measured the sample (　　) to avoid errors.",
+    "choices": [
+      "precise",
+      "precision",
+      "predict",
+      "precisely"
+    ],
+    "choiceMeanings": [
+      "正確な",
+      "精密さ",
+      "予測する",
+      "正確に"
+    ],
+    "answer": 4,
+    "correctWord": "precisely",
+    "translation": "科学者は誤差を避けるため試料を正確に測定した。",
+    "explanation": "precisely＝正確に"
+  },
+  {
+    "id": "G2-089",
+    "grade": "2級",
+    "sentence": "The campaign aims to raise public (　　) of ocean pollution.",
+    "choices": [
+      "awareness",
+      "negotiate",
+      "regulate",
+      "allocate"
+    ],
+    "choiceMeanings": [
+      "認識",
+      "交渉する",
+      "規制する",
+      "割り当てる"
+    ],
+    "answer": 1,
+    "correctWord": "awareness",
+    "translation": "その運動は海洋汚染への一般の認識を高めることを目指す。",
+    "explanation": "awareness of＝～への認識"
+  },
+  {
+    "id": "G2-090",
+    "grade": "2級",
+    "sentence": "The committee concluded that the evidence was not (　　) to support the claim.",
+    "choices": [
+      "estimate",
+      "sufficient",
+      "participate",
+      "regulate"
+    ],
+    "choiceMeanings": [
+      "推定する",
+      "十分な",
+      "参加する",
+      "規制する"
+    ],
+    "answer": 2,
+    "correctWord": "sufficient",
+    "translation": "委員会は主張を裏付ける証拠が不十分だと結論づけた。",
+    "explanation": "sufficient to do＝～するのに十分な"
+  },
+  {
+    "id": "G2-091",
+    "grade": "2級",
+    "sentence": "Without maintenance, the equipment will (　　) deteriorate.",
+    "choices": [
+      "inevitable",
+      "investigate",
+      "inevitably",
+      "invention"
+    ],
+    "choiceMeanings": [
+      "避けられない",
+      "調査する",
+      "必然的に",
+      "発明"
+    ],
+    "answer": 3,
+    "correctWord": "inevitably",
+    "translation": "保守しなければ機器は必然的に劣化する。",
+    "explanation": "inevitably＝必然的に"
+  },
+  {
+    "id": "G2-092",
+    "grade": "2級",
+    "sentence": "A large (　　) of the population lives in urban areas.",
+    "choices": [
+      "negotiate",
+      "regulate",
+      "allocate",
+      "proportion"
+    ],
+    "choiceMeanings": [
+      "交渉する",
+      "規制する",
+      "割り当てる",
+      "割合"
+    ],
+    "answer": 4,
+    "correctWord": "proportion",
+    "translation": "人口の大きな割合が都市部に住んでいる。",
+    "explanation": "proportion of＝～の割合"
+  },
+  {
+    "id": "G2-093",
+    "grade": "2級",
+    "sentence": "The researchers discussed the (　　) risks of the new technology.",
+    "choices": [
+      "potential",
+      "estimate",
+      "allocate",
+      "negotiate"
+    ],
+    "choiceMeanings": [
+      "潜在的な",
+      "推定する",
+      "割り当てる",
+      "交渉する"
+    ],
+    "answer": 1,
+    "correctWord": "potential",
+    "translation": "研究者は新技術の潜在的なリスクを議論した。",
+    "explanation": "potential＝潜在的な"
+  },
+  {
+    "id": "G2-094",
+    "grade": "2級",
+    "sentence": "The service is available to everyone, (　　) of income.",
+    "choices": [
+      "despite",
+      "regardless",
+      "although",
+      "unless"
+    ],
+    "choiceMeanings": [
+      "～にもかかわらず",
+      "～に関係なく",
+      "～だけれども",
+      "～でない限り"
+    ],
+    "answer": 2,
+    "correctWord": "regardless",
+    "translation": "このサービスは収入に関係なく誰でも利用できる。",
+    "explanation": "regardless of＝～に関係なく"
+  },
+  {
+    "id": "G2-095",
+    "grade": "2級",
+    "sentence": "The committee needs an (　　) assessment based on facts.",
+    "choices": [
+      "estimate",
+      "allocate",
+      "objective",
+      "negotiate"
+    ],
+    "choiceMeanings": [
+      "推定する",
+      "割り当てる",
+      "客観的な",
+      "交渉する"
+    ],
+    "answer": 3,
+    "correctWord": "objective",
+    "translation": "委員会には事実に基づく客観的な評価が必要だ。",
+    "explanation": "objective＝客観的な"
+  },
+  {
+    "id": "G2-096",
+    "grade": "2級",
+    "sentence": "The stadium has a seating (　　) of 30,000.",
+    "choices": [
+      "negotiate",
+      "regulate",
+      "participate",
+      "capacity"
+    ],
+    "choiceMeanings": [
+      "交渉する",
+      "規制する",
+      "参加する",
+      "収容能力"
+    ],
+    "answer": 4,
+    "correctWord": "capacity",
+    "translation": "そのスタジアムの収容人数は3万人だ。",
+    "explanation": "seating capacity＝収容人数"
+  },
+  {
+    "id": "G2-097",
+    "grade": "2級",
+    "sentence": "The athlete performed (　　) well throughout the season.",
+    "choices": [
+      "consistently",
+      "consistent",
+      "consistency",
+      "consider"
+    ],
+    "choiceMeanings": [
+      "一貫して",
+      "一貫した",
+      "一貫性",
+      "考慮する"
+    ],
+    "answer": 1,
+    "correctWord": "consistently",
+    "translation": "その選手はシーズンを通して安定して好成績を残した。",
+    "explanation": "consistently＝一貫して"
+  },
+  {
+    "id": "G2-098",
+    "grade": "2級",
+    "sentence": "The school arranged a (　　) classroom while the building was repaired.",
+    "choices": [
+      "estimate",
+      "temporary",
+      "allocate",
+      "negotiate"
+    ],
+    "choiceMeanings": [
+      "推定する",
+      "一時的な",
+      "割り当てる",
+      "交渉する"
+    ],
+    "answer": 2,
+    "correctWord": "temporary",
+    "translation": "校舎の修理中、学校は仮設教室を用意した。",
+    "explanation": "temporary＝一時的な"
+  },
+  {
+    "id": "G2-099",
+    "grade": "2級",
+    "sentence": "Clean drinking water is (　　) for human survival.",
+    "choices": [
+      "estimate",
+      "allocate",
+      "essential",
+      "participate"
+    ],
+    "choiceMeanings": [
+      "推定する",
+      "割り当てる",
+      "不可欠な",
+      "参加する"
+    ],
+    "answer": 3,
+    "correctWord": "essential",
+    "translation": "清潔な飲料水は人間の生存に不可欠だ。",
+    "explanation": "essential for＝～に不可欠な"
+  },
+  {
+    "id": "G2-100",
+    "grade": "2級",
+    "sentence": "The researchers reached a (　　) after analyzing all the results.",
+    "choices": [
+      "negotiate",
+      "regulate",
+      "allocate",
+      "conclusion"
+    ],
+    "choiceMeanings": [
+      "交渉する",
+      "規制する",
+      "割り当てる",
+      "結論"
+    ],
+    "answer": 4,
+    "correctWord": "conclusion",
+    "translation": "研究者はすべての結果を分析して結論に達した。",
+    "explanation": "reach a conclusion＝結論に達する"
   }
 ]
