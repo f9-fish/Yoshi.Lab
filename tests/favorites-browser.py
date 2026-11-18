@@ -87,7 +87,12 @@ with sync_playwright() as playwright:
         library.goto(SITE + 'index.html?view=subjects')
         shortcut = library.locator('.favorites-home-link')
         expect(shortcut).to_be_visible()
-        assert shortcut.evaluate("link => link.nextElementSibling.matches('.pair-feature')")
+        assert shortcut.evaluate("""link => {
+          const pair = document.querySelector('#pairFeature .pair-start');
+          const properties = ['backgroundImage', 'borderRadius', 'padding', 'fontFamily', 'transform'];
+          return link.parentElement.nextElementSibling === pair.parentElement &&
+            properties.every(key => getComputedStyle(link)[key] === getComputedStyle(pair)[key]);
+        }""")
         shortcut.click()
         expect(library).to_have_url(SITE + 'favorites.html')
         expect(library.locator('#favoriteList li')).to_have_count(1)
