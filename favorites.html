@@ -4,20 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>お気に入り | Yoshi.Lab</title>
-<link rel="stylesheet" href="./favorites.css">
+<link rel="stylesheet" href="./favorites.css?v=2">
 </head>
 <body class="favorites-page">
 <main>
  <nav aria-label="ナビゲーション"><a href="./index.html?view=subjects">← Yoshi.Lab ホーム</a></nav>
- <h1>☆ お気に入り</h1>
- <p>お気に入りに登録した問題を復習できます。復習でXPは加算されません。</p>
+ <header class="favorites-heading">
+  <span class="favorites-home-icon" aria-hidden="true">★</span>
+  <div><h1>お気に入り</h1><p>保存した問題を復習できます。復習でXPは加算されません。</p></div>
+ </header>
  <button id="favoriteLogin" type="button" hidden>Googleでログイン</button>
  <p id="favoriteStatus" role="status">ログイン状態を確認中…</p>
  <section id="favoriteLibrary" aria-label="お気に入り一覧" hidden>
-  <div class="favorite-panel favorite-actions">
-   <label>科目<select id="filterSubject"><option value="">すべて</option></select></label>
-   <label>問題形式<select id="filterFormat"><option value="">すべて</option></select></label>
-   <button id="reviewAll" type="button" disabled>表示中の問題を連続で解く</button>
+  <div class="favorite-panel favorite-toolbar">
+   <div class="favorite-filters">
+    <label>科目<select id="filterSubject"><option value="">すべての科目</option></select></label>
+    <label>問題形式<select id="filterFormat"><option value="">すべての形式</option></select></label>
+   </div>
+   <div class="favorite-toolbar-actions">
+    <button id="clearFavoritesFilters" type="button" hidden>絞り込みを解除</button>
+    <button id="reviewAll" class="favorite-primary" type="button" disabled>まとめて復習</button>
+   </div>
   </div>
   <ul id="favoriteList"></ul>
  </section>
@@ -38,7 +45,7 @@
   <p id="reviewHintText"></p>
   <p id="reviewJudgment" role="status"></p>
   <div id="reviewAnswer" hidden></div>
-  <button id="nextFavorite" type="button" hidden>次の問題へ</button>
+  <button id="nextFavorite" class="favorite-primary" type="button" hidden>次の問題へ</button>
  </section>
 </main>
 <script src="./answer-variants.js"></script>
@@ -50,6 +57,6 @@
 <script src="./favorites-ui.js"></script>
 <script src="./favorites-catalog.js"></script>
 <script type="module" src="./account.js?v=question-favorites-1"></script>
-<script src="./favorites-page.js"></script>
+<script src="./favorites-page.js?v=2"></script>
 </body>
 </html>

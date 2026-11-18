@@ -85,7 +85,10 @@ with sync_playwright() as playwright:
 
         library = context.new_page()
         library.goto(SITE + 'index.html?view=subjects')
-        library.locator('.favorites-home-link').click()
+        shortcut = library.locator('.favorites-home-link')
+        expect(shortcut).to_be_visible()
+        assert shortcut.evaluate("link => link.nextElementSibling.matches('.pair-feature')")
+        shortcut.click()
         expect(library).to_have_url(SITE + 'favorites.html')
         expect(library.locator('#favoriteList li')).to_have_count(1)
         first_text = json.loads((ROOT / 'lessons.json').read_text())[0]['cards'][0]
@@ -109,7 +112,9 @@ with sync_playwright() as playwright:
         library.locator('#filterFormat').select_option('textTyping')
         expect(library.locator('#favoriteList li')).to_have_count(1)
         expect(library.locator('#favoriteList h2')).not_to_contain_text('( transferred )')
-        library.locator('#filterFormat').select_option('')
+        library.locator('#clearFavoritesFilters').click()
+        expect(library.locator('#filterFormat')).to_have_value('')
+        expect(library.locator('#reviewAll')).to_have_text('まとめて復習（2問）')
         library.locator('#reviewAll').click()
         expect(library.locator('#reviewProgress')).to_have_text('1 / 2問')
         expect(library.locator('#reviewProgress')).to_be_visible()
