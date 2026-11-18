@@ -7,29 +7,38 @@
  }
  function options(select,entries){
   const selected=select.value;
-  select.replaceChildren(new Option('すべて',''),...entries.map(([value,label])=>new Option(label,value)));
+  select.replaceChildren(new Option(select===subject?'すべての科目':'すべての形式',''),...entries.map(([value,label])=>new Option(label,value)));
   if(entries.some(([value])=>value===selected))select.value=selected;
  }
  function renderList(){
   const list=$('favoriteList');
   visible=rows.filter(({key,item})=>(!subject.value||item?.subject===subject.value)&&(!format.value||key.split('~')[1]===format.value));
-  $('reviewAll').disabled=!visible.some(row=>row.item);
+  const reviewCount=visible.filter(row=>row.item).length;
+  $('reviewAll').disabled=!reviewCount;
+  $('reviewAll').textContent=reviewCount?'まとめて復習（'+reviewCount+'問）':'まとめて復習';
+  $('clearFavoritesFilters').hidden=!subject.value&&!format.value;
   list.replaceChildren();
   for(const row of visible){
    const {item,key,error}=row,card=document.createElement('li'),heading=document.createElement('h2'),meta=document.createElement('p');
-   card.className='favorite-panel';
+   card.className='favorite-panel favorite-item';
+   meta.className='favorite-meta';
    heading.textContent=item?.prompt||(error?'教材を読み込めませんでした':'公開教材から見つかりませんでした');
    meta.textContent=[item?.subject,Q.formats[key.split('~')[1]],item?.scope].filter(Boolean).join(' · ');
    const actions=document.createElement('div');actions.className='favorite-actions';
-   if(item)actions.append(button('この問題を復習',()=>start([row])));
+   if(item){
+    const review=button('この問題を復習',()=>start([row]));
+    review.className='favorite-primary';
+    actions.append(review);
+   }
    const remove=button('登録解除',async()=>{
     remove.disabled=true;
     try{await F.change(key,false);}
     catch{status.textContent='登録を解除できませんでした。接続を確認してください。';}
     finally{remove.disabled=false;}
    });
+   remove.className='favorite-quiet';
    remove.setAttribute('aria-label','登録解除：'+heading.textContent);
-   actions.append(remove);card.append(heading,meta,actions);list.append(card);
+   actions.append(remove);card.append(meta,heading,actions);list.append(card);
   }
   status.textContent=rows.length?(visible.length?visible.length+'件のお気に入り':'条件に合う問題がありません。'):
    'お気に入りはまだありません。学習画面の「☆ お気に入り」で問題を登録できます。';
@@ -74,6 +83,7 @@
   catch{status.textContent='Googleログインに失敗しました。もう一度お試しください。';}
  };
  subject.onchange=format.onchange=renderList;
+ $('clearFavoritesFilters').onclick=()=>{subject.value='';format.value='';renderList();subject.focus();};
  $('reviewAll').onclick=()=>start(visible.filter(row=>row.item));
  $('backToFavorites').onclick=()=>{listScreen();renderList();$('filterSubject').focus();};
  function start(selection){
