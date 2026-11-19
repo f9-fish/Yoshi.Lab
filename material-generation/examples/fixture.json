@@ -1,0 +1,513 @@
+{
+  "notice": "すべて架空の手作りモックです。AI実生成・教科書転載・本番公開はしていません。",
+  "master": [
+    [
+      "原文ID",
+      "科目",
+      "単元ID",
+      "Part",
+      "文番号",
+      "教科書本文（英語）",
+      "日本語訳",
+      "重要文法・語句メモ",
+      "生成対象",
+      "備考"
+    ],
+    [
+      "SRC-001",
+      "英C",
+      "DEMO",
+      "1",
+      1,
+      "During a school project, Aki and her friends discovered a neglected garden behind the library.",
+      "学校の活動中、亜希たちは図書館の裏に手入れされていない庭を見つけた。",
+      "過去完了・関係副詞・譲歩・目的表現",
+      "",
+      "架空のテスト教材"
+    ],
+    [
+      "SRC-002",
+      "英C",
+      "DEMO",
+      "1",
+      2,
+      "They had promised to turn it into a quiet place where students could read.",
+      "生徒が読書できる静かな場所にすると約束していた。",
+      "過去完了・関係副詞・譲歩・目的表現",
+      "",
+      "架空のテスト教材"
+    ],
+    [
+      "SRC-003",
+      "英C",
+      "DEMO",
+      "1",
+      3,
+      "Instead of buying new tools, they borrowed some from a neighbor.",
+      "新しい道具を買う代わりに近所の人から借りた。",
+      "過去完了・関係副詞・譲歩・目的表現",
+      "",
+      "架空のテスト教材"
+    ],
+    [
+      "SRC-004",
+      "英C",
+      "DEMO",
+      "1",
+      4,
+      "Although the ground was hard, they managed to plant several trees.",
+      "地面は固かったが、なんとか数本の木を植えた。",
+      "過去完了・関係副詞・譲歩・目的表現",
+      "",
+      "架空のテスト教材"
+    ],
+    [
+      "SRC-005",
+      "英C",
+      "DEMO",
+      "1",
+      5,
+      "Aki recorded each change so that younger students could continue the project.",
+      "後輩が活動を続けられるよう、亜希は変化を記録した。",
+      "過去完了・関係副詞・譲歩・目的表現",
+      "",
+      "架空のテスト教材"
+    ],
+    [
+      "SRC-006",
+      "英C",
+      "DEMO",
+      "1",
+      6,
+      "By working together, they learned that small efforts could make a lasting difference.",
+      "協力することで、小さな努力が長く続く変化を生むと学んだ。",
+      "過去完了・関係副詞・譲歩・目的表現",
+      "",
+      "架空のテスト教材"
+    ]
+  ],
+  "selection": {
+    "subject": "英C",
+    "unitId": "DEMO",
+    "part": "1"
+  },
+  "responses": {
+    "vocabulary": {
+      "items": [
+        {
+          "word": "discover",
+          "sourceExpression": "discovered",
+          "meaning": "発見する",
+          "hint": "本文での使い方を確認",
+          "reading": "",
+          "evidence": [
+            {
+              "sourceId": "SRC-001",
+              "quote": "During a school project, Aki and her friends discovered a neglected garden behind the library."
+            }
+          ]
+        },
+        {
+          "word": "neglected",
+          "sourceExpression": "neglected",
+          "meaning": "手入れされていない",
+          "hint": "本文での使い方を確認",
+          "reading": "",
+          "evidence": [
+            {
+              "sourceId": "SRC-001",
+              "quote": "During a school project, Aki and her friends discovered a neglected garden behind the library."
+            }
+          ]
+        },
+        {
+          "word": "instead of",
+          "sourceExpression": "Instead of",
+          "meaning": "〜の代わりに",
+          "hint": "本文での使い方を確認",
+          "reading": "",
+          "evidence": [
+            {
+              "sourceId": "SRC-003",
+              "quote": "Instead of buying new tools, they borrowed some from a neighbor."
+            }
+          ]
+        },
+        {
+          "word": "manage to",
+          "sourceExpression": "managed to",
+          "meaning": "なんとか〜する",
+          "hint": "本文での使い方を確認",
+          "reading": "",
+          "evidence": [
+            {
+              "sourceId": "SRC-004",
+              "quote": "Although the ground was hard, they managed to plant several trees."
+            }
+          ]
+        }
+      ],
+      "shortageReason": "模擬データは重要語句4件に限定し、指定数まで水増ししていません。"
+    },
+    "qa": {
+      "items": [
+        {
+          "question": "Where was the garden?",
+          "modelAnswer": "It was behind the library.",
+          "acceptedAnswers": [],
+          "explanation": "庭の場所は図書館の裏。",
+          "evidence": [
+            {
+              "sourceId": "SRC-001",
+              "quote": "During a school project, Aki and her friends discovered a neglected garden behind the library."
+            }
+          ]
+        },
+        {
+          "question": "What did the students borrow?",
+          "modelAnswer": "They borrowed tools.",
+          "acceptedAnswers": [],
+          "explanation": "新しい道具を買わず、道具を借りた。",
+          "evidence": [
+            {
+              "sourceId": "SRC-003",
+              "quote": "Instead of buying new tools, they borrowed some from a neighbor."
+            }
+          ]
+        },
+        {
+          "question": "How did Aki help younger students continue the project?",
+          "modelAnswer": "She recorded each change.",
+          "acceptedAnswers": [],
+          "explanation": "変化を記録することで継続を助けた。",
+          "evidence": [
+            {
+              "sourceId": "SRC-005",
+              "quote": "Aki recorded each change so that younger students could continue the project."
+            }
+          ]
+        },
+        {
+          "question": "Why did the students want to change the garden?",
+          "modelAnswer": "They wanted to make a quiet place for reading.",
+          "acceptedAnswers": [],
+          "explanation": "生徒が読書できる静かな場所にするため。",
+          "evidence": [
+            {
+              "sourceId": "SRC-002",
+              "quote": "They had promised to turn it into a quiet place where students could read."
+            }
+          ]
+        }
+      ],
+      "shortageReason": "模擬データは本文に根拠を持つ4件に限定しています。"
+    },
+    "writing": {
+      "story": {
+        "title": "止まった時計の手紙",
+        "genre": "ミステリー",
+        "opening": "修理の約束をした美緒が時計店を訪れる。",
+        "development": "時計に隠された紙を発見する。",
+        "twist": "隠し引き出しの鍵が別の箱につながる。",
+        "ending": "古い手紙を家族に届け、小さな努力の意味を知る。"
+      },
+      "items": [
+        {
+          "sequence": 1,
+          "act": "起",
+          "japanese": "美緒は、放課後に古い時計を修理することを祖父に約束していた。",
+          "requiredExpressions": [
+            "had promised"
+          ],
+          "modelAnswer": "Mio had promised her grandfather to repair an old clock after school.",
+          "acceptedAnswers": [],
+          "hintGrammar": "過去のある時点より前の約束は過去完了で表す。",
+          "hintWords": "had promisedの意味と形に注目する。",
+          "explanation": "過去のある時点より前の約束は過去完了で表す。",
+          "targets": [
+            "had promised"
+          ],
+          "evidence": [
+            {
+              "sourceId": "SRC-002",
+              "quote": "They had promised to turn it into a quiet place where students could read."
+            }
+          ]
+        },
+        {
+          "sequence": 2,
+          "act": "起",
+          "japanese": "美緒は、珍しい時計が並んでいる小さな店に入った。",
+          "requiredExpressions": [
+            "where"
+          ],
+          "modelAnswer": "Mio entered a small shop where unusual clocks were displayed.",
+          "acceptedAnswers": [],
+          "hintGrammar": "場所を説明する関係副詞whereを使う。",
+          "hintWords": "whereの意味と形に注目する。",
+          "explanation": "場所を説明する関係副詞whereを使う。",
+          "targets": [
+            "where"
+          ],
+          "evidence": [
+            {
+              "sourceId": "SRC-002",
+              "quote": "They had promised to turn it into a quiet place where students could read."
+            }
+          ]
+        },
+        {
+          "sequence": 3,
+          "act": "承",
+          "japanese": "美緒は新しい時計を買う代わりに、壊れた時計を店主に見せた。",
+          "requiredExpressions": [
+            "Instead of"
+          ],
+          "modelAnswer": "Instead of buying a new clock, Mio showed the broken one to the shopkeeper.",
+          "acceptedAnswers": [],
+          "hintGrammar": "instead ofの後に動詞を続けるときは動名詞にする。",
+          "hintWords": "Instead ofの意味と形に注目する。",
+          "explanation": "instead ofの後に動詞を続けるときは動名詞にする。",
+          "targets": [
+            "Instead of"
+          ],
+          "evidence": [
+            {
+              "sourceId": "SRC-003",
+              "quote": "Instead of buying new tools, they borrowed some from a neighbor."
+            }
+          ]
+        },
+        {
+          "sequence": 4,
+          "act": "承",
+          "japanese": "美緒は時計のふたの内側に隠された小さな紙を発見した。",
+          "requiredExpressions": [
+            "discovered"
+          ],
+          "modelAnswer": "Mio discovered a small piece of paper hidden inside the clock cover.",
+          "acceptedAnswers": [],
+          "hintGrammar": "hiddenは過去分詞で、紙が隠されていることを説明する。",
+          "hintWords": "discoveredの意味と形に注目する。",
+          "explanation": "hiddenは過去分詞で、紙が隠されていることを説明する。",
+          "targets": [
+            "discovered"
+          ],
+          "evidence": [
+            {
+              "sourceId": "SRC-001",
+              "quote": "During a school project, Aki and her friends discovered a neglected garden behind the library."
+            }
+          ]
+        },
+        {
+          "sequence": 5,
+          "act": "承",
+          "japanese": "美緒は店主がその文字を読めるように、紙を明かりに近づけた。",
+          "requiredExpressions": [
+            "so that"
+          ],
+          "modelAnswer": "Mio held the paper near a light so that the shopkeeper could read the words.",
+          "acceptedAnswers": [],
+          "hintGrammar": "so that + 主語 + couldで過去の目的を示す。",
+          "hintWords": "so thatの意味と形に注目する。",
+          "explanation": "so that + 主語 + couldで過去の目的を示す。",
+          "targets": [
+            "so that"
+          ],
+          "evidence": [
+            {
+              "sourceId": "SRC-005",
+              "quote": "Aki recorded each change so that younger students could continue the project."
+            }
+          ]
+        },
+        {
+          "sequence": 6,
+          "act": "転",
+          "japanese": "時計の針は止まっていたが、美緒はなんとか小さな引き出しを開けた。",
+          "requiredExpressions": [
+            "managed to"
+          ],
+          "modelAnswer": "Although the clock hands had stopped, Mio managed to open a tiny drawer.",
+          "acceptedAnswers": [],
+          "hintGrammar": "Althoughで譲歩を表し、managed toで苦労して成功したことを示す。",
+          "hintWords": "managed toの意味と形に注目する。",
+          "explanation": "Althoughで譲歩を表し、managed toで苦労して成功したことを示す。",
+          "targets": [
+            "managed to"
+          ],
+          "evidence": [
+            {
+              "sourceId": "SRC-004",
+              "quote": "Although the ground was hard, they managed to plant several trees."
+            }
+          ]
+        },
+        {
+          "sequence": 7,
+          "act": "転",
+          "japanese": "引き出しには、誰も長年開けたことのない箱の鍵が入っていた。",
+          "requiredExpressions": [
+            "had opened"
+          ],
+          "modelAnswer": "The drawer contained a key to a box that nobody had opened for years.",
+          "acceptedAnswers": [],
+          "hintGrammar": "過去完了は過去の時点までの状態を表す。",
+          "hintWords": "had openedの意味と形に注目する。",
+          "explanation": "過去完了は過去の時点までの状態を表す。",
+          "targets": [
+            "had opened"
+          ],
+          "evidence": [
+            {
+              "sourceId": "SRC-002",
+              "quote": "They had promised to turn it into a quiet place where students could read."
+            }
+          ]
+        },
+        {
+          "sequence": 8,
+          "act": "結",
+          "japanese": "美緒と店主は協力することで、その箱の持ち主を見つけた。",
+          "requiredExpressions": [
+            "By working together"
+          ],
+          "modelAnswer": "By working together, Mio and the shopkeeper found the owner of the box.",
+          "acceptedAnswers": [],
+          "hintGrammar": "by + 動名詞は方法を表す。",
+          "hintWords": "By working togetherの意味と形に注目する。",
+          "explanation": "by + 動名詞は方法を表す。",
+          "targets": [
+            "By working together"
+          ],
+          "evidence": [
+            {
+              "sourceId": "SRC-006",
+              "quote": "By working together, they learned that small efforts could make a lasting difference."
+            }
+          ]
+        },
+        {
+          "sequence": 9,
+          "act": "結",
+          "japanese": "箱の持ち主は、孫が読めるように昔の手紙を大切に保管していた。",
+          "requiredExpressions": [
+            "so that"
+          ],
+          "modelAnswer": "The owner had kept the old letters carefully so that her grandson could read them.",
+          "acceptedAnswers": [],
+          "hintGrammar": "過去完了と目的のso thatを組み合わせる。",
+          "hintWords": "so thatの意味と形に注目する。",
+          "explanation": "過去完了と目的のso thatを組み合わせる。",
+          "targets": [
+            "so that"
+          ],
+          "evidence": [
+            {
+              "sourceId": "SRC-005",
+              "quote": "Aki recorded each change so that younger students could continue the project."
+            }
+          ]
+        },
+        {
+          "sequence": 10,
+          "act": "結",
+          "japanese": "美緒は小さな努力が誰かの人生に長く続く変化をもたらすことを学んだ。",
+          "requiredExpressions": [
+            "make a lasting difference"
+          ],
+          "modelAnswer": "Mio learned that small efforts could make a lasting difference in someone’s life.",
+          "acceptedAnswers": [],
+          "hintGrammar": "learned that節の中に学んだ内容を置く。",
+          "hintWords": "make a lasting differenceの意味と形に注目する。",
+          "explanation": "learned that節の中に学んだ内容を置く。",
+          "targets": [
+            "make a lasting difference"
+          ],
+          "evidence": [
+            {
+              "sourceId": "SRC-006",
+              "quote": "By working together, they learned that small efforts could make a lasting difference."
+            }
+          ]
+        }
+      ],
+      "shortageReason": ""
+    },
+    "trueFalse": {
+      "items": [
+        {
+          "question": "The garden was behind the library.",
+          "modelAnswer": "True",
+          "acceptedAnswers": [],
+          "explanation": "本文では図書館の裏と明示されている。",
+          "reasonKind": "supported",
+          "evidence": [
+            {
+              "sourceId": "SRC-001",
+              "quote": "During a school project, Aki and her friends discovered a neglected garden behind the library."
+            }
+          ]
+        },
+        {
+          "question": "The students bought new tools for the project.",
+          "modelAnswer": "False",
+          "acceptedAnswers": [],
+          "explanation": "買う代わりに借りたとあり、購入したという主張と矛盾する。",
+          "reasonKind": "contradicted",
+          "evidence": [
+            {
+              "sourceId": "SRC-003",
+              "quote": "Instead of buying new tools, they borrowed some from a neighbor."
+            }
+          ]
+        },
+        {
+          "question": "The students planted several trees.",
+          "modelAnswer": "True",
+          "acceptedAnswers": [],
+          "explanation": "数本の木を植えたと明示されている。",
+          "reasonKind": "supported",
+          "evidence": [
+            {
+              "sourceId": "SRC-004",
+              "quote": "Although the ground was hard, they managed to plant several trees."
+            }
+          ]
+        },
+        {
+          "question": "The garden was in front of the library.",
+          "modelAnswer": "False",
+          "acceptedAnswers": [],
+          "explanation": "図書館の裏であり、正面という主張と矛盾する。",
+          "reasonKind": "contradicted",
+          "evidence": [
+            {
+              "sourceId": "SRC-001",
+              "quote": "During a school project, Aki and her friends discovered a neglected garden behind the library."
+            }
+          ]
+        }
+      ],
+      "shortageReason": "模擬データは明確な根拠のあるTrue2件・False2件に限定しています。"
+    },
+    "discussion": {
+      "items": [
+        {
+          "question": "How could you improve a place in your community?",
+          "modelAnswer": "I could help clean a local park.",
+          "acceptedAnswers": [],
+          "explanation": "自由回答で、実行可能な方法を自分の言葉で説明する。",
+          "evidence": [
+            {
+              "sourceId": "SRC-006",
+              "quote": "By working together, they learned that small efforts could make a lasting difference."
+            }
+          ]
+        }
+      ],
+      "shortageReason": "任意の模擬問題を1件用意しました。"
+    }
+  }
+}
