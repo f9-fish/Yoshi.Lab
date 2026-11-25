@@ -377,12 +377,21 @@ async function refresh(){
  const a=window.YoshiAccount;if(!a)return;
  if(loading&&a.user)return;
  const user=a.user;achievementRanking=null;renderSeasonFinal();$('login').classList.toggle('hidden',!!user);$('headerLogin').classList.toggle('hidden',!!user);$('headerSignedIn').classList.toggle('hidden',!user);
- if(!user){leaderboardRows={};myProfile=null;render();$('authNotice').classList.remove('hidden');$('authMessage').textContent='ランキングを見るには学校のGoogleアカウントでログインしてね。';return}
+ if(!user){leaderboardRows={};myProfile=null;$('seasonHistory').replaceChildren();render();$('authNotice').classList.remove('hidden');$('authMessage').textContent='ランキングを見るには学校のGoogleアカウントでログインしてね。';return}
  loading=true;
- try{const profile=await a.profile();if(!profile){$('authNotice').classList.remove('hidden');$('authMessage').textContent='まずMY PAGEでプロフィールを登録してね。';return}
- myProfile=profile;await a.syncXP();renderHistory(await a.records());leaderboardRows=await a.leaderboard();$('authNotice').classList.add('hidden');render();
- void loadSeasonFinal(a,user.uid)
- }catch(e){$('authNotice').classList.remove('hidden');$('authMessage').textContent='読み込みに失敗しました：'+e.message}
+ try{
+  const profile=await a.profile();
+  if(a.user?.uid!==user.uid)return;
+  if(!profile){$('authNotice').classList.remove('hidden');$('authMessage').textContent='まずMY PAGEでプロフィールを登録してね。';return}
+  void loadSeasonFinal(a,user.uid);
+  await a.syncXP();
+  const [records,board]=await Promise.all([a.records(),a.leaderboard()]);
+  if(a.user?.uid!==user.uid)return;
+  myProfile=profile;leaderboardRows=board;renderHistory(records);$('authNotice').classList.add('hidden');render();
+ }catch(e){
+  if(a.user?.uid!==user.uid)return;
+  $('authNotice').classList.remove('hidden');$('authMessage').textContent='読み込みに失敗しました：'+e.message;
+ }
  finally{loading=false}
 }
 async function loadSeasonFinal(account,uid){
