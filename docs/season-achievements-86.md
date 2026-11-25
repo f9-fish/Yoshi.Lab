@@ -23,6 +23,44 @@
 
 11月27日までに、管理者は [Realtime Database](https://console.firebase.google.com/project/yoshi-lab-db3eb/database) のバックアップ設定・復元点、[ログ エクスプローラ](https://console.cloud.google.com/logs/query?project=yoshi-lab-db3eb) の監査対象と保持期間、必要に応じて [Cloud Run](https://console.cloud.google.com/run?project=yoshi-lab-db3eb) と [Cloud Scheduler](https://console.cloud.google.com/cloudscheduler?project=yoshi-lab-db3eb) の既存構成を参照します。これらの本番設定は今回未確認です。推奨は、証明済みの復元点を優先し、利用できなければ既存の監査で変更の有無を証明できる範囲で、Cloud Shellの1回実行を使う方法です。
 
+### 11月27日までに方式を決める
+
+ユーザー報告では日次バックアップが有効で、直近7日のRTDB監査ログは0件です。バックアップの復元時刻は現物のメタデータで確認します。ログ0件から無更新は推定しません。最新の `main` で確認した確定時の入力は以下です。
+
+| 対象 | 締切をまたぐときに変わり得る内容 |
+| --- | --- |
+| `learningRecords` | 通常学習、英検、単語帳の結果が追加されます。Dailyは開始枠の作成、既存行への完了追記、教員による削除があります。結果ごとにブラウザ時刻が入るため、時計ずれや接続遅延の判定にこの時刻だけを使えません。複数端末や未送信の再試行も同様です。 |
+| `studentProfiles` | 初回登録や教員による編集があります。締切後の変更でも元の `createdAt` が残る場合があり、最新データから日付で戻すことはできません。 |
+| `leaderboard` | ログイン等に続く `syncXP` が現在シーズン・週間・累計の表示用キャッシュを更新します。確定元から除外し、停止対象にもしません。 |
+
+**判断順**は、締切を証明できる既存の復元点 → 承認された短時間の保存休止 → 確定保留です。毎日のバックアップがあること、取得が締切直後だったこと、監査ログに結果がなかったことのいずれも、それだけでは根拠になりません。
+
+#### オプションの保存休止を採用できる条件
+
+- 学校が **11月27日23:59:00から11月28日00:02:00 JSTまで** の保存休止を明示的に承認し、事前に告知して、進行中のセッションを終了させられること。従来の通常学習にはエラー後に結果を自動再送しない経路があります。学習中の保存を失わせない運用を保証できない場合は、この方式を採用しません。
+- 同じ期間の管理者Console、Admin SDK、サービスアカウント、インポート、自動処理などを管理者が把握し、2パスへの特権書き込みとRules変更を抑止・確認できること。RTDB Rulesは特権経由の書き込みを止めません。一覧が不明、または例外が確認できない場合は保留します。
+- 管理者が本番の現行Rulesを入手し、提案との差分を確認できること。ルートの広い書き込み許可やルートワイルドカードを見つけた場合、生成ツールは停止します。保護対象のすべての `.write` にサーバーの `now` による条件を加えるため、ブラウザの時刻、別端末、遅れて届いた書き込みに依存しません。停止期間外の権限と検証式は維持します。
+- 清浄な取得を監査できること。公開元Rulesのハッシュ、公開した提案Rulesのハッシュ、公開時刻、管理者操作の記録、取得の開始／終了／HTTP日時を保管します。開始前と取得完了後に実際のRulesが提案と一致することを確認し、期間中にRules差し替えや特権書き込みが無いことを管理者が独立に確認します。取得候補の整合はこの管理と組み合わせて成立します。
+
+#### Cloud Shellで作るレビュー用Rules案
+
+下の「締切前の準備」を終え、管理者から受け取った**その時点の本番Rules**を `$S3_DIR/current.rules.json` に置いた上で、11月27日中に実行します。ここではファイル生成だけを行います。
+
+```sh
+node scripts/prepare-season-achievement-guard.cjs "$S3_DIR/current.rules.json" "$S3_DIR/cutoff.rules.json"
+git diff --no-index "$S3_DIR/current.rules.json" "$S3_DIR/cutoff.rules.json"
+```
+
+差分コマンドの終了コード1は差分があることを示します。対象2パスの書き込み条件だけが変更されたことを確認し、管理者が別途承認した場合に限り、[Firebase ConsoleのRules](https://console.firebase.google.com/project/yoshi-lab-db3eb/database) から開始時刻より十分前に公開します。ツールは公開・Rules変更・停止の開始を行いません。最初の書き込み拒否までに生徒の保存が完了していることを運用で確認します。
+
+23:58〜23:59 JSTに下の `capture` を実行し、00:02 JSTより前に正常取得できた候補だけを使います。時刻条件で00:02に権限は元に戻ります。管理者が期間内の例外なしを確認してから、`unchanged-window` の証跡に `unchangedFrom=1795791540000`、`unchangedThrough=1795791720000` と実際の監査記録番号を使用します。根拠が足りない場合はこの値を記入しません。
+
+期限後に時刻条件を外す場合は別途承認を取り、現在のRulesと提案を照合して時刻条件だけを除きます。取得できなかった場合も停止時間を延長せず、検証済み復元点が得られるまで保留します。
+
+#### 権限・費用
+
+既存のCloud Shell、Firebaseとバックアップを使用し、新しいCloud RunやSchedulerは不要です。取得には承認されたRTDBルートの読み取り権限、Rulesを公開する場合は別途承認された既存管理権限、最終確定には確定先への管理者書き込み権限が必要です。実際に付与されている権限はConsoleで確認します。ルートGETは成功時にDB全体を転送するため、データ量とRTDB通信枠を事前確認します。バックアップのCloud Storage保管量にも留意してください。取得ファイルには2パスだけを保存します。
+
 ### 1. 締切前の準備
 
 Firebase Consoleの **Realtime Database → データ** で、対象のプロジェクトとデータベースURLを確認します。リポジトリ上の接続先は `yoshi-lab-db3eb` の `https://yoshi-lab-db3eb-default-rtdb.firebaseio.com` です。参照するのは `studentProfiles` と `learningRecords`、確定結果の保存先は `seasonAchievements/2026-S3` です。公開表示のRulesが承認済みかはFirebase Consoleで確認します。確定スクリプトはRulesと認証を操作しません。
@@ -30,7 +68,7 @@ Firebase Consoleの **Realtime Database → データ** で、対象のプロジ
 [Google Cloud Shell](https://shell.cloud.google.com/?project=yoshi-lab-db3eb) で、レビュー対象のPRブランチを取得します。学校がCloud Shellでの学習データ取り扱いを許可していることを確認してください。記録をGitの作業ツリーに置かず、他人と共有しない個人ディレクトリに保存します。
 
 ```sh
-git clone --branch feat/season-s3-cutoff-capture https://github.com/f9-fish/Yoshi.Lab.git yoshi-s3-tools
+git clone --branch feat/season-s3-cutoff-guard https://github.com/f9-fish/Yoshi.Lab.git yoshi-s3-tools
 cd yoshi-s3-tools
 git rev-parse HEAD
 node --version
