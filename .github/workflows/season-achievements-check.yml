@@ -28,8 +28,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - run: node --test --test-isolation=none tests/season-achievements.test.cjs tests/season-achievement-source.test.cjs tests/season-achievement-cutoff.test.cjs tests/xp.test.cjs tests/historical-xp.test.cjs tests/radiant-ranking.test.cjs tests/weekly-daily.test.cjs
+      - run: node --test --test-isolation=none tests/season-achievements.test.cjs tests/season-achievement-source.test.cjs tests/season-achievement-cutoff.test.cjs tests/season-achievement-guard.test.cjs tests/xp.test.cjs tests/historical-xp.test.cjs tests/radiant-ranking.test.cjs tests/weekly-daily.test.cjs
       - run: npm ci --prefix tests/pair-qa-rules
       - name: Verify access using the Realtime Database emulator
         working-directory: tests/pair-qa-rules
-        run: ./node_modules/.bin/firebase emulators:exec --project demo-yoshi-achievements --config ../../firebase.pair-qa-spark-emulator.json --only database 'node --test season-achievements.test.cjs'
+        run: ./node_modules/.bin/firebase emulators:exec --project demo-yoshi-achievements --config ../../firebase.pair-qa-spark-emulator.json --only database 'node --test season-achievements.test.cjs && node --test season-achievement-guard.test.cjs'
