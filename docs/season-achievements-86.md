@@ -10,31 +10,86 @@
 - `seasonAchievements/2026-S3/students/{uid}` は本人限定で、最終ランク・順位、XP、学習日数、バッジと確定時刻を保持します。`highestRankTier: "unknown"` は、途中時点の順位とランク到達履歴を証明できない記録です。最終ランクから推測しません。
 - `seasonAchievements/2026-S3/ranking` は登録済みの確認済みGoogleユーザーに限定。UID別のバッジと最終TOP10の表示名・順位・バッジのみです。学習日数、個人のXP、クラス、メールアドレスと学習記録は含めません。集計メタデータは管理者のみです。画面からは書き込めません。
 
-## 管理者の承認後に行う手順
+## Google Cloud Shellで確定する
 
-1. **切り替え前**に、既存のシーズン切り替えPRと実績PRを確認します。Firebaseから現在のRulesを安全にエクスポートし、保管します。以下の統合コマンドでレビュー用差分を作り、差分が新しい名前空間だけであることと、テスト結果を確認してから承認のもとでRulesを公開します。
+### 1. 締切前の準備
 
-   ```sh
-   node scripts/merge-season-achievement-rules.cjs current.rules.json reviewed.rules.json
-   ```
+Firebase Consoleの **Realtime Database → データ** で、対象のプロジェクトとデータベースURLを確認します。リポジトリ上の接続先は `yoshi-lab-db3eb` の `https://yoshi-lab-db3eb-default-rtdb.firebaseio.com` です。参照するのは `studentProfiles` と `learningRecords`、確定結果の保存先は `seasonAchievements/2026-S3` です。公開表示のRulesが承認済みかはFirebase Consoleで確認します。確定スクリプトはRulesと認証を操作しません。
 
-2. 締切時点の一貫した `studentProfiles` と `learningRecords` を、管理者の読み取り専用バックアップまたは検証済みの復元点から確保します。入力は `{"asOf":1795791600000,"studentProfiles":{...},"learningRecords":{...}}` 形式です。空の学習記録は `{}` とします。`asOf` は締切のUnixミリ秒で、取得時刻を機械的に書き換える指示ではありません。締切直後の取得を使う場合は、締切から取得までのプロフィール変更・学習記録の編集や削除がなく、対象データを締切直前へ復元できることを確認します。保証できない場合は確定を保留してください。既存 `leaderboard` は入力に使いません。原本と生成入力は学校のアクセス制限付き保管先に置きます。
+[Google Cloud Shell](https://shell.cloud.google.com/?project=yoshi-lab-db3eb) で、レビュー対象のPRブランチを取得します。学校がCloud Shellでの学習データ取り扱いを許可していることを確認してください。記録をGitの作業ツリーに置かず、他人と共有しない個人ディレクトリに保存します。
 
-3. **11月28日 0:00 JST以降**、時刻同期済みの管理端末で、対象件数とSHA-256をドライランで確認します。Node.js 22と既存の管理SDKを使用します。結果のハッシュ、人数、コードのコミットを管理者の作業記録に残してください。
+```sh
+git clone --branch feat/season-s3-finalization-preflight https://github.com/f9-fish/Yoshi.Lab.git yoshi-s3-tools
+cd yoshi-s3-tools
+git rev-parse HEAD
+node --version
+npm ci --prefix studio-functions
+umask 077
+S3_DIR=$(mktemp -d "$HOME/yoshi-s3.XXXXXX")
+printf '%s\n' "$S3_DIR"
+export LC_ALL=ja_JP.UTF-8 LANG=ja_JP.UTF-8
+node -p 'new Intl.Collator().resolvedOptions().locale'
+RTDB_URL=https://yoshi-lab-db3eb-default-rtdb.firebaseio.com
+```
 
-   ```sh
-   npm ci --prefix studio-functions
-   LANG=ja_JP.UTF-8 node scripts/finalize-season-achievements.cjs --source /secure/season-s3.json
-   ```
+Node.js 22または24を使用します。ロケール確認は `ja-JP` です。同じCloud Shellセッションで以降の操作を行います。再接続したら表示された保存先を `S3_DIR` に戻してください。
 
-4. 承認済みのRTDB管理権限を持つ Application Default Credentials を使って一度確定します。データベースURLとプロジェクトIDは Firebase Console で照合します。監査ログ用にコマンド結果を保存してください。
+### 2. 締切を裏づける原本を用意する
 
-   ```sh
-   LANG=ja_JP.UTF-8 node scripts/finalize-season-achievements.cjs \
-     --source /secure/season-s3.json --expected-sha256 '<確認済みSHA-256>' \
-     --project-id '<承認済みプロジェクト>' --database-url '<確認済みRTDB URL>' --publish
-   ```
+締切は **2026-11-28 00:00 JST**（`1795791600000`）です。対象は締切直前までの状態です。RTDBの2パスを別々の時刻に読む方法や、通常の締切後エクスポートから新規記録だけを削る方法では、編集・削除を復元できません。次のどちらかを使います。
 
-`seasonAchievements/2026-S3` を1回のトランザクションで作成します。失敗や接続断のときは同じ入力と同じロケールで再実行し、`published` または `already-published`、件数・ハッシュ・確定時刻を確認します。別の入力や既存の不完全なパスは拒否します。表示検証は本人カードと登録者向けランキングで行います。
+**A. 検証された締切復元点がある場合**
+管理者が検証した締切時点のバックアップ、または監査記録に基づいて復元した単一のエクスポートを `$S3_DIR/cutoff-export.json` に用意します。両入力パスが同じ復元点に由来することを確認してください。別時刻のバックアップに締切のラベルを付けるだけでは使えません。
 
-表示を戻す場合はフロントエンドをロールバックします。閲覧を停止する必要がある場合は、最新Rulesから実績名前空間の読み取り許可だけを除く差分をレビューして公開します。Rules公開直後で他の更新がなければ、保存した元のRulesへ戻せます。確定実績は監査用に保管し、誤った入力の調査中も学習記録、XP、ランキング、実績の既存スナップショットを上書きしません。
+**B. 締切から取得完了まで対象への書き込みが無かったことを証明できる場合**
+承認済みの運用・監査証跡で、締切より前から読み取り完了まで、対象2パスへの新規作成・変更・削除が無かったと証明できる場合に限ります。予定や画面上の目視、取得時刻だけでは証明になりません。Rulesやアクセス設定を無断で変更して書き込みを止める操作は行いません。
+
+RTDBのADCは `firebase.database` と `userinfo.email` スコープを含む、学校承認済みの認証を使用します。ADCを設定する場合は管理者が承認した方法を使います。例となるユーザーADCのコマンドは以下です。ブラウザの認証画面を使い、鍵やトークンを貼り付けないでください。学校の既定のADCがある場合は再設定不要です。確定時の権限は別途確認します。
+
+```sh
+gcloud auth application-default login   --scopes=https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/firebase.database,https://www.googleapis.com/auth/userinfo.email
+```
+
+締切後、学校が承認したADCで、RTDBのルートを**1回のGET**で読み取ります。メモリー内で2パスを選択し、専用ファイルにだけ書き出します。RESTルートの読み取り権限が無い場合は、別々のAPI呼び出しに切り替えずAを使います。
+
+```sh
+node scripts/prepare-season-achievement-source.cjs capture   --database-url "$RTDB_URL" --output "$S3_DIR/capture.json"
+```
+
+**どちらも証明できなければ公開を保留します。** SEASON 2の開始は独立しています。取得コマンド自体は、対象への書き込みが無かったことを保証しません。
+
+### 3. 原本を検証してドライラン
+
+承認された実際の監査記録番号と対象DBに基づき、Cloud Shellのエディタで `$S3_DIR/evidence.json` を用意します。参照欄には生徒名や秘密情報を含めません。原本のSHA-256は `sha256sum "$S3_DIR/cutoff-export.json"`（Bなら `capture.json`）で求めます。監査済みの原本そのもののハッシュを入力します。
+
+Aの形式
+
+```json
+{"method":"verified-cutoff","asOf":1795791600000,"databaseURL":"https://yoshi-lab-db3eb-default-rtdb.firebaseio.com","reference":"承認済み復元点の管理番号","inputSha256":"原本のSHA-256"}
+```
+
+Bの形式。両数値の `0` は例のプレースホルダーです。変更がなかったことを証明できる実際の期間をUnixミリ秒で設定します。
+
+```json
+{"method":"unchanged-window","unchangedFrom":0,"unchangedThrough":0,"databaseURL":"https://yoshi-lab-db3eb-default-rtdb.firebaseio.com","reference":"承認済み監査記録番号","inputSha256":"原本のSHA-256"}
+```
+
+```sh
+# Bの場合は cutoff-export.json を capture.json に変更
+node scripts/prepare-season-achievement-source.cjs seal   --input "$S3_DIR/cutoff-export.json" --evidence "$S3_DIR/evidence.json"   --output "$S3_DIR/season-s3.json"
+node scripts/finalize-season-achievements.cjs --source "$S3_DIR/season-s3.json"
+```
+
+締切後の時刻が含まれるプロフィール・学習記録・Daily完了、取得根拠やハッシュの不一致は拒否します。確定用ファイルは上書きしません。時計ずれで締切以降の時刻がある場合も、原本を編集せず監査担当者に確認してください。取得根拠は管理者が外部記録と照合します。ツールが監査記録そのものの正しさを判定することはできません。
+
+ドライランは書き込みを行いません。対象件数、Radiant件数、対象DBと `sourceHash` を確認し、レビューしたコミットとともに管理記録に残してください。
+
+### 4. 書き込み承認後だけ確定
+
+承認された管理者が、確認した **ドライランの `sourceHash`** を指定して実行します。
+
+```sh
+node scripts/finalize-season-achievements.cjs   --source "$S3_DIR/season-s3.json" --expected-sha256 '<ドライランのsourceHash>'   --project-id yoshi-lab-db3eb --database-url "$RTDB_URL" --publish
+```
+
+`seasonAchievements/2026-S3` のみをトランザクションで作成します。接続断の場合は同じファイル・ハッシュ・ロケールで再実行して `published` または `already-published` と件数を確認します。別の入力や既存の不完全なパスは拒否します。値を印刷せず、原本・監査情報・確定用入力は学校の承認済み保管先に移し、Cloud Shell側も学校の保管方針に従って管理します。

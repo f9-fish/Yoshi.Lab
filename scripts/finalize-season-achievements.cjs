@@ -3,6 +3,7 @@
 const { readFileSync } = require('node:fs');
 const { parseArgs } = require('node:util');
 const { buildSnapshot, path, publishOnce, sourceHash } = require('./season-achievements.cjs');
+const { databaseOrigin, parseJson, validateSource } = require('./season-achievement-source.cjs');
 
 async function main() {
   const { values } = parseArgs({ options: {
@@ -15,16 +16,21 @@ async function main() {
   if (!values.source) throw Error('--source が必要です');
   const bytes = readFileSync(values.source);
   const hash = sourceHash(bytes);
-  const snapshot = buildSnapshot(JSON.parse(bytes), { sourceHash: hash });
+  const source = parseJson(bytes);
+  const target = validateSource(source);
+  if (Intl.Collator().resolvedOptions().locale !== 'ja-JP') {
+    throw Error('LC_ALL=ja_JP.UTF-8 LANG=ja_JP.UTF-8 を指定してください');
+  }
+  const snapshot = buildSnapshot(source, { sourceHash: hash });
   if (!values.publish) {
     const radiant = Object.values(snapshot.students).filter(row => row.badgeType === 'radiant_top10').length;
-    console.log(JSON.stringify({ status: 'dry-run', ...snapshot.metadata, radiant }));
+    console.log(JSON.stringify({ status: 'dry-run', ...snapshot.metadata, databaseURL: target, radiant }));
     return;
   }
   const databaseURL = values['database-url'];
   const projectId = values['project-id'];
   if (values['expected-sha256'] !== hash || !projectId ||
-      !/^https:\/\/[a-z0-9-]+(?:\.[a-z0-9-]+)?\.(?:firebaseio\.com|firebasedatabase\.app)\/?$/.test(databaseURL || '') ||
+      databaseOrigin(databaseURL) !== target ||
       process.env.FIREBASE_DATABASE_EMULATOR_HOST) {
     throw Error('公開には確認済みSHA-256、明示したプロジェクトIDとRTDB URL、および本番管理者認証が必要です');
   }
