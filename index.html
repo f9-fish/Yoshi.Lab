@@ -1252,7 +1252,7 @@ body:has(#subjects:not(.hidden)) #subjects .growth-subject-cta{grid-column:3;gri
 <section class="panel"><h2>🏆 スコアボード</h2><div class="grid2"><div class="stat"><strong id="scoreA">0 / 0</strong><span>生徒A（正解 / 回答）</span></div><div class="stat"><strong id="scoreB">0 / 0</strong><span>生徒B（正解 / 回答）</span></div></div><div class="space"></div><button class="outline" id="export">結果をCSV保存</button></section>
 <section class="panel hidden"><details id="editor"><summary>✏️ 先生用：熟語リストを編集する</summary><div><p class="muted">1行に「英語 | 日本語」を入力。タブ区切りもOK。保存した内容はこの端末のブラウザに記憶されます。生徒の端末へ共有する場合は、下の「共有用HTMLを保存」を使ってください。</p><textarea id="terms" spellcheck="false"></textarea><div class="space"></div><div class="controls"><button class="primary" id="save">この端末に保存</button><button id="restore">初期リストに戻す</button><button id="share">共有用HTMLを保存</button></div><p id="editMessage" class="notice"></p></div></details></section></div><div class="footer">Yoshi<span class="brand-accent">.Lab</span></div></div>
 <div id="streakCelebration" class="streak-celebration" hidden aria-live="polite"><div class="streak-celebration-card"><div class="streak-fire" id="streakFire">🔥</div><div class="streak-count"><b id="streakNumber">5</b> <span>STREAK!</span></div><div class="streak-praise" id="streakPraise">AWESOME!</div></div></div>
-<script src="./favorites-core.js"></script><script src="./favorites-ui.js?v=4"></script><script src="./answer-variants.js?v=1"></script><script src="./weekly-daily.js?v=1"></script><script type="module" src="./account.js?v=question-favorites-1"></script>
+<script src="./favorites-core.js"></script><script src="./favorites-ui.js?v=4"></script><script src="./answer-variants.js?v=1"></script><script src="./weekly-daily.js?v=1"></script><script type="module" src="./account.js?v=season-rollover-1"></script>
 <script>
 const $=id=>document.getElementById(id);
 let accountAttached=false;
@@ -2165,17 +2165,27 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
  const badge=document.createElement('div');badge.className='yoshi-home-rank';badge.setAttribute('aria-label','現在のランク');
  const gem=document.createElement('span');gem.className='yoshi-rank-gem';gem.setAttribute('aria-hidden','true');
  const label=document.createElement('span');label.className='yoshi-rank-label';label.textContent='ランク';const name=document.createElement('span');name.className='yoshi-rank-name';name.textContent='—';badge.append(label,gem,name);parent.prepend(badge);parent.classList.add('yoshi-rank-enabled');
- let busy=false;
+ let busy=false,board={},boardUid;
+ function renderRank(){
+  const a=window.YoshiAccount,uid=a?.user?.uid;
+  if(!uid){name.textContent='ランク —';return;}
+  const peers=window.YoshiRanks.standings(uid===boardUid?board:{},a.getSeason());
+  const pos=peers.findIndex(r=>r.id===uid),info=window.YoshiRanks.get(peers[pos]?.seasonXP||0,pos);
+  name.textContent=info.name;badge.style.setProperty('--rank-tone',tiers[info.tier][2]);
+ }
  async function update(){
-  const a=window.YoshiAccount;if(busy||!a?.user){name.textContent='ランク —';return;}busy=true;
+  const a=window.YoshiAccount,uid=a?.user?.uid;
+  if(!uid){renderRank();return;}
+  if(busy)return;
+  busy=true;
   try{
-   const board=await a.leaderboard(),season=a.getSeason?.();
-   const uid=a.user.uid,peers=window.YoshiRanks.standings(board,season),pos=peers.findIndex(r=>r.id===uid);
-   const xp=pos>=0?peers[pos].seasonXP:0,info=window.YoshiRanks.get(xp,pos),index=info.tier;
-   name.textContent=info.name;badge.style.setProperty('--rank-tone',tiers[index][2]);
-  }catch(err){console.warn('[Yoshi.Lab] ランク表示の取得失敗',err);name.textContent='ランク —';}
+   const rows=await a.leaderboard();
+   if(a.user?.uid!==uid)return;
+   board=rows;boardUid=uid;renderRank();
+  }catch(err){console.warn('[Yoshi.Lab] ランク表示の取得失敗',err);if(boardUid!==uid)name.textContent='ランク —';}
   finally{busy=false;}
  }
+ document.addEventListener('yoshi-season-change',()=>{renderRank();void update()});
  setTimeout(update,1600);window.addEventListener('focus',update);document.addEventListener('visibilitychange',()=>{if(!document.hidden)update()});
  document.addEventListener('click',e=>{if(e.target.closest('#xpCelebrationClose'))setTimeout(update,500)});
 })();

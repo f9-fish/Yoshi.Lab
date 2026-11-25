@@ -25,6 +25,10 @@ function context(extra = {}) {
 
 function accountHarness({ records = {}, teacher = false, loggedIn = true, now = NOW } = {}) {
   const uid = 'student_test_001';
+  const events = new EventTarget();
+  const windowEvents = new EventTarget();
+  const timers = new Map();
+  let timerId = 0;
   const data = {
     studentProfiles: { [uid]: { classNumber: 1, studentNumber: 1, name: '架空の生徒' } },
     learningRecords: { [uid]: clone(records) },
@@ -46,7 +50,9 @@ function accountHarness({ records = {}, teacher = false, loggedIn = true, now = 
       constructor(...args) { super(...(args.length ? args : [now])); }
       static now() { return now; }
     },
-    window: {}, document: { dispatchEvent() {} }, Event: class {},
+    window: windowEvents, document: events, Event,
+    setTimeout(fn, delay) { timers.set(++timerId, { fn, due: now + delay }); return timerId; },
+    clearTimeout(id) { timers.delete(id); },
     initializeApp: () => ({}), getApps: () => [], getApp: () => ({}),
     getAuth: () => ({ currentUser: loggedIn ? user : null }), getDatabase: () => ({}),
     GoogleAuthProvider: class { setCustomParameters() {} },
@@ -75,6 +81,14 @@ function accountHarness({ records = {}, teacher = false, loggedIn = true, now = 
   assert.equal(imports.length, 4, 'Review harness if Firebase imports change');
   vm.runInContext(source.replace(/^import .*;\r?$/gm, ''), sandbox, { filename: 'account.js', timeout: 1000 });
   return { api: sandbox.window.YoshiAccount, sandbox, uid, data, writes,
+    advanceTo(timestamp, { runTimers = true } = {}) {
+      now = timestamp;
+      if (runTimers) for (const [id, timer] of [...timers]) {
+        if (timer.due > now) continue;
+        timers.delete(id);
+        timer.fn();
+      }
+    },
     evaluate: code => vm.runInContext(code, sandbox, { timeout: 1000 }) };
 }
 
