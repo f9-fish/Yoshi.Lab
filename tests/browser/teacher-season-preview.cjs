@@ -29,7 +29,13 @@ window.previewFixture = {
  paths: [],
 };
 export const initializeApp = () => ({});
-export const getAuth = () => auth;
+export const getAuth = () => { window.previewFixture.persistence = 'shared'; return auth; };
+export const inMemoryPersistence = {};
+export const initializeAuth = (_, options) => {
+ window.previewFixture.persistence = options.persistence === inMemoryPersistence ? 'memory' : 'unexpected';
+ return auth;
+};
+export const browserPopupRedirectResolver = {};
 export const getIdTokenResult = async () => ({ signInProvider: 'google.com' });
 export const onIdTokenChanged = (_, receive) => {
  userListeners.add(receive);
@@ -59,15 +65,18 @@ const importMap = JSON.stringify({ imports: Object.fromEntries(['app', 'auth', '
 ])) });
 const requests = [];
 const server = createServer(async (req, res) => {
-  const name = new URL(req.url, 'http://localhost').pathname.slice(1);
+  const url = new URL(req.url, 'http://localhost');
+  const name = url.pathname.slice(1);
   requests.push({ name, method: req.method });
   if (req.method !== 'GET') return res.writeHead(405).end();
   if (name === 'favicon.ico') return res.writeHead(204).end();
   if (name === '__firebase-fixture.js') return res.writeHead(200, { 'Content-Type': mime['.js'] }).end(fixture);
+  if (name === '__home-source') return res.writeHead(200, { 'Content-Type': 'text/plain' }).end(await readFile(join(root, 'index.html')));
   if (!allowedFiles.has(name)) return res.writeHead(404).end();
   let body = await readFile(join(root, name));
   if (name === 'teacher-season2-preview.html') {
-    body = body.toString().replace('<head>', '<head><script type="importmap">' + importMap + '</script>');
+    const staging = url.searchParams.get('staging') === 'true' ? '<meta name="preview-home-source" content="./__home-source">' : '';
+    body = body.toString().replace('<head>', '<head>' + staging + '<script type="importmap">' + importMap + '</script>');
   }
   res.writeHead(200, { 'Content-Type': mime[extname(name)], 'Cache-Control': 'no-store' }).end(body);
 });
@@ -164,10 +173,12 @@ async function run() {
     for (const width of [320, 390, 768, 1280]) {
       await call('Emulation.setDeviceMetricsOverride', { width, height: width < 768 ? 850 : 980, deviceScaleFactor: 1, mobile: width < 768 });
       await call('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
-      const homeLoads = requests.filter(r => r.name === 'index.html').length;
-      await call('Page.navigate', { url: url + '&width=' + width });
+      const source = width < 768 ? '__home-source' : 'index.html';
+      const homeLoads = requests.filter(r => r.name === source).length;
+      await call('Page.navigate', { url: url + '&staging=' + (width < 768) + '&width=' + width });
       await wait(`location.search.endsWith('width=${width}') && typeof previewFixture !== 'undefined'`);
       await wait("document.querySelector('#previewAccessStatus').textContent.includes('Google')");
+      assert.equal(await evaluate('previewFixture.persistence'), width < 768 ? 'memory' : 'shared');
       assert.equal(await evaluate("document.querySelector('#previewOutlet').hidden && !document.querySelector('dialog')"), true);
       await evaluate("previewFixture.account('anonymous')");
       await wait("document.querySelector('#previewAccessStatus').textContent.includes('教員アカウントでのみ')");
@@ -176,9 +187,10 @@ async function run() {
       await wait("previewFixture.paths.includes('.info/connected')");
       await evaluate("previewFixture.emit('.info/connected', true); previewFixture.emit('teacherUids/fixture', false)");
       await wait("document.querySelector('#previewAccessStatus').textContent.includes('教員アカウントでのみ')");
-      assert.equal(requests.filter(r => r.name === 'index.html').length, homeLoads);
+      assert.equal(requests.filter(r => r.name === source).length, homeLoads);
       await evaluate("previewFixture.emit('teacherUids/fixture', true)");
       await wait("document.querySelector('dialog')?.open");
+      assert.equal(requests.filter(r => r.name === source).length, homeLoads + 1);
       assert.deepEqual(await evaluate(`[
         document.querySelector('dialog .season-badge-center').textContent,
         document.querySelector('dialog [data-result]').textContent.includes('12,840 XP · 学習 48日'),
@@ -253,7 +265,7 @@ async function run() {
     assert.ok(session.network.every(request => request.method === 'GET' && new URL(request.url).origin === new URL(url).origin));
     for (const request of requests) {
       assert.equal(request.method, 'GET');
-      assert.ok(allowedFiles.has(request.name) || ['__firebase-fixture.js', 'favicon.ico'].includes(request.name), request.name);
+      assert.ok(allowedFiles.has(request.name) || ['__firebase-fixture.js', '__home-source', 'favicon.ico'].includes(request.name), request.name);
     }
     console.log('All preview requests were read-only local fixtures.');
   } finally {

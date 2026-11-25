@@ -8,9 +8,35 @@
 
 プレビューは専用の読み取り専用エントリーから動作します。実ホームの静的HTMLからロゴと科目情報を取得し、表示用の要素だけを組み立てます。通常ホームのアプリスクリプト、`account.js`、XP同期やシーズン確定処理を起動しません。RTDBの接続が失われた場合、教員権限が変わった場合、権限の取得に失敗した場合はプレビューを閉じます。ダミー値はタブ内のメモリーにのみ保持します。Firebase Rulesの変更は不要です。
 
-## 本番公開前にスマートフォンとPCで確認する
+## クラウドを追加せず、教員のPCで操作する
 
-このブランチのファイルを、学校が管理する非公開のHTTPSステージングに静的配信します。Googleログインを使うため、Firebase Authenticationが現在承認しているステージングドメインを使います。ステージングの `/teacher-season2-preview.html` をスマートフォンとPCで開き、学校の教員アカウントでログインします。ステージングで本番の教員ダッシュボードや通常学習画面を開かずに確認したい場合は、プレビューページを直接開きます。
+Firebase Consoleの **Authentication → Settings → Authorized domains** で `localhost` を確認します。参照権限があれば設定を変更せず確認できます。手元でIdentity Toolkitに接続できる場合は、PR #90のブランチで次の照会でも確認できます。
+
+```sh
+node scripts/check-teacher-preview-domain.mjs https://localhost:8443
+```
+
+照会エラーの場合はFirebase Consoleで確認してください。未登録の場合は、追加を承認できる管理者がいる場合に限り、Authenticationの許可ドメインに `localhost` を追加します。既存のGoogleログインと教員UIDを使用します。
+
+1. Node.js 24と `mkcert` が使える教員のPCで、このブランチを取得するかプレビュー配布ZIPを展開します。
+2. 取得したディレクトリで、PCが信頼するlocalhost用の証明書を作り、HTTPSサーバーを起動します。証明書の秘密鍵はPCの外へ共有しないでください。
+
+   ```sh
+   mkcert -install
+   mkcert -cert-file localhost.pem -key-file localhost-key.pem localhost
+   node scripts/serve-teacher-preview.mjs --local localhost.pem localhost-key.pem
+   ```
+
+3. 同じPCのChromeまたはEdgeで **https://localhost:8443/teacher-season2-preview.html** を開きます。ブラウザのダイアログでユーザー名 `preview` とターミナルに出た今回限りのパスワードを入力し、画面のGoogleログインから教員アカウントを選びます。ログインのポップアップを許可してください。
+4. 終了するときはターミナルで Ctrl+C を押します。もう一度起動すると端末認証のパスワードは変わります。
+
+サーバーは `127.0.0.1` のみで待ち受け、HTTPSと端末認証の後にページ・素材を配信します。その後にアプリがFirebaseで教員権限を確認します。ローカル配信時のFirebaseセッションはタブのメモリーだけに保持し、ページを再読み込みするとGoogleログインを求めます。学習用リンクを選ぶと通常の本番サイトへ移動し、プレビューを終了します。
+
+## スマートフォンとPCで同じURLを開く場合
+
+学校の既存の非公開HTTPSホストが利用できる場合は、同じサーバーをそのホストで動かせます。公開URLのホスト名をAuthenticationの許可ドメインで確認します。学校側のアクセス制限に加えて、サーバーの認証を設定します。配信先は `/teacher-season2-preview.html` です。
+
+環境変数は `PREVIEW_ORIGIN`（外部から見えるHTTPSオリジン）、`PREVIEW_TLS_CERT`、`PREVIEW_TLS_KEY`、`PREVIEW_PASSWORD_SHA256` です。パスワードには32バイトのランダム値をbase64urlで表した43文字を使い、そのSHA-256（小文字16進）だけをサーバーに設定します。必要に応じて `PREVIEW_BIND` と `PREVIEW_PORT` を指定します。リバースプロキシを経由する場合は元の `Host` と `Authorization` を保持し、認証ヘッダーをログに残さない設定にします。クラウドやネットワーク構成の変更が必要な場合は管理者の承認を取ります。
 
 Chromiumの自動検証では、Googleアカウントと教員フラグを架空のSDK応答で再現します。本番の認証・RTDBに接続せず、操作を再現して320px・390px・768px・1280pxの画面を保存できます。
 
