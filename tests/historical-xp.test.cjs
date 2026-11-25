@@ -78,7 +78,7 @@ test('history renderer uses corrected XP, shows ended seasons newest first and n
   assert.match(s2.children[1].children[1].textContent, /^500 XP ／ /);
   assert.equal(s1.children[1].children[0].textContent, '2026年前期 SEASON 1 · マスター');
   assert.match(s1.children[1].children[1].textContent, /^12,000 XP ／ /);
-  assert.match(note.textContent, /レディアントの最終順位は保存されていないため表示しません/);
+  assert.match(note.textContent, /保存済みの最終順位は、確定後に最終TOP10欄に表示されます/);
 });
 
 test('history renderer preserves the no-ended-season message', () => {

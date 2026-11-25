@@ -1,0 +1,17 @@
+{
+  "rules": {
+    "seasonAchievements": {
+      ".write": false,
+      "$season": {
+        "students": {
+          "$uid": {
+            ".read": "auth != null && auth.uid === $uid && auth.token.firebase.sign_in_provider === 'google.com' && auth.token.email_verified === true && root.child('studentProfiles').child($uid).exists()"
+          }
+        },
+        "ranking": {
+          ".read": "auth != null && auth.token.firebase.sign_in_provider === 'google.com' && auth.token.email_verified === true && root.child('studentProfiles').child(auth.uid).exists()"
+        }
+      }
+    }
+  }
+}

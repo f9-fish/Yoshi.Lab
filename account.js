@@ -1,4 +1,5 @@
 import './practice-xp.js';
+import './learning-xp.js';
 import {initializeApp,getApps,getApp} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js';
 import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged,signOut,browserLocalPersistence,setPersistence} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js';
 import {getDatabase,ref,push,set,get,runTransaction,remove,onValue} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js';
@@ -7,21 +8,7 @@ const auth=getAuth(app),db=getDatabase(app),provider=new GoogleAuthProvider();pr
 let current=null,authReady=false;const listeners=new Set();let lastAccessUid='',lastAccessAt=0;
 async function recordLastAccess(u){if(!u||!u.emailVerified)return;const now=Date.now();if(lastAccessUid===u.uid&&now-lastAccessAt<5*60*1000)return;lastAccessUid=u.uid;lastAccessAt=now;try{const profile=await get(ref(db,'studentProfiles/'+u.uid));if(!profile.exists()||auth.currentUser?.uid!==u.uid)return;await set(ref(db,'lastAccess/'+u.uid),{at:Date.now()})}catch(e){console.warn('最終アクセス記録:',e.message)}}
 function weekKey(ts){const d=new Date(ts+9*3600000);const t=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));t.setUTCDate(t.getUTCDate()+4-(t.getUTCDay()||7));const year=t.getUTCFullYear();const jan=new Date(Date.UTC(year,0,1));return year+'-W'+String(Math.ceil((((t-jan)/86400000)+1)/7)).padStart(2,'0')}
-function yoshiRecordXP(r){
- const n=Number(r.total),correct=Number(r.right);
- if(!Number.isFinite(n)||!Number.isFinite(correct)||n<=0||correct<0||correct>n)return 0;
- if(r.dailyV1===true)return Math.max(0,Math.min(500,Number(r.dailyDeltaXP)||0));
- if(r.xpPolicyV3===true&&(r.subject==='英検'||r.subject==='単語帳'))return YoshiPracticeXP.recordXP(r);
- const mode=String(r.xpMode||r.mode||'');
- if(r.xpPolicyV2===true){const rate=r.subject==='英検'&&mode==='eikenChoice'?(r.lesson==='2級'?10:5):mode==='textTyping'?10:mode==='vocabTyping'?7:mode==='vocab'?1:0;return Math.floor(correct)*rate;}
- if(r.subject==='英検'&&mode==='eikenChoice')return Math.min(50,Math.floor(correct)*5);
- // Legacy records lack xpMode: award no XP to old cloze check records;
- // legacy vocab cannot be reliably separated into 4-choice and typing.
- const rate=mode==='textTyping'?7:mode==='vocabTyping'?4:mode==='vocab'?1:0;
- return Math.min(30,Math.floor(correct)*rate);
-}
-
-// シーズンの終了時刻は最終秒の末尾までを含む（JST）。
+// 学年別シーズンランク。日付はテスト最終日が確定するまで仮設定（JST）。
 const seasonWindows=[
  {id:'2026-S1',label:'SEASON 1',start:'2026-04-01T00:00:00+09:00',end:'2026-06-30T23:59:59.999+09:00'},
  {id:'2026-S2',label:'SEASON 2',start:'2026-07-01T00:00:00+09:00',end:'2026-09-30T23:59:59.999+09:00'},
@@ -29,6 +16,7 @@ const seasonWindows=[
  {id:'2026-S4',label:'SEASON 2',start:'2026-11-28T00:00:00+09:00',end:'2027-02-25T23:59:59.999+09:00'}
 ];
 function activeSeason(ts=Date.now()){return seasonWindows.find(s=>ts>=Date.parse(s.start)&&ts<=Date.parse(s.end))||null}
+
 function watchSeasonClock(){
  let season=activeSeason(),timer;
  function check(){
@@ -109,17 +97,13 @@ async grade(){if(!current)return null;const s=await get(ref(db,'studentGrades/'+
 async grades(){if(!current)return {};const s=await get(ref(db,'studentGrades'));return s.val()||{}},
 async setGrade(grade){if(!current)throw Error('ログインしてください');const n=Number(grade);if(![1,2,3].includes(n))throw Error('学年を選択してください');await set(ref(db,'studentGrades/'+current.uid),n);return n},
 getSeason(){return activeSeason()},getSeasons(){return seasonWindows},
+async seasonAchievement(){if(!current)return null;const snap=await get(ref(db,'seasonAchievements/2026-S3/students/'+current.uid));return snap.val()},
+async seasonAchievementRanking(){if(!current)return null;const snap=await get(ref(db,'seasonAchievements/2026-S3/ranking'));return snap.val()},
 async leaderboard(){if(!current)throw Error('ログインしてください');const snap=await get(ref(db,'leaderboard'));return snap.val()||{}},
 async syncXP({targetUid}={}){if(!current)return null;const uid=targetUid||current.uid;if(uid!==current.uid&&!await this.isTeacher())throw Error('教員権限が必要です');const profileSnap=await get(ref(db,'studentProfiles/'+uid));const profile=profileSnap.val();if(!profile)return null;const recordsSnap=await get(ref(db,'learningRecords/'+uid));const rows=Object.values(recordsSnap.val()||{});const now=Date.now(),week=weekKey(now),season=activeSeason(now);let total=0,weekly=0,seasonXP=0;
-// Count previous attempts for the same subject/lesson/part/mode, including old records.
-// Sort chronologically; the new policy never removes XP earned before deployment.
-const attempts=new Map();
-const ordered=[...rows].sort((a,b)=>(Number(a.createdAt)||0)-(Number(b.createdAt)||0));
-for(const r of ordered){const n=Number(r.total),correct=Number(r.right);if(!Number.isFinite(n)||!Number.isFinite(correct)||n<=0||correct<0||correct>n)continue;const key=JSON.stringify([String(r.subject||''),String(r.lesson||''),String(r.part||''),String(r.xpMode||r.mode||'')]);
-const previous=attempts.get(key)||0;
-attempts.set(key,previous+1);
-const xp=(r.repeatPolicyV1===true&&previous>=4&&r.completedSet!==true&&!(r.subject==='英検'&&r.xpMode==='eikenChoice'))?0:yoshiRecordXP(r);
-total+=xp;if(weekKey(Number(r.createdAt))===week)weekly+=xp;if(season&&Number(r.createdAt)>=Date.parse(season.start)&&Number(r.createdAt)<=Date.parse(season.end))seasonXP+=xp;}
+YoshiLearningXP.forEachEarned(rows,(r,xp)=>{
+const ts=Number(r.createdAt);total+=xp;if(weekKey(ts)===week)weekly+=xp;if(season&&ts>=Date.parse(season.start)&&ts<=Date.parse(season.end))seasonXP+=xp;
+});
 // Derive each weekly milestone once from saved completion days, never increment it.
 for(const bonus of YoshiWeeklyDaily.bonuses(rows,now)){total+=bonus.xp;if(weekKey(bonus.earnedAt)===week)weekly+=bonus.xp;if(season&&bonus.earnedAt>=Date.parse(season.start)&&bonus.earnedAt<=Date.parse(season.end))seasonXP+=bonus.xp;}
 total=Math.min(99999999,total);weekly=Math.min(99999999,weekly);const item={classNumber:Number(profile.classNumber),nickname:'Player-'+Array.from(uid).reduce((h,c)=>(Math.imul(h,31)+c.charCodeAt(0))>>>0,2166136261).toString(36).toUpperCase().padStart(5,'0').slice(-5),name:String(profile.name||'').trim(),totalXP:total,weeklyXP:weekly,weekKey:week,seasonXP:Math.min(99999999,seasonXP),seasonId:season?.id||"none",updatedAt:now};await set(ref(db,'leaderboard/'+uid),item);return item},

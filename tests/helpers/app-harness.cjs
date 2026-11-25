@@ -76,9 +76,10 @@ function accountHarness({ records = {}, teacher = false, loggedIn = true, now = 
       return { committed: true, snapshot: snapshot(value) };
     },
   });
+  vm.runInContext(read('learning-xp.js'), sandbox, { filename: 'learning-xp.js', timeout: 1000 });
   const source = read('account.js');
   const imports = source.match(/^import .*;\r?$/gm) || [];
-  assert.equal(imports.length, 4, 'Review harness if Firebase imports change');
+  assert.equal(imports.length, 5, 'Review harness if Firebase imports change');
   vm.runInContext(source.replace(/^import .*;\r?$/gm, ''), sandbox, { filename: 'account.js', timeout: 1000 });
   return { api: sandbox.window.YoshiAccount, sandbox, uid, data, writes,
     advanceTo(timestamp, { runTimers = true } = {}) {

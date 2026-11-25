@@ -1,5 +1,5 @@
 /* Yoshi.Lab rank thresholds: keep original tier boundaries. */
-window.YoshiRanks=(function(){
+const YoshiRanksAPI=(function(){
  const tiers=[{name:'ブロンズ',min:0,color:'#c98c60'},{name:'シルバー',min:500,color:'#c3d5ea'},{name:'ゴールド',min:1500,color:'#f4c04d'},{name:'プラチナ',min:3500,color:'#7ad5e8'},{name:'ダイヤモンド',min:7000,color:'#7aafff'},{name:'マスター',min:12000,color:'#bb89ff'},{name:'レディアント',min:12000,color:'#ffd779'}];
  function get(xp,position=-1){xp=Math.max(0,Number(xp)||0);let tier=0;for(let i=5;i>=0;i--){if(xp>=tiers[i].min){tier=i;break;}}
  if(tier===5&&position>=0&&position<10)tier=6;
@@ -18,3 +18,5 @@ window.YoshiRanks=(function(){
  }
  return {tiers,get,standings};
 })();
+if(typeof window==='object')window.YoshiRanks=YoshiRanksAPI;
+if(typeof module==='object')module.exports=YoshiRanksAPI;
