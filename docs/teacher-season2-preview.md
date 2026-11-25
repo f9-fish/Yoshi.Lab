@@ -8,6 +8,24 @@
 
 プレビューは専用の読み取り専用エントリーから動作します。実ホームの静的HTMLからロゴと科目情報を取得し、表示用の要素だけを組み立てます。通常ホームのアプリスクリプト、`account.js`、XP同期やシーズン確定処理を起動しません。RTDBの接続が失われた場合、教員権限が変わった場合、権限の取得に失敗した場合はプレビューを閉じます。ダミー値はタブ内のメモリーにのみ保持します。Firebase Rulesの変更は不要です。
 
+## インストール不要の確認方法
+
+| 方式 | 判定 |
+| --- | --- |
+| Firebase Hosting プレビューチャネル | 配信URL自体が公開され、HTMLやJSの取得を教員だけに制限できません。 |
+| 既存の非公開HTTPSホスト | 利用可能なら追加リソースが最少です。現時点で利用できるホストは確認できていません。 |
+| 既存の教材用 Cloud Run | 用途と権限が異なります。既存サービスは維持します。 |
+| Cloud Run の専用サービス＋直接 IAP | 推奨。学校PCとスマートフォンはHTTPS URLを開くだけです。IAPのGoogle認証で素材まで保護し、既存FirebaseのGoogle認証と教員UIDも照合します。 |
+
+### 承認後に管理者が一度行うこと
+
+1. 既存Google Cloudプロジェクトで、小規模な専用Cloud Runサービスの作成と直接IAPの利用を承認します。最小インスタンス数は0、上限は1を目安にします。Cloud Run・ビルド・イメージ保管の課金可能性を確認し、ロードバランサや新しいFirebaseプロジェクトは用意しません。
+2. PR #90の `Dockerfile.teacher-preview` のイメージを専用サービスに配信し、**直接IAP**を有効にします。IAPのアクセス許可は指定の教員アカウント一人に付与します。全ユーザー公開の権限は使いません。配信サービスアカウントにFirebase管理権限は付与しません。
+3. サービスのHTTPSオリジンを `PREVIEW_ORIGIN`、IAPの対象サービスを `IAP_AUDIENCE`（`/projects/<PROJECT_NUMBER>/locations/<REGION>/services/<SERVICE>`）、指定の教員メールを `PREVIEW_TEACHER_EMAIL` に設定します。配信側もIAPの署名・対象・有効期限・メールを検証します。未認証の別ブラウザからページとJSを取得できないことを確認します。
+4. Firebase Authenticationの承認済みドメインで、Cloud Runのホスト名を確認します。未登録の場合のみ、別途承認を得てそのホスト名を追加します。教員に `https://<Cloud Runのホスト>/teacher-season2-preview.html` を渡します。最初のIAP画面と、プレビュー画面内のGoogleログインで同じ教員アカウントを選びます。
+
+確認期間が終わったら管理者が専用サービスと不要になった許可ドメインを整理します。本番のPages、Rules、RTDBデータはこの手順の対象外です。
+
 ## クラウドを追加せず、教員のPCで操作する
 
 Firebase Consoleの **Authentication → Settings → Authorized domains** で `localhost` を確認します。参照権限があれば設定を変更せず確認できます。手元でIdentity Toolkitに接続できる場合は、PR #90のブランチで次の照会でも確認できます。

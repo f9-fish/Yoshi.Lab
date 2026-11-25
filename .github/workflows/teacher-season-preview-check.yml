@@ -11,6 +11,7 @@ on:
       - 'teacher-season2-preview.*'
       - 'season2-opening.*'
       - 'scripts/*teacher-preview*.mjs'
+      - 'Dockerfile.teacher-preview'
       - 'season-achievements*'
       - 'tests/**'
   push:

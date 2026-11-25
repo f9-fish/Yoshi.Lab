@@ -41,16 +41,14 @@ function isAuthorized(authorization, expected) {
  return timingSafeEqual(createHash('sha256').update(secret).digest(), expected);
 }
 
-export function createPreviewServer({ origin, passwordHash, tls }) {
+export function createPreviewHandler({ origin, authorize, authorizationHeaders = {} }) {
  const url = new URL(origin);
  if (url.protocol !== 'https:' || url.href !== url.origin + '/') throw Error('PREVIEW_ORIGIN must be an HTTPS origin');
- if (!/^[a-f0-9]{64}$/.test(passwordHash || '')) throw Error('PREVIEW_PASSWORD_SHA256 is required');
- const expected = Buffer.from(passwordHash, 'hex');
  const files = new Map([...assets].map(([file, type]) => [file, { type, body: readFileSync(new URL(file, root)) }]));
  const page = readFileSync(new URL(preview.slice(1), root), 'utf8')
   .replace('<head>', '<head><meta name="preview-home-source" content="./__home-source">');
  const home = readFileSync(new URL('index.html', root));
- return createServer(tls, (req, res) => {
+ return async (req, res) => {
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');
   res.setHeader('Vary', 'Authorization');
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -58,9 +56,9 @@ export function createPreviewServer({ origin, passwordHash, tls }) {
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'");
   if (req.headers.host?.toLowerCase() !== url.host) return res.writeHead(421).end();
-  if (!isAuthorized(req.headers.authorization, expected)) {
-   return res.writeHead(401, { 'WWW-Authenticate': 'Basic realm="Yoshi.Lab private teacher staging", charset="UTF-8"' }).end();
-  }
+  let authorized = false;
+  try { authorized = await authorize(req); } catch { /* Fail closed on verification errors. */ }
+  if (!authorized) return res.writeHead(401, authorizationHeaders).end();
   if (!['GET', 'HEAD'].includes(req.method)) return res.writeHead(405, { Allow: 'GET, HEAD' }).end();
   if (!req.url.startsWith('/') || req.url.startsWith('//')) return res.writeHead(400).end();
   let path;
@@ -82,7 +80,17 @@ export function createPreviewServer({ origin, passwordHash, tls }) {
   if (!asset) return res.writeHead(404).end();
   res.setHeader('Content-Type', asset.type);
   return res.end(req.method === 'HEAD' ? undefined : asset.body);
- });
+ };
+}
+
+export function createPreviewServer({ origin, passwordHash, tls }) {
+ if (!/^[a-f0-9]{64}$/.test(passwordHash || '')) throw Error('PREVIEW_PASSWORD_SHA256 is required');
+ const expected = Buffer.from(passwordHash, 'hex');
+ return createServer(tls, createPreviewHandler({
+  origin,
+  authorize: req => isAuthorized(req.headers.authorization, expected),
+  authorizationHeaders: { 'WWW-Authenticate': 'Basic realm="Yoshi.Lab private teacher staging", charset="UTF-8"' },
+ }));
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

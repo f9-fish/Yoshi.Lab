@@ -83,3 +83,55 @@ test('private HTTPS staging protects HTML, scripts, source and images before Fir
   assert.equal(returnToNormal.status, 302);
   assert.equal(returnToNormal.headers.location, 'https://f9-fish.github.io/Yoshi.Lab/index.html?view=subjects');
 });
+
+test('Cloud Run serves even static assets only for a signed IAP assertion for the selected teacher and service', async t => {
+  const { generateKeyPairSync, sign } = require('node:crypto');
+  const { createServer } = require('node:http');
+  const { makeIapAuthorization } = await import('../scripts/serve-teacher-preview-iap.mjs');
+  const { createPreviewHandler } = await import('../scripts/serve-teacher-preview.mjs');
+  const { privateKey, publicKey } = generateKeyPairSync('ec', { namedCurve: 'P-256' });
+  const another = generateKeyPairSync('ec', { namedCurve: 'P-256' });
+  const audience = '/projects/123/locations/asia-northeast1/services/teacher-preview';
+  const teacherEmail = 'teacher@example.test';
+  const authorize = makeIapAuthorization({ audience, teacherEmail, now: () => 1_000_000, async fetchKeys(url) {
+    assert.equal(url, 'https://www.gstatic.com/iap/verify/public_key-jwk');
+    return { ok: true, json: async () => ({ keys: [{ ...publicKey.export({ format: 'jwk' }), kid: 'test' }] }) };
+  } });
+  function assertion(changes = {}, key = privateKey) {
+    const encode = value => Buffer.from(JSON.stringify(value)).toString('base64url');
+    const token = encode({ alg: 'ES256', kid: 'test' }) + '.' + encode({
+      aud: audience, iss: 'https://cloud.google.com/iap', sub: '1',
+      email: teacherEmail, iat: 990, exp: 1200, ...changes,
+    });
+    return token + '.' + sign('sha256', Buffer.from(token), { key, dsaEncoding: 'ieee-p1363' }).toString('base64url');
+  }
+  const server = createServer(createPreviewHandler({ origin: 'https://preview.example.test', authorize }));
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const get = (path, token) => new Promise((resolve, reject) => {
+    const req = require('node:http').get({
+      hostname: '127.0.0.1', port: server.address().port, path,
+      headers: { Host: 'preview.example.test', 'X-Goog-Authenticated-User-Email': 'accounts.google.com:' + teacherEmail,
+        ...(token ? { 'X-Goog-IAP-JWT-Assertion': token } : {}) },
+    }, res => {
+      const chunks = [];
+      res.on('data', chunk => chunks.push(chunk));
+      res.on('end', () => resolve({ status: res.statusCode, body: Buffer.concat(chunks).toString() }));
+    });
+    req.on('error', reject);
+  });
+
+  for (const token of [null, 'invalid', assertion({ email: 'student@example.test' }),
+    assertion({ aud: '/different-service' }), assertion({ iss: 'wrong' }),
+    assertion({ exp: 999 }), assertion({}, another.privateKey)]) {
+    const result = await get('/teacher-season2-preview.js', token);
+    assert.equal(result.status, 401);
+    assert.equal(result.body, '');
+  }
+  assert.equal((await get('/teacher-season2-preview.html', assertion())).status, 200);
+  assert.equal((await get('/__home-source', assertion())).status, 200);
+  assert.equal((await get('/account.js', assertion())).status, 404);
+  const unavailable = makeIapAuthorization({ audience, teacherEmail, now: () => 1_000_000,
+    fetchKeys: async () => { throw Error('offline'); } });
+  assert.equal(await unavailable({ headers: { 'x-goog-iap-jwt-assertion': assertion() } }), false);
+});
