@@ -1,8 +1,8 @@
 FROM node:24-bookworm-slim
 WORKDIR /app
-COPY scripts/serve-teacher-preview.mjs scripts/serve-teacher-preview-iap.mjs ./scripts/
-COPY index.html teacher-season2-preview.html teacher-season2-preview.js teacher-preview-access.js firebase-web-config.js ./
-COPY season2-opening.js season2-opening.css season-achievements-ui.js season-achievements.css ./
-COPY mountain-mobile-v7.jpg mountain-desktop-v7.jpg ./
+COPY --chmod=0555 scripts/serve-teacher-preview.mjs scripts/serve-teacher-preview-iap.mjs ./scripts/
+COPY --chmod=0555 index.html teacher-season2-preview.html teacher-season2-preview.js teacher-preview-access.js firebase-web-config.js ./
+COPY --chmod=0555 season2-opening.js season2-opening.css season-achievements-ui.js season-achievements.css ./
+COPY --chmod=0555 mountain-mobile-v7.jpg mountain-desktop-v7.jpg ./
 USER node
 CMD ["node", "scripts/serve-teacher-preview-iap.mjs"]
