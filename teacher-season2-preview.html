@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ja">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <title>教員向けプレビュー | Yoshi.Lab</title>
+ <link rel="stylesheet" href="./season-achievements.css">
+ <link rel="stylesheet" href="./season2-opening.css">
+ <script src="./season-achievements-ui.js" defer></script>
+ <script type="module" src="./teacher-season2-preview.js"></script>
+</head>
+<body class="preview-page">
+ <main id="previewAccess" class="preview-access">
+  <h1>Yoshi.Lab 教員向けプレビュー</h1>
+  <p id="previewAccessStatus" role="status">教員権限を確認しています…</p>
+  <button id="previewLogin" hidden>Googleでログイン</button>
+  <a href="./index.html?view=subjects">通常画面に戻る</a>
+ </main>
+ <div id="previewOutlet" hidden></div>
+</body>
+</html>

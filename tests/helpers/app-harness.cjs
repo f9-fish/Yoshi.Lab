@@ -53,7 +53,7 @@ function accountHarness({ records = {}, teacher = false, loggedIn = true, now = 
     window: windowEvents, document: events, Event,
     setTimeout(fn, delay) { timers.set(++timerId, { fn, due: now + delay }); return timerId; },
     clearTimeout(id) { timers.delete(id); },
-    initializeApp: () => ({}), getApps: () => [], getApp: () => ({}),
+    firebaseWebConfig: {}, initializeApp: () => ({}), getApps: () => [], getApp: () => ({}),
     getAuth: () => ({ currentUser: loggedIn ? user : null }), getDatabase: () => ({}),
     GoogleAuthProvider: class { setCustomParameters() {} },
     browserLocalPersistence: 'local', setPersistence: async () => {},
@@ -79,7 +79,7 @@ function accountHarness({ records = {}, teacher = false, loggedIn = true, now = 
   vm.runInContext(read('learning-xp.js'), sandbox, { filename: 'learning-xp.js', timeout: 1000 });
   const source = read('account.js');
   const imports = source.match(/^import .*;\r?$/gm) || [];
-  assert.equal(imports.length, 5, 'Review harness if Firebase imports change');
+  assert.equal(imports.length, 6, 'Review harness if Firebase imports change');
   vm.runInContext(source.replace(/^import .*;\r?$/gm, ''), sandbox, { filename: 'account.js', timeout: 1000 });
   return { api: sandbox.window.YoshiAccount, sandbox, uid, data, writes,
     advanceTo(timestamp, { runTimers = true } = {}) {

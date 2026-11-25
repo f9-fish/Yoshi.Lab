@@ -1,9 +1,10 @@
+import {firebaseWebConfig} from './firebase-web-config.js';
 import './practice-xp.js';
 import './learning-xp.js';
 import {initializeApp,getApps,getApp} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js';
 import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged,signOut,browserLocalPersistence,setPersistence} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js';
 import {getDatabase,ref,push,set,get,runTransaction,remove,onValue} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js';
-const app=getApps().some(app=>app.name==='[DEFAULT]')?getApp():initializeApp({apiKey:'AIzaSyDhm9zeUsgvF6_lbwcRj57VWXzYPA3LEzM',authDomain:'yoshi-lab-db3eb.firebaseapp.com',databaseURL:'https://yoshi-lab-db3eb-default-rtdb.firebaseio.com',projectId:'yoshi-lab-db3eb',storageBucket:'yoshi-lab-db3eb.firebasestorage.app',messagingSenderId:'543561154900',appId:'1:543561154900:web:b9ba898d1d44a385f848c1'});
+const app=getApps().some(app=>app.name==='[DEFAULT]')?getApp():initializeApp(firebaseWebConfig);
 const auth=getAuth(app),db=getDatabase(app),provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:'select_account'});
 let current=null,authReady=false;const listeners=new Set();let lastAccessUid='',lastAccessAt=0;
 async function recordLastAccess(u){if(!u||!u.emailVerified)return;const now=Date.now();if(lastAccessUid===u.uid&&now-lastAccessAt<5*60*1000)return;lastAccessUid=u.uid;lastAccessAt=now;try{const profile=await get(ref(db,'studentProfiles/'+u.uid));if(!profile.exists()||auth.currentUser?.uid!==u.uid)return;await set(ref(db,'lastAccess/'+u.uid),{at:Date.now()})}catch(e){console.warn('最終アクセス記録:',e.message)}}
