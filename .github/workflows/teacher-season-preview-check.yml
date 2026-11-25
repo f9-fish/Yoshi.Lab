@@ -28,11 +28,17 @@ jobs:
           node-version: '24'
       - name: Verify authorization and existing XP behavior
         run: node --test --test-isolation=none tests/teacher-season-preview.test.cjs tests/season-rollover.test.cjs tests/season-achievements.test.cjs tests/radiant-ranking.test.cjs tests/xp.test.cjs tests/weekly-daily.test.cjs tests/daily*.test.cjs tests/favorites*.test.cjs
+      - uses: browser-actions/setup-chrome@v2
+        id: chrome
+        with:
+          install-dependencies: true
       - name: Exercise the preview in Chrome with synthetic access and no Firebase traffic
         env:
-          CHROME_BIN: google-chrome
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
           PREVIEW_SCREENSHOTS: preview-screenshots
-        run: node tests/browser/teacher-season-preview.cjs
+        run: |
+          "$CHROME_BIN" --version
+          node tests/browser/teacher-season-preview.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
