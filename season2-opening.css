@@ -1,0 +1,149 @@
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body.preview-page {
+  margin: 0;
+  color: #fff5e2;
+  font-family: system-ui, sans-serif;
+  line-height: 1.55;
+  background: #08132a linear-gradient(160deg, #0a1023 1%, #142444 70%, #0a1326);
+}
+.preview-page :is(a,button,input,select,summary):focus-visible { outline: 3px solid #ffdf84; outline-offset: 3px; }
+.preview-page :is(button,a,select,input) { font: inherit; }
+.preview-page :is(button,a) { color: #fff0c2; }
+.preview-page button, .opening-actions a, .preview-strip a {
+  padding: .5rem .8rem;
+  border: 1px solid #dcc17d85;
+  border-radius: .55rem;
+  background: #132444;
+  font-weight: 750;
+  text-decoration: none;
+  cursor: pointer;
+}
+.preview-access, .preview-home { width: min(70rem, 100%); margin: auto; padding: 1rem clamp(.75rem, 3vw, 2rem) 5rem; }
+.preview-access :is(a,button) { display: inline-block; margin-inline-end: .8rem; }
+.preview-strip {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .3rem 1rem;
+  flex-wrap: wrap;
+  padding: .55rem max(.75rem, calc((100% - 66rem)/2));
+  background: #0c172d;
+  border-bottom: 1px solid #ddb96885;
+}
+.preview-strip strong, .opening-eyebrow { color: #ffe092; font-weight: 850; letter-spacing: .09em; }
+.preview-strip p { margin: 0; font-size: .85rem; }
+.preview-strip a { white-space: nowrap; }
+.preview-brand { margin-bottom: .7rem; font-weight: 900; font-size: clamp(1.65rem, 5vw, 2.3rem); line-height: 1.1; }
+.preview-brand span { color: #f7ce7f; }
+.preview-brand small { font-size: .6rem; letter-spacing: .24em; }
+.opening-banner, .opening-panel {
+  border: 1px solid #cea8529c;
+  border-radius: 1rem;
+  padding: clamp(.9rem, 3.5vw, 2.5rem);
+  margin-bottom: 1rem;
+  background: #111e36;
+}
+.opening-banner {
+  background: linear-gradient(110deg, #090f23f5, #111526d9 52%, #48301760),
+    url('./mountain-desktop-v7.jpg') center 58% / cover;
+  box-shadow: inset 0 0 0 4px #e5bf5b19, 0 14px 35px #0005;
+}
+.opening-banner[data-opening-phase="before"] { border-color: #a6b1df; }
+.opening-banner[data-opening-phase="after"] { box-shadow: none; }
+.opening-banner h1 { margin: .2em 0 0; font-size: clamp(1.8rem, 7vw, 4.25rem); color: #ffe3a5; line-height: 1.05; letter-spacing: .03em; }
+.opening-banner h2, .opening-panel h2, .opening-dialog-inner h2 { margin: .15em 0; }
+.opening-banner time { color: #ffe0a0; font-size: .86rem; font-weight: 750; }
+.opening-actions { display: flex; flex-wrap: wrap; gap: .45rem; }
+.preview-page .opening-primary { background: #f4d386; color: #251813; border-color: #ffe4a8; }
+.opening-preview-result { margin-top: .85rem; font-size: .85rem; }
+.opening-preview-result .season-badge { margin: 0 .4rem 0 0; }
+.preview-subjects { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: .55rem; margin-bottom: .7rem; }
+.preview-subjects a { padding: .65rem .75rem; border-radius: .6rem; background: #1d3054; text-decoration: none; }
+.preview-subjects svg { display: block; width: 1.7rem; height: 1.7rem; margin-bottom: .2rem; fill: none; stroke: #f1d395; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.preview-subjects small { display: block; color: #dedcf1; }
+.opening-panel :is(h2,[tabindex]) { scroll-margin-top: 9rem; }
+.preview-controls {
+  position: fixed;
+  z-index: 3;
+  bottom: .5rem;
+  right: .5rem;
+  width: min(24rem, calc(100% - 1rem));
+  border: 1px solid #c6a45d;
+  background: #0c172d;
+  color: #ffebc7;
+  border-radius: .65rem;
+  box-shadow: 0 6px 24px #0008;
+}
+.preview-controls:not([open]) { width: auto; }
+.preview-controls summary { padding: .55rem .8rem; cursor: pointer; font-weight: 750; }
+.preview-control-body { padding: .2rem .8rem .8rem; max-height: 50dvh; overflow: auto; }
+.preview-control-body label { display: grid; gap: .2rem; margin: .25rem 0; font-size: .84rem; }
+.preview-control-body :is(input,select) { min-width: 0; width: 100%; color: #fff1d8; background: #1c2c4b; border: 1px solid #958769; border-radius: .35rem; padding: .3rem; }
+.preview-control-body fieldset { border: 0; margin: .35rem 0; padding: 0; }
+.preview-numbers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem; }
+#seasonOpeningDialog {
+  width: min(39rem, calc(100% - 1rem));
+  max-height: calc(100dvh - 1rem);
+  border-radius: 1.1rem;
+  border: 1px solid #e4ba65;
+  padding: 0;
+  color: #fff4dc;
+  background: #11182c;
+  box-shadow: 0 10px 48px #000a;
+}
+#seasonOpeningDialog::backdrop { background: #050a18e5; }
+html:has(#seasonOpeningDialog[open]) { overflow: hidden; }
+.opening-dialog-inner {
+  position: relative;
+  padding: 1.5rem clamp(.85rem, 4vw, 2rem);
+  background: linear-gradient(#0a1124ed, #261a23e8 55%, #11182c),
+    url('./mountain-desktop-v7.jpg') center / cover;
+  text-align: center;
+}
+.opening-dialog-inner .opening-actions { justify-content: center; }
+.opening-dialog-inner .opening-eyebrow { display: block; margin: .35rem 1.4rem; font-size: .7rem; }
+.opening-dialog-inner h2 { font-size: clamp(1.45rem, 5.2vw, 2.35rem); }
+.opening-dialog-inner p { margin: .45rem 0; }
+.opening-return { font-size: .8rem; }
+#seasonOpeningDialog .preview-controls {
+  position: static;
+  width: min(100%, 24rem);
+  margin: .6rem auto 0;
+  text-align: start;
+  box-shadow: none;
+}
+#seasonOpeningDialog .preview-control-body { max-height: none; overflow: visible; }
+.opening-result p span { white-space: nowrap; }
+.preview-page .opening-close { position: absolute; right: .6rem; top: .6rem; min-width: 2.35rem; padding: .1rem; font-size: 1.25rem; }
+.opening-result { text-align: center; margin: .55rem 0 .85rem; }
+.opening-result-card { display: flex; align-items: center; flex-wrap: wrap; justify-content: center; gap: .6rem 1.5rem; text-align: start; }
+.opening-rank { display: block; color: #ffe3a5; letter-spacing: .13em; font-size: 1.2rem; }
+.opening-emblem { position: relative; isolation: isolate; display: inline-grid; place-items: center; }
+.opening-champion { width: min(18rem, 100%); filter: drop-shadow(0 0 12px #ffc85554); }
+.opening-champion::before, .opening-champion::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 24% 48% 12% 0;
+  background: linear-gradient(135deg, #fff0a9, #e6ab47 38%, #6d351c 59%, #ffde83);
+  clip-path: polygon(0 0, 48% 16%, 82% 43%, 100% 83%, 77% 100%, 26% 72%, 55% 68%, 18% 45%, 42% 44%, 9% 24%, 28% 24%);
+}
+.opening-champion::after { transform: scaleX(-1); inset: 24% 0 12% 48%; }
+.opening-champion .season-badge { width: 9rem; height: 9.2rem; }
+.opening-champion .season-badge.finish-1 .season-badge-icon { color: #ffda75; font-size: 1.45rem; }
+.opening-champion .season-badge-center { font-size: 3rem; }
+@media (max-width: 500px) {
+  .opening-banner, .opening-dialog-inner { background-image: linear-gradient(#0a1124e8, #221827e0), url('./mountain-mobile-v7.jpg'); }
+  .preview-strip { gap: .2rem; }
+  .preview-strip a { font-size: .83rem; padding: .3rem .55rem; }
+  .opening-dialog-inner { padding-top: 2.55rem; }
+  .opening-dialog-inner > .opening-actions button { flex: 1 1 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+}

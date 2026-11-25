@@ -1,0 +1,41 @@
+name: 教員向け開幕プレビューの検証
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/teacher-season-preview-check.yml'
+      - 'account.js'
+      - 'firebase-web-config.js'
+      - 'index.html'
+      - 'teacher.html'
+      - 'teacher-preview-access.js'
+      - 'teacher-season2-preview.*'
+      - 'season2-opening.*'
+      - 'season-achievements*'
+      - 'tests/**'
+  push:
+    branches:
+      - feat/teacher-season2-preview
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify authorization and existing XP behavior
+        run: node --test --test-isolation=none tests/teacher-season-preview.test.cjs tests/season-rollover.test.cjs tests/season-achievements.test.cjs tests/radiant-ranking.test.cjs tests/xp.test.cjs tests/weekly-daily.test.cjs tests/daily*.test.cjs tests/favorites*.test.cjs
+      - name: Exercise the preview in Chrome with synthetic access and no Firebase traffic
+        env:
+          CHROME_BIN: google-chrome
+          PREVIEW_SCREENSHOTS: preview-screenshots
+        run: node tests/browser/teacher-season-preview.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: teacher-season2-preview-screenshots
+          path: preview-screenshots/
+          if-no-files-found: ignore

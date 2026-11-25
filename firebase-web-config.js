@@ -1,0 +1,2 @@
+// Public Firebase web configuration shared by the app and the read-only preview.
+export const firebaseWebConfig = Object.freeze({apiKey:'AIzaSyDhm9zeUsgvF6_lbwcRj57VWXzYPA3LEzM',authDomain:'yoshi-lab-db3eb.firebaseapp.com',databaseURL:'https://yoshi-lab-db3eb-default-rtdb.firebaseio.com',projectId:'yoshi-lab-db3eb',storageBucket:'yoshi-lab-db3eb.firebasestorage.app',messagingSenderId:'543561154900',appId:'1:543561154900:web:b9ba898d1d44a385f848c1'});
