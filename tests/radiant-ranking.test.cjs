@@ -32,7 +32,10 @@ function harness({ count = 3, grade = null, extra = {} } = {}) {
     grade: async () => grades[api.user.uid] || null,
     setGrade: async value => { grades[api.user.uid] = value; },
   };
-  const sandbox = context({ window: {}, document: { getElementById: $, createElement: node, addEventListener() {} }, alert() {} });
+  const events = new EventTarget();
+  const sandbox = context({ window: {}, document: {
+    getElementById: $, createElement: node, addEventListener: events.addEventListener.bind(events),
+  }, alert() {} });
   const evaluate = code => vm.runInContext(code, sandbox, { timeout: 1000 });
   evaluate(read('yoshi-ranks-v14.js'));
   const scripts = [...read('ranking.html').matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)];
@@ -40,7 +43,7 @@ function harness({ count = 3, grade = null, extra = {} } = {}) {
   assert.equal(app.length, 1);
   evaluate(app[0][1]);
   sandbox.window.YoshiAccount = api;
-  return { $, api, board, grades, evaluate };
+  return { $, api, board, grades, evaluate, events, sandbox };
 }
 
 for (const count of [1, 2, 3, 9, 10, 11]) {
@@ -112,14 +115,14 @@ test('existing grade API writes only the signed-in student grade, not XP or reco
   assert.deepEqual(h.writes, ['studentGrades/' + h.uid]);
 });
 
-async function rankSurface(file,board,uid='s0') {
-  const elements=new Map(),callbacks=[];
+async function rankSurface(file,board,uid='s0',seasonClock) {
+  const elements=new Map(),callbacks=[],events=new EventTarget();
   const $=id=>{if(!elements.has(id)){const el=node();el.prepend=(...xs)=>el.children.unshift(...xs);el.add=o=>el.append(o);elements.set(id,el);}return elements.get(id);};
   const window={addEventListener(){}};
-  const api={user:{uid},getSeason:()=>({id:'current'}),leaderboard:async()=>board,
+  const api={user:{uid},getSeason:seasonClock?.getSeason||(()=>({id:'current'})),leaderboard:async()=>board,
     profile:async()=>({name:'Student',classNumber:1,studentNumber:1}),records:async()=>[],syncXP:async()=>{},
     grade(){throw Error('must not read grade')},grades(){throw Error('must not read grades')}};
-  const sandbox=context({window,document:{getElementById:$,createElement:node,addEventListener(){}},
+  const sandbox=context({window,document:{getElementById:$,createElement:node,addEventListener:events.addEventListener.bind(events)},
     setTimeout:fn=>callbacks.push(fn),fetch:async()=>({ok:true,json:async()=>[]}),Option:class {constructor(text,value){this.textContent=text;this.value=value;}}});
   const evaluate=code=>vm.runInContext(code,sandbox,{timeout:1000});
   evaluate(read('yoshi-ranks-v14.js'));
@@ -128,11 +131,13 @@ async function rankSurface(file,board,uid='s0') {
     window.YoshiAccount=api;
     evaluate(scripts.find(([,attrs])=>attrs.includes('yoshi-v13-home-rank-script'))[2]);
     await callbacks[0]();
-    return $('questProgress').children[0].children[2].textContent;
+    const rank = $('questProgress').children[0].children[2];
+    return seasonClock ? { rank, events } : rank.textContent;
   }
   evaluate(scripts.find(([, ,code])=>code.includes('let leaderboardRows='))[2]);
   window.YoshiAccount=api;await evaluate('refresh()');
-  return $('mySeasonRank').textContent;
+  const rank = $('mySeasonRank');
+  return seasonClock ? { rank, events } : rank.textContent;
 }
 for(const count of [2,3,11])test(`all three screens agree with ${count} masters and no grade registration`,async()=>{
   const h=harness({count});
@@ -182,4 +187,50 @@ test('empty rank groups show guidance and selecting a rank does not fetch or wri
   }
   h.$('showRadiant').onclick();
   assert.equal(h.$('radiantRows').children.length,1);
+});
+
+test('open Ranking, Home and My Page switch at midnight with stale rows and reveal SEASON 1 history', async () => {
+  const boundary = Date.parse('2026-11-28T00:00:00+09:00');
+  const clock = accountHarness({ now: boundary - 1000, loggedIn: false });
+  const h = harness({ count: 0, extra: {
+    s0: { name: 'Same name', classNumber: 1, seasonId: '2026-S3', seasonXP: 13000, totalXP: 15000 },
+    s1: { name: 'Same name', classNumber: 1, seasonId: '2026-S3', seasonXP: 13000, totalXP: 16000 },
+  } });
+  h.sandbox.Date = clock.sandbox.Date;
+  h.api.getSeason = clock.api.getSeason;
+  h.api.getSeasons = clock.api.getSeasons;
+  h.api.records = async () => [{ mode: 'textTyping', total: 1, right: 1,
+    createdAt: boundary - 1, xpPolicyV2: true }];
+  await h.evaluate('refresh()');
+  h.$('rankAll').onclick();
+  h.$('rankSeason').onclick();
+  assert.equal(h.$('rankTitle').textContent, 'レディアント');
+  assert.equal(h.$('radiantRows').children.length, 2);
+  assert.match(h.$('rankXP').textContent, /全体 1位/);
+  assert.doesNotMatch(h.$('seasonHistory').children[0].children[1].children[0].textContent, /^SEASON 1/);
+  const peers = () => h.sandbox.window.YoshiRanks.standings(h.board, clock.api.getSeason());
+  const ranks = await Promise.all(['index.html', 'mypage.html'].map(file => rankSurface(file, h.board, 's0', clock.api)));
+  for (const { rank } of ranks) assert.equal(rank.textContent, 'レディアント');
+  h.api.syncXP = async () => assert.fail('rollover must not write to the leaderboard');
+  clock.sandbox.document.addEventListener('yoshi-season-change', () => {
+    for (const eventTarget of [h.events, ...ranks.map(({ events }) => events)]) {
+      eventTarget.dispatchEvent(new Event('yoshi-season-change'));
+    }
+  });
+  clock.advanceTo(boundary);
+  assert.equal(h.$('seasonName').textContent, 'SEASON 2');
+  assert.equal(h.$('rankTitle').textContent, 'ブロンズ Ⅲ');
+  assert.match(h.$('rankXP').textContent, /^0 シーズンXP · 全体 1位$/);
+  assert.equal(h.$('radiantRows').children.length, 0);
+  for (const { rank } of ranks) assert.equal(rank.textContent, 'ブロンズ Ⅲ');
+  const [, history] = h.$('seasonHistory').children[0].children;
+  assert.match(history.children[0].textContent, /^SEASON 1 · ブロンズ/);
+  assert.equal(history.children[1].textContent, '10 XP ／ 2026/11/27終了');
+  assert.deepEqual(Array.from(peers(), r => [r.id, r.seasonXP]), [['s0', 0], ['s1', 0]]);
+  h.board.s1.seasonId = '2026-S4';
+  h.board.s1.seasonXP = 1;
+  clock.advanceTo(boundary + 1000);
+  assert.deepEqual(Array.from(peers(), r => [r.id, r.seasonXP]), [['s1', 1], ['s0', 0]]);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(h.$('authNotice').classList.contains('hidden'), true);
 });
