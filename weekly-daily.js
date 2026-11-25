@@ -37,3 +37,4 @@ globalThis.YoshiWeeklyDaily=(()=>{
  }
  return Object.freeze({milestones,launchWeek,today,monday,completedDays,bonuses,progress});
 })();
+if(typeof module==='object')module.exports=globalThis.YoshiWeeklyDaily;
