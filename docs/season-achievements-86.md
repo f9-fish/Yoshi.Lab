@@ -12,6 +12,17 @@
 
 ## Google Cloud Shellで確定する
 
+### 締切を証明できる手段
+
+| 手段 | 判断 |
+| --- | --- |
+| RTDBの自動バックアップ／エクスポート | 利用できる場合は取得時刻と復元根拠を確認します。日次バックアップがあるだけでは11月28日 00:00 JSTの復元点にはなりません。[RTDBの自動バックアップ](https://firebase.google.com/docs/database/backups) |
+| ポイントインタイム復元 | RTDBに使える復元機能・外部の復元履歴は未確認です。FirestoreのPITRをRTDBに適用できるとは扱いません。 |
+| 監査ログ | 対象パスの全書き込み経路を覆う設定、対象期間の保持、ログの欠落や遅延、更新・削除の追跡可能性を確認します。ログが見当たらないだけでは無更新の証明になりません。[RTDB監査ログ](https://firebase.google.com/docs/database/usage/audit-logging) |
+| Cloud Run・Cloud Scheduler | リポジトリで確認できるCloud Runは教材スタジオ用です。この用途に流用しません。Schedulerは起動時刻やHTTP読み取り完了時刻を保証せず、再実行もあり得ます。仮に既存ジョブが利用可能でも、取得後に締切時点を検証する条件は同じです。[Schedulerの概要](https://cloud.google.com/scheduler/docs/overview) |
+
+11月27日までに、管理者は [Realtime Database](https://console.firebase.google.com/project/yoshi-lab-db3eb/database) のバックアップ設定・復元点、[ログ エクスプローラ](https://console.cloud.google.com/logs/query?project=yoshi-lab-db3eb) の監査対象と保持期間、必要に応じて [Cloud Run](https://console.cloud.google.com/run?project=yoshi-lab-db3eb) と [Cloud Scheduler](https://console.cloud.google.com/cloudscheduler?project=yoshi-lab-db3eb) の既存構成を参照します。これらの本番設定は今回未確認です。推奨は、証明済みの復元点を優先し、利用できなければ既存の監査で変更の有無を証明できる範囲で、Cloud Shellの1回実行を使う方法です。
+
 ### 1. 締切前の準備
 
 Firebase Consoleの **Realtime Database → データ** で、対象のプロジェクトとデータベースURLを確認します。リポジトリ上の接続先は `yoshi-lab-db3eb` の `https://yoshi-lab-db3eb-default-rtdb.firebaseio.com` です。参照するのは `studentProfiles` と `learningRecords`、確定結果の保存先は `seasonAchievements/2026-S3` です。公開表示のRulesが承認済みかはFirebase Consoleで確認します。確定スクリプトはRulesと認証を操作しません。
@@ -19,7 +30,7 @@ Firebase Consoleの **Realtime Database → データ** で、対象のプロジ
 [Google Cloud Shell](https://shell.cloud.google.com/?project=yoshi-lab-db3eb) で、レビュー対象のPRブランチを取得します。学校がCloud Shellでの学習データ取り扱いを許可していることを確認してください。記録をGitの作業ツリーに置かず、他人と共有しない個人ディレクトリに保存します。
 
 ```sh
-git clone --branch feat/season-s3-finalization-preflight https://github.com/f9-fish/Yoshi.Lab.git yoshi-s3-tools
+git clone --branch feat/season-s3-cutoff-capture https://github.com/f9-fish/Yoshi.Lab.git yoshi-s3-tools
 cd yoshi-s3-tools
 git rev-parse HEAD
 node --version
@@ -47,14 +58,18 @@ Node.js 22または24を使用します。ロケール確認は `ja-JP` です�
 RTDBのADCは `firebase.database` と `userinfo.email` スコープを含む、学校承認済みの認証を使用します。ADCを設定する場合は管理者が承認した方法を使います。例となるユーザーADCのコマンドは以下です。ブラウザの認証画面を使い、鍵やトークンを貼り付けないでください。学校の既定のADCがある場合は再設定不要です。確定時の権限は別途確認します。
 
 ```sh
-gcloud auth application-default login   --scopes=https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/firebase.database,https://www.googleapis.com/auth/userinfo.email
+gcloud auth application-default login \
+  --scopes=https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/firebase.database,https://www.googleapis.com/auth/userinfo.email
 ```
 
-締切後、学校が承認したADCで、RTDBのルートを**1回のGET**で読み取ります。メモリー内で2パスを選択し、専用ファイルにだけ書き出します。RESTルートの読み取り権限が無い場合は、別々のAPI呼び出しに切り替えずAを使います。
+11月27日 **23:58〜23:59 JST** にCloud Shellを開いたまま次のコマンドを実行します。スクリプトは締切まで待ち、学校が承認したADCで、RTDBのルートを**1回のGET**の成功応答から取得します。メモリー内で2パスを選択し、専用ファイルにだけ書き出します。RESTルートの読み取り権限が無い場合は、別々のAPI呼び出しに切り替えずAを使います。
 
 ```sh
-node scripts/prepare-season-achievement-source.cjs capture   --database-url "$RTDB_URL" --output "$S3_DIR/capture.json"
+node scripts/prepare-season-achievement-source.cjs capture \
+  --database-url "$RTDB_URL" --output "$S3_DIR/capture.json"
 ```
+
+取得コマンドは一時的な通信失敗だけを最大3回まで試み、締切後2分以降の応答を拒否します。HTTPのDateヘッダーと端末時計を照合し、時計が飛んだ場合や、締切後の日付が記録内にある場合は候補を作りません。既存の候補を上書きしません。HTTP日時は書き込み履歴や厳密なスナップショット時刻の証明になりません。エラーで候補がなければ、締切後2分以内だけ同じコマンドを再実行できます。期限を過ぎたらAの検証済み復元点を調べます。
 
 **どちらも証明できなければ公開を保留します。** SEASON 2の開始は独立しています。取得コマンド自体は、対象への書き込みが無かったことを保証しません。
 
@@ -76,7 +91,9 @@ Bの形式。両数値の `0` は例のプレースホルダーです。変更�
 
 ```sh
 # Bの場合は cutoff-export.json を capture.json に変更
-node scripts/prepare-season-achievement-source.cjs seal   --input "$S3_DIR/cutoff-export.json" --evidence "$S3_DIR/evidence.json"   --output "$S3_DIR/season-s3.json"
+node scripts/prepare-season-achievement-source.cjs seal \
+  --input "$S3_DIR/cutoff-export.json" --evidence "$S3_DIR/evidence.json" \
+  --output "$S3_DIR/season-s3.json"
 node scripts/finalize-season-achievements.cjs --source "$S3_DIR/season-s3.json"
 ```
 
@@ -89,7 +106,9 @@ node scripts/finalize-season-achievements.cjs --source "$S3_DIR/season-s3.json"
 承認された管理者が、確認した **ドライランの `sourceHash`** を指定して実行します。
 
 ```sh
-node scripts/finalize-season-achievements.cjs   --source "$S3_DIR/season-s3.json" --expected-sha256 '<ドライランのsourceHash>'   --project-id yoshi-lab-db3eb --database-url "$RTDB_URL" --publish
+node scripts/finalize-season-achievements.cjs \
+  --source "$S3_DIR/season-s3.json" --expected-sha256 '<ドライランのsourceHash>' \
+  --project-id yoshi-lab-db3eb --database-url "$RTDB_URL" --publish
 ```
 
 `seasonAchievements/2026-S3` のみをトランザクションで作成します。接続断の場合は同じファイル・ハッシュ・ロケールで再実行して `published` または `already-published` と件数を確認します。別の入力や既存の不完全なパスは拒否します。値を印刷せず、原本・監査情報・確定用入力は学校の承認済み保管先に移し、Cloud Shell側も学校の保管方針に従って管理します。

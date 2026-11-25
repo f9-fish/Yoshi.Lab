@@ -30,6 +30,17 @@ async function capture({ databaseURL, readRoot, now = Date.now }) {
   return { capture: { databaseURL: origin, startedAt, finishedAt }, ...extract(source) };
 }
 
+const windowMs = 120_000;
+const clockToleranceMs = 2_000;
+
+function validateHttpTiming({ startedAt, finishedAt, httpDateAt }) {
+  if (finishedAt >= cutoff + windowMs) throw Error('締切後の読み取り時間を超えました');
+  if (!Number.isSafeInteger(httpDateAt) || httpDateAt < cutoff ||
+      httpDateAt < startedAt - clockToleranceMs || httpDateAt > finishedAt + clockToleranceMs) {
+    throw Error('RTDBのHTTP日時と端末時計を照合できません');
+  }
+}
+
 function validateProvenance(provenance) {
   if (provenance?.version !== 1 || !/^[a-f0-9]{64}$/.test(provenance.inputSha256 || '') ||
       typeof provenance.reference !== 'string' || !provenance.reference.trim() || provenance.reference.length > 240) {
@@ -40,12 +51,13 @@ function validateProvenance(provenance) {
     if (provenance.asOf !== cutoff) throw Error('復元点が締切と一致しません');
     return;
   }
-  const { startedAt, finishedAt, unchangedFrom, unchangedThrough } = provenance;
+  const { startedAt, finishedAt, unchangedFrom, unchangedThrough, httpDateAt } = provenance;
   if (provenance.method !== 'unchanged-window' ||
       ![startedAt, finishedAt, unchangedFrom, unchangedThrough].every(Number.isSafeInteger) ||
       unchangedFrom >= cutoff || startedAt < cutoff || finishedAt < startedAt || unchangedThrough < finishedAt) {
     throw Error('締切をまたいで取得完了まで変更がなかった根拠が必要です');
   }
+  if (httpDateAt !== undefined) validateHttpTiming({ startedAt, finishedAt, httpDateAt });
 }
 
 function rejectLaterData({ studentProfiles, learningRecords }) {
@@ -83,7 +95,7 @@ function seal(inputBytes, evidence, now = Date.now()) {
       throw Error('取得元と監査対象のデータベースが一致しません');
     }
     Object.assign(provenance, {
-      startedAt: captured.startedAt, finishedAt: captured.finishedAt,
+      startedAt: captured.startedAt, finishedAt: captured.finishedAt, httpDateAt: captured.httpDateAt,
       unchangedFrom: evidence.unchangedFrom, unchangedThrough: evidence.unchangedThrough,
     });
   }
@@ -103,4 +115,5 @@ function validateSource(source, now = Date.now()) {
   return databaseOrigin(source.provenance.databaseURL);
 }
 
-module.exports = { capture, databaseOrigin, parseJson, seal, validateSource };
+module.exports = { capture, databaseOrigin, parseJson, rejectLaterData, seal, validateSource,
+  validateHttpTiming, windowMs, clockToleranceMs };
