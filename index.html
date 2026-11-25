@@ -1527,8 +1527,15 @@ function renderClozeQuestion(english,japanese){
  const re=/\(([^()]+)\)/g;let lastIndex=0,match;
  while((match=re.exec(english))!==null){
   line.appendChild(document.createTextNode(english.slice(lastIndex,match.index)));
-  const gap=document.createElement('span');gap.className='cloze-gap';gap.textContent='\u00a0\u00a0\u00a0\u00a0';
-  gap.dataset.initial=(match[1].match(/[A-Za-z]/)||[''])[0];gap.setAttribute('aria-label','空欄');line.appendChild(gap);lastIndex=re.lastIndex;
+  const words=match[1].trim().split(/\s+/).filter(Boolean);
+  words.forEach((_,index)=>{
+   if(index)line.appendChild(document.createTextNode(' '));
+   const gap=document.createElement('span');gap.className='cloze-gap';gap.textContent='\u00a0\u00a0\u00a0\u00a0';
+   // Preserve one initial-letter hint per original parenthesized answer.
+   if(index===0)gap.dataset.initial=(match[1].match(/[A-Za-z]/)||[''])[0];
+   gap.setAttribute('aria-label','空欄');line.appendChild(gap);
+  });
+  lastIndex=re.lastIndex;
  }
  line.appendChild(document.createTextNode(english.slice(lastIndex)));
  const translation=document.createElement('div');translation.className='cloze-japanese';renderHighlightedParentheses(translation,japanese,'japanese-highlight');
@@ -1645,7 +1652,7 @@ $('soloInitialHint').onclick=()=>{if(!running||paused||current==null)return;if($
  fields.forEach(field=>{const label=field.parentElement.querySelector('.cloze-typing-hint');if(label)label.textContent=firstLetter(field.dataset.expected||'')||'？'});
  $('soloInitialText').textContent='';return;
  }
- const gaps=$('question').querySelectorAll('.cloze-gap');gaps.forEach(g=>{g.textContent=g.dataset.initial||'？';g.classList.add('cloze-hint-shown')});$('soloInitialText').textContent='';return;}const english=String(terms[current]?.[0]||'');const cloze=$('mode').value==='cloze';const target=cloze?(english.match(/\(([^()]+)\)/)||[])[1]:(dir==='ja'?english:'');$('soloInitialText').textContent=target?'💡 頭文字：'+firstLetter(target):'💡 英語の頭文字：'+firstLetter(english)};
+ const gaps=$('question').querySelectorAll('.cloze-gap[data-initial]');gaps.forEach(g=>{g.textContent=g.dataset.initial||'？';g.classList.add('cloze-hint-shown')});$('soloInitialText').textContent='';return;}const english=String(terms[current]?.[0]||'');const cloze=$('mode').value==='cloze';const target=cloze?(english.match(/\(([^()]+)\)/)||[])[1]:(dir==='ja'?english:'');$('soloInitialText').textContent=target?'💡 頭文字：'+firstLetter(target):'💡 英語の頭文字：'+firstLetter(english)};
 // Independent katakana reading control (4-choice vocabulary only).
 $('vocabReadingToggle').onclick=()=>{
  const label=$('vocabReadingText');
