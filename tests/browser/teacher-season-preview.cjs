@@ -73,7 +73,7 @@ const server = createServer(async (req, res) => {
 });
 
 async function until(check, message) {
-  for (let attempt = 0; attempt < 100; attempt++) {
+  for (let attempt = 0; attempt < 200; attempt++) {
     const result = await check();
     if (result) return result;
     await new Promise(resolve => setTimeout(resolve, 50));
@@ -82,7 +82,10 @@ async function until(check, message) {
 }
 
 async function browser(debugPort) {
-  const [tab] = await (await fetch('http://127.0.0.1:' + debugPort + '/json/list')).json();
+  const tab = await until(async () => {
+    const targets = await (await fetch('http://127.0.0.1:' + debugPort + '/json/list')).json();
+    return targets.find(target => target.type === 'page' && target.url === 'about:blank');
+  }, 'Chrome did not provide its blank tab');
   const socket = new WebSocket(tab.webSocketDebuggerUrl);
   await new Promise((resolve, reject) => {
     socket.onopen = resolve;
@@ -121,18 +124,26 @@ async function run() {
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
     const url = 'http://127.0.0.1:' + server.address().port + '/teacher-season2-preview.html?preview=true&teacher=true';
     let chromeError;
+    let chromeLog = '';
     chrome = spawn(process.env.CHROME_BIN || 'chromium', [
       '--headless', '--no-sandbox', '--no-proxy-server', '--disable-gpu', '--disable-dev-shm-usage',
+      '--no-first-run', '--no-default-browser-check', '--disable-search-engine-choice-screen',
       '--disable-background-networking', '--remote-debugging-port=0', '--user-data-dir=' + profile,
       '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1', 'about:blank',
     ], { env: { ...process.env, XDG_CACHE_HOME: join(profile, 'cache'), XDG_CONFIG_HOME: join(profile, 'config') },
-      stdio: 'ignore' });
+      stdio: ['ignore', 'ignore', 'pipe'] });
+    chrome.stderr.on('data', chunk => { chromeLog = (chromeLog + chunk).slice(-4000); });
     chrome.on('error', error => { chromeError = error; });
-    const port = await until(async () => {
+    let port;
+    try {
+      port = await until(async () => {
       if (chromeError) throw chromeError;
       try { return (await readFile(join(profile, 'DevToolsActivePort'), 'utf8')).split('\n')[0]; }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
-    }, 'Chrome did not start');
+      }, 'Chrome did not start');
+    } catch (error) {
+      throw Error(error.message + '\n' + chromeLog, { cause: error });
+    }
     session = await browser(port);
     const call = session.call.bind(session);
     await call('Network.enable');
@@ -257,4 +268,10 @@ async function run() {
   }
 }
 
-run().catch(error => { console.error(error); process.exitCode = 1; });
+run().catch(error => {
+  if (process.env.GITHUB_ACTIONS) {
+    console.error('::error::' + error.message.replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A'));
+  }
+  console.error(error);
+  process.exitCode = 1;
+});
