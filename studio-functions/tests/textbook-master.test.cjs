@@ -39,3 +39,17 @@ test('no permission or an unconfigured connector fails without returning provide
   throw Object.assign(Error('private credentials'),{status:502});
  }}),{status:502,message:'教科書本文マスターの読み取りに失敗しました'});
 });
+
+test('read-only preflight uses the same credentials and reads only the header range', async () => {
+ const { checkTextbookMasterHeader } = require('../textbook-master.cjs');
+ const calls = [];
+ await checkTextbookMasterHeader({config,getRuntimeToken:async()=> 'runtime',fetcher:async(url,options)=>{
+  calls.push({url,options});
+  return url.startsWith('https://iamcredentials.') ? new Response('{"accessToken":"reader"}') :
+   new Response(JSON.stringify({values:[HEADERS]}));
+ }});
+ assert.equal(calls.length,2);
+ assert.equal(calls[1].options.method,'GET');
+ assert.match(decodeURIComponent(calls[1].url), /\/values\/'教科書本文マスター'!1:1\?/);
+ assert.equal(calls[1].options.headers.Authorization,'Bearer reader');
+});

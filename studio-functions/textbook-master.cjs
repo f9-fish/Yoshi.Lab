@@ -20,11 +20,15 @@ function validateSelection(input) {
  return { subject, lesson: clean(lesson), part: partKey(part) };
 }
 
-function assembleTextbookMaster(values, selection) {
+function assertHeaders(values) {
  if (!Array.isArray(values) || !Array.isArray(values[0]) || values[0].length !== HEADERS.length ||
      values[0].some((header,index) => header !== HEADERS[index])) {
   throw fail(422,'教科書本文マスターの列名と順序を確認してください');
  }
+}
+
+function assembleTextbookMaster(values, selection) {
+ assertHeaders(values);
  const ids = new Set(), numbers = new Set(), matches = [];
  for (let index = 1; index < values.length; index++) {
   const row = values[index];
@@ -59,8 +63,7 @@ async function sheetValues(response) {
  return JSON.parse(Buffer.concat(chunks).toString('utf8')).values;
 }
 
-async function readTextbookMaster(input, { config, getRuntimeToken, fetcher = fetch }) {
- const selection = validateSelection(input);
+async function fetchMasterValues({ config, getRuntimeToken, fetcher = fetch }, headerOnly = false) {
  const spreadsheetId = config.STUDIO_MASTER_SPREADSHEET_ID;
  const reader = config.STUDIO_MASTER_READER_SERVICE_ACCOUNT;
  if (!/^[A-Za-z0-9_-]{20,100}$/.test(spreadsheetId || '') ||
@@ -79,7 +82,7 @@ async function readTextbookMaster(input, { config, getRuntimeToken, fetcher = fe
   if (!credentials.ok) throw fail(502,'本文マスターの読み取り認証を確認できません');
   const { accessToken } = await credentials.json();
   if (typeof accessToken !== 'string' || !accessToken) throw fail(502,'本文マスターの読み取り認証を確認できません');
-  const range = encodeURIComponent("'" + TAB + "'");
+  const range = encodeURIComponent("'" + TAB + "'" + (headerOnly ? "!1:1" : ""));
   const url = 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheetId + '/values/' + range +
    '?majorDimension=ROWS&valueRenderOption=FORMATTED_VALUE';
   const response = await fetcher(url, { method:'GET', headers:{ Authorization:'Bearer ' + accessToken },
@@ -91,7 +94,16 @@ async function readTextbookMaster(input, { config, getRuntimeToken, fetcher = fe
   if (error instanceof MasterError) throw error;
   throw fail(502,'教科書本文マスターの読み取りに失敗しました');
  }
- return assembleTextbookMaster(values, selection);
+ return values;
 }
 
-module.exports = { HEADERS, assembleTextbookMaster, readTextbookMaster, validateSelection };
+async function readTextbookMaster(input, options) {
+ const selection = validateSelection(input);
+ return assembleTextbookMaster(await fetchMasterValues(options), selection);
+}
+
+async function checkTextbookMasterHeader(options) {
+ assertHeaders(await fetchMasterValues(options, true));
+}
+
+module.exports = { HEADERS, assembleTextbookMaster, checkTextbookMasterHeader, readTextbookMaster, validateSelection };
