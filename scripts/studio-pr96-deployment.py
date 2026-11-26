@@ -162,15 +162,18 @@ def source_archive(client, function):
 
 
 def known_legacy_index(pr_base):
+    fallback_comment = b"// Do not silently switch models when a future deployment loses its runtime setting.\n"
     explicit_model = b"const model=String(process.env.STUDIO_GEMINI_MODEL||'').trim();\n"
     fallback_model = b"const model=process.env.STUDIO_GEMINI_MODEL||'gemini-2.5-flash';\n"
     missing_model_check = (
         "  if(action==='generate'&&!model)return json(res,503,"
         "{error:'AIモデルが未設定です。管理者にSTUDIO_GEMINI_MODELの確認を依頼してください'});\n"
     ).encode()
-    if pr_base.count(explicit_model) != 1 or pr_base.count(missing_model_check) != 1:
-        raise Stop('PR #96の基準に既知の2差分を一意に適用できません')
-    return pr_base.replace(explicit_model, fallback_model, 1).replace(missing_model_check, b'', 1)
+    if any(pr_base.count(line) != 1 for line in (fallback_comment, explicit_model, missing_model_check)):
+        raise Stop('PR #96の基準に既知の3差分を一意に適用できません')
+    return (pr_base.replace(fallback_comment, b'', 1)
+            .replace(explicit_model, fallback_model, 1)
+            .replace(missing_model_check, b'', 1))
 
 
 def preflight_fingerprint(state, archive, new_index):

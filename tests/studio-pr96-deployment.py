@@ -29,14 +29,15 @@ class DeploymentTest(unittest.TestCase):
         with self.assertRaises(d.Stop):
             d.replacement(source.getvalue(), {**original, 'package-lock.json': b'wrong'}, b'new-index')
 
-    def test_known_legacy_requires_exactly_the_two_confirmed_differences(self):
+    def test_known_legacy_requires_exactly_the_three_confirmed_differences(self):
+        comment = b"// Do not silently switch models when a future deployment loses its runtime setting.\n"
         explicit = b"const model=String(process.env.STUDIO_GEMINI_MODEL||'').trim();\n"
         fallback = b"const model=process.env.STUDIO_GEMINI_MODEL||'gemini-2.5-flash';\n"
         check = (
             "  if(action==='generate'&&!model)return json(res,503,"
             "{error:'AIモデルが未設定です。管理者にSTUDIO_GEMINI_MODELの確認を依頼してください'});\n"
         ).encode()
-        base = b'// untouched\n' + explicit + check + b'// untouched tail\n'
+        base = b'// untouched\n' + comment + explicit + check + b'// untouched tail\n'
         expected = b'// untouched\n' + fallback + b'// untouched tail\n'
         other_files = {name: name.encode() for name in d.SOURCE_FILES if name != 'index.js'}
         before = {**other_files, 'index.js': base}
@@ -49,12 +50,15 @@ class DeploymentTest(unittest.TestCase):
                     bundle.writestr(name, content)
             return source.getvalue()
 
+        self.assertEqual(d.known_legacy_index(base), expected)
         data, baseline = d.replacement(archive(expected), before, desired)
         self.assertEqual(baseline, 'known-legacy-model-fallback')
         with zipfile.ZipFile(io.BytesIO(data)) as bundle:
             self.assertEqual(bundle.read('index.js'), desired)
             self.assertNotIn(b'gemini-2.5-flash', bundle.read('index.js'))
-        for index in [expected + b'// extra\n', expected.replace(fallback, explicit), expected.replace(fallback, fallback + check)]:
+        for index in [expected + b'// extra\n', expected.replace(fallback, explicit),
+                      expected.replace(fallback, fallback + check), expected.replace(fallback, comment + fallback),
+                      expected.replace(b'// untouched\n', b'// untouched \n')]:
             with self.subTest(index=index), self.assertRaises(d.Stop):
                 d.replacement(archive(index), before, desired)
 
