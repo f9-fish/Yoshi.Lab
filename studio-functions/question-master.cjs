@@ -50,7 +50,7 @@ function storageConfig(config) {
  return {sheet,writer};
 }
 
-async function authenticatedSheets({config,fetcher,getRuntimeToken}) {
+async function authenticatedSheets({config,fetcher,getRuntimeToken},readOnly=false) {
  const settings=storageConfig(config);
  if(!settings)throw fail(503,'問題マスター専用の保存設定を確認してください');
  const {sheet,writer}=settings;
@@ -59,7 +59,7 @@ async function authenticatedSheets({config,fetcher,getRuntimeToken}) {
  if(!bearer)throw fail(502,'問題マスターの実行認証を確認できません');
  const response=await fetcher('https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/'+encodeURIComponent(writer)+':generateAccessToken',{
   method:'POST',signal,redirect:'error',headers:{Authorization:'Bearer '+bearer,'Content-Type':'application/json'},
-  body:JSON.stringify({scope:['https://www.googleapis.com/auth/spreadsheets'],lifetime:'300s'})
+  body:JSON.stringify({scope:['https://www.googleapis.com/auth/spreadsheets'+(readOnly?'.readonly':'')],lifetime:'300s'})
  });
  if(!response.ok)throw fail(502,'問題マスターの保存用アカウントを確認してください');
  const {accessToken}=await response.json();
@@ -68,6 +68,21 @@ async function authenticatedSheets({config,fetcher,getRuntimeToken}) {
   method:body?'POST':'GET',signal,redirect:'error',headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},
   ...(body?{body:JSON.stringify(body)}:{})
  });
+}
+
+async function checkQuestionMaster(options) {
+ try{
+  const request=await authenticatedSheets(options,true);
+  const response=await request('?fields=spreadsheetId');
+  if(!response.ok)throw fail(502,'問題マスターへの閲覧アクセスを確認できません');
+  const result=await response.json();
+  if(result.spreadsheetId!==options.config.STUDIO_QUESTION_MASTER_SPREADSHEET_ID)
+   throw fail(502,'接続した問題マスターを確認できません');
+  return {connected:true,readOnly:true};
+ }catch(error){
+  if(error.status)throw error;
+  throw fail(502,'問題マスターの接続を確認できません');
+ }
 }
 
 async function saveBatch(body,uid,options) {
@@ -258,4 +273,4 @@ async function managedPublication(body,options,preview) {
  }
 }
 
-module.exports={HEADER,prepareBatch,saveBatch,searchBatches,sharedDraftsEnabled,updateQuestion,managedPublication};
+module.exports={HEADER,checkQuestionMaster,prepareBatch,saveBatch,searchBatches,sharedDraftsEnabled,updateQuestion,managedPublication};

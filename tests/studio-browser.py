@@ -15,6 +15,9 @@ with sync_playwright() as p:
    if u.hostname=='studioapi-bfaa4wjjga-an.a.run.app':
     calls.append(u.path)
     if u.path=='/generate':r.fulfill(json={'questions':questions,**({'sharedDraft':True} if shared else {})})
+    elif u.path=='/question-master/check':
+     assert r.request.post_data_json=={}
+     r.fulfill(json={'connected':True,'readOnly':True})
     elif u.path=='/question-master/save':
      batch=r.request.post_data_json
      retry_ids.append(batch['batchId'])
@@ -106,6 +109,8 @@ with sync_playwright() as p:
    tab.locator('#editor').wait_for(state='visible')
    return ctx,tab
   source_context,source_page=teacher_context()
+  source_page.locator('#checkQuestionMaster').click()
+  source_page.wait_for_function("document.getElementById('questionMasterConnection').textContent.includes('確認しました')")
   source_page.locator('#lesson').fill('TEST');source_page.locator('#source').fill('We protect the ocean.')
   source_page.locator('#generate').click()
   source_page.wait_for_function("document.getElementById('sharedStatus').textContent.includes('未保存')")
