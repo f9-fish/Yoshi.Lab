@@ -9,6 +9,8 @@ on:
       - 'studio-config.js'
       - 'scripts/studio-master-runtime-check.py'
       - 'scripts/studio-pr96-deployment.py'
+      - 'scripts/studio-question-master-deployment.py'
+      - 'tests/studio-question-master-deployment.py'
       - 'tests/studio-master-runtime-check.py'
       - '.github/workflows/studio-check.yml'
   push:
@@ -27,6 +29,7 @@ jobs:
           node-version: '22'
       - run: node --test studio-functions/tests/*.test.cjs
       - run: python3 tests/studio-master-runtime-check.py
+      - run: python3 tests/studio-question-master-deployment.py
       - run: node --check studio-functions/index.js
       - run: node --check studio-functions/studio-core.cjs
       - run: node --check studio-config.js

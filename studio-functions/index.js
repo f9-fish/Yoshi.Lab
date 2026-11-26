@@ -195,6 +195,8 @@ exports.studioApi=onRequest({region:'asia-northeast1',secrets:[geminiKey,githubT
   limited(req);
   const user=await authorized(req);
   const action=String(req.path||'').replace(/^\/+|\/+$/g,'');
+  const pilotUid=process.env.STUDIO_QUESTION_MASTER_PILOT_TEACHER_UID;
+  const shared=sharedDraftsEnabled(process.env)&&(!pilotUid||pilotUid===user.uid);
   if(action==='textbook-master'||action==='textbook-master/check'){
    const options={
     config:process.env,fetcher:fetch,
@@ -209,6 +211,7 @@ exports.studioApi=onRequest({region:'asia-northeast1',secrets:[geminiKey,githubT
    return json(res,200,await readTextbookMaster(req.body,options));
   }
   if(action==='question-master/save'||action==='question-master/search'||action==='question-master/update'){
+   if(pilotUid&&pilotUid!==user.uid)throw fail(403,'試験運用の共有履歴は指定教員のみ利用できます');
    const options={
     config:process.env,fetcher:fetch,
     getRuntimeToken:async()=> (await applicationDefault().getAccessToken()).access_token,
@@ -218,7 +221,9 @@ exports.studioApi=onRequest({region:'asia-northeast1',secrets:[geminiKey,githubT
    return json(res,200,result);
   }
   if(action!=='generate'&&action!=='preview'&&action!=='publish')return json(res,404,{error:'未対応の操作です'});
-  if((action==='preview'||action==='publish')&&sharedDraftsEnabled(process.env)){
+  if(pilotUid===user.uid&&(action==='preview'||action==='publish'))
+   throw fail(409,'試験運用中はこのアカウントで教材を公開できません');
+  if((action==='preview'||action==='publish')&&shared){
    const options={config:process.env,fetcher:fetch,
     getRuntimeToken:async()=> (await applicationDefault().getAccessToken()).access_token};
    if(action==='publish'){
@@ -240,7 +245,7 @@ exports.studioApi=onRequest({region:'asia-northeast1',secrets:[geminiKey,githubT
    const input=checkInput(req.body);
    // Never log passages, tokens, model output or user emails.
    const result=await generate(input);
-   return json(res,200,sharedDraftsEnabled(process.env)?{...result,sharedDraft:true}:result);
+   return json(res,200,shared?{...result,sharedDraft:true}:result);
   }
   if(action==='preview'){
    const input=checkInput(req.body);

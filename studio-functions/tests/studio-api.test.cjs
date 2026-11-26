@@ -4,9 +4,9 @@ const core=require('../studio-core.cjs');
 const master=require('../textbook-master.cjs');
 const questions=()=>({vocabulary:[{question:'ocean',answer:'海',translation:'海'}],cloze:[{question:'We (protect) the ocean.',answer:'私たちは海を守る。',translation:'protectは守る'}],qa:[{question:'What do we protect?',answer:'The ocean.',translation:'何を守りますか'}],trueFalse:[{question:'We protect the ocean.',answer:'True',translation:'海を守る'}],discussion:[{question:'How can you help?',answer:'I collect rubbish.',translation:'どう協力できますか'}]});
 const input={subject:'英C',lesson:'TEST',part:'1',source:'We protect the ocean.',count:1};
-function harness({teacher=true,provider='google.com',verified=true,quota=true,sha='old',geminiFail=false,model='gemini-configured-test-model',geminiResponse,githubResponse,clock,masterConfig={},masterResponse}={}){
+function harness({uid='teacher-test',teacher=true,provider='google.com',verified=true,quota=true,sha='old',geminiFail=false,model='gemini-configured-test-model',geminiResponse,githubResponse,clock,masterConfig={},masterResponse}={}){
  let handler;const calls=[],reads=[],logs=[];
- const ctx={exports:{},Buffer,AbortController,setTimeout:clock?.setTimeout||setTimeout,clearTimeout:clock?.clearTimeout||clearTimeout,console:{error(){},info(line){logs.push(JSON.parse(line))}},process:{env:{STUDIO_ALLOWED_ORIGINS:'https://f9-fish.github.io',STUDIO_GEMINI_MODEL:model,...masterConfig}},fetch:async(url,opts)=>{calls.push({url,opts});if(url.startsWith('https://iamcredentials.googleapis.com')||url.startsWith('https://sheets.googleapis.com'))return masterResponse(url,opts);if(url.includes('generativelanguage'))return geminiResponse?geminiResponse(opts):{ok:!geminiFail,status:geminiFail?503:200,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({questions:questions()})}]}}]})};if(githubResponse)return githubResponse(url,opts);if(opts.method==='PUT')return {ok:true,json:async()=>({commit:{sha:'mock-commit'}})};return {ok:true,json:async()=>({sha,type:'file',encoding:'base64',content:Buffer.from('[]').toString('base64')})};},require(name){if(name==='firebase-functions/v2/https')return {onRequest:(config,fn)=>(handler=fn)};if(name==='firebase-functions/params')return {defineSecret:()=>({value:()=> 'mock-secret'})};if(name==='firebase-admin/app')return {getApps:()=>[{}],applicationDefault:()=>({getAccessToken:async()=>({access_token:'mock-runtime'})})};if(name==='firebase-admin/auth')return {getAuth:()=>({verifyIdToken:async()=>({uid:'teacher-test',email_verified:verified,firebase:{sign_in_provider:provider}})})};if(name==='firebase-admin/database')return {getDatabase:()=>({ref:p=>(reads.push(p),{get:async()=>({val:()=>teacher}),transaction:async()=>({committed:quota})})})};if(name==='./studio-core.cjs')return core;if(name==='./textbook-master.cjs')return master;if(name==='./question-master.cjs')return require('../question-master.cjs');throw Error(name);}};
+ const ctx={exports:{},Buffer,AbortController,setTimeout:clock?.setTimeout||setTimeout,clearTimeout:clock?.clearTimeout||clearTimeout,console:{error(){},info(line){logs.push(JSON.parse(line))}},process:{env:{STUDIO_ALLOWED_ORIGINS:'https://f9-fish.github.io',STUDIO_GEMINI_MODEL:model,...masterConfig}},fetch:async(url,opts)=>{calls.push({url,opts});if(url.startsWith('https://iamcredentials.googleapis.com')||url.startsWith('https://sheets.googleapis.com'))return masterResponse(url,opts);if(url.includes('generativelanguage'))return geminiResponse?geminiResponse(opts):{ok:!geminiFail,status:geminiFail?503:200,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({questions:questions()})}]}}]})};if(githubResponse)return githubResponse(url,opts);if(opts.method==='PUT')return {ok:true,json:async()=>({commit:{sha:'mock-commit'}})};return {ok:true,json:async()=>({sha,type:'file',encoding:'base64',content:Buffer.from('[]').toString('base64')})};},require(name){if(name==='firebase-functions/v2/https')return {onRequest:(config,fn)=>(handler=fn)};if(name==='firebase-functions/params')return {defineSecret:()=>({value:()=> 'mock-secret'})};if(name==='firebase-admin/app')return {getApps:()=>[{}],applicationDefault:()=>({getAccessToken:async()=>({access_token:'mock-runtime'})})};if(name==='firebase-admin/auth')return {getAuth:()=>({verifyIdToken:async()=>({uid,email_verified:verified,firebase:{sign_in_provider:provider}})})};if(name==='firebase-admin/database')return {getDatabase:()=>({ref:p=>(reads.push(p),{get:async()=>({val:()=>teacher}),transaction:async()=>({committed:quota})})})};if(name==='./studio-core.cjs')return core;if(name==='./textbook-master.cjs')return master;if(name==='./question-master.cjs')return require('../question-master.cjs');throw Error(name);}};
  if(model===null)delete ctx.process.env.STUDIO_GEMINI_MODEL;
  vm.runInNewContext(fs.readFileSync(require.resolve('../index.js'),'utf8'),ctx);
  return {calls,reads,logs,async send(action,body=input,{auth=true,origin='https://f9-fish.github.io',method='POST'}={}){const req={headers:{origin,...(auth?{authorization:'Bearer mock-token'}:{})},method,path:'/'+action,body,is:()=>true};let code=200,data;const res={set(){return this},status(c){code=c;return this},json(d){data=d;return this},end(){return this}};await handler(req,res);return {code,data};}};
@@ -277,4 +277,20 @@ test('revision races reject stale edits and an approved partial publication reco
  assert.equal(rows[1][17],commit);
  assert.ok(rows.slice(2).every(row=>row[10]==='要確認'));
  assert.equal((await h.send('question-master/update',{batchId,questionId:first,version:5,operation:'return'})).code,409);
+});
+
+test('pilot limits shared writes to one teacher and blocks pilot publication',async()=>{
+ const masterConfig={STUDIO_QUESTION_MASTER_SPREADSHEET_ID:'independent-sheet-id-123456789',
+  STUDIO_QUESTION_MASTER_WRITER_SERVICE_ACCOUNT:'writer@sample-project.iam.gserviceaccount.com',
+  STUDIO_QUESTION_MASTER_PILOT_TEACHER_UID:'teacher-test'};
+ const pilot=harness({masterConfig});
+ assert.equal((await pilot.send('generate')).data.sharedDraft,true);
+ for(const route of ['preview','publish'])assert.equal((await pilot.send(route)).code,409);
+ assert.equal(pilot.calls.length,1);
+ const peer=harness({masterConfig,uid:'other-teacher'});
+ for(const action of ['save','search','update'])
+  assert.equal((await peer.send('question-master/'+action)).code,403);
+ assert.equal(peer.calls.length,0);
+ assert.equal((await peer.send('generate')).data.sharedDraft,undefined);
+ assert.equal((await peer.send('publish',{...input,questions:questions(),expectedSha:'old'})).code,200);
 });
