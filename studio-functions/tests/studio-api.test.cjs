@@ -4,9 +4,9 @@ const core=require('../studio-core.cjs');
 const master=require('../textbook-master.cjs');
 const questions=()=>({vocabulary:[{question:'ocean',answer:'海',translation:'海'}],cloze:[{question:'We (protect) the ocean.',answer:'私たちは海を守る。',translation:'protectは守る'}],qa:[{question:'What do we protect?',answer:'The ocean.',translation:'何を守りますか'}],trueFalse:[{question:'We protect the ocean.',answer:'True',translation:'海を守る'}],discussion:[{question:'How can you help?',answer:'I collect rubbish.',translation:'どう協力できますか'}]});
 const input={subject:'英C',lesson:'TEST',part:'1',source:'We protect the ocean.',count:1};
-function harness({teacher=true,provider='google.com',verified=true,quota=true,sha='old',geminiFail=false,model='gemini-configured-test-model',geminiResponse,clock,masterConfig={},masterResponse}={}){
+function harness({teacher=true,provider='google.com',verified=true,quota=true,sha='old',geminiFail=false,model='gemini-configured-test-model',geminiResponse,githubResponse,clock,masterConfig={},masterResponse}={}){
  let handler;const calls=[],reads=[],logs=[];
- const ctx={exports:{},Buffer,AbortController,setTimeout:clock?.setTimeout||setTimeout,clearTimeout:clock?.clearTimeout||clearTimeout,console:{error(){},info(line){logs.push(JSON.parse(line))}},process:{env:{STUDIO_ALLOWED_ORIGINS:'https://f9-fish.github.io',STUDIO_GEMINI_MODEL:model,...masterConfig}},fetch:async(url,opts)=>{calls.push({url,opts});if(url.startsWith('https://iamcredentials.googleapis.com')||url.startsWith('https://sheets.googleapis.com'))return masterResponse(url,opts);if(url.includes('generativelanguage'))return geminiResponse?geminiResponse(opts):{ok:!geminiFail,status:geminiFail?503:200,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({questions:questions()})}]}}]})};if(opts.method==='PUT')return {ok:true,json:async()=>({commit:{sha:'mock-commit'}})};return {ok:true,json:async()=>({sha,type:'file',encoding:'base64',content:Buffer.from('[]').toString('base64')})};},require(name){if(name==='firebase-functions/v2/https')return {onRequest:(config,fn)=>(handler=fn)};if(name==='firebase-functions/params')return {defineSecret:()=>({value:()=> 'mock-secret'})};if(name==='firebase-admin/app')return {getApps:()=>[{}],applicationDefault:()=>({getAccessToken:async()=>({access_token:'mock-runtime'})})};if(name==='firebase-admin/auth')return {getAuth:()=>({verifyIdToken:async()=>({uid:'teacher-test',email_verified:verified,firebase:{sign_in_provider:provider}})})};if(name==='firebase-admin/database')return {getDatabase:()=>({ref:p=>(reads.push(p),{get:async()=>({val:()=>teacher}),transaction:async()=>({committed:quota})})})};if(name==='./studio-core.cjs')return core;if(name==='./textbook-master.cjs')return master;throw Error(name);}};
+ const ctx={exports:{},Buffer,AbortController,setTimeout:clock?.setTimeout||setTimeout,clearTimeout:clock?.clearTimeout||clearTimeout,console:{error(){},info(line){logs.push(JSON.parse(line))}},process:{env:{STUDIO_ALLOWED_ORIGINS:'https://f9-fish.github.io',STUDIO_GEMINI_MODEL:model,...masterConfig}},fetch:async(url,opts)=>{calls.push({url,opts});if(url.startsWith('https://iamcredentials.googleapis.com')||url.startsWith('https://sheets.googleapis.com'))return masterResponse(url,opts);if(url.includes('generativelanguage'))return geminiResponse?geminiResponse(opts):{ok:!geminiFail,status:geminiFail?503:200,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({questions:questions()})}]}}]})};if(githubResponse)return githubResponse(url,opts);if(opts.method==='PUT')return {ok:true,json:async()=>({commit:{sha:'mock-commit'}})};return {ok:true,json:async()=>({sha,type:'file',encoding:'base64',content:Buffer.from('[]').toString('base64')})};},require(name){if(name==='firebase-functions/v2/https')return {onRequest:(config,fn)=>(handler=fn)};if(name==='firebase-functions/params')return {defineSecret:()=>({value:()=> 'mock-secret'})};if(name==='firebase-admin/app')return {getApps:()=>[{}],applicationDefault:()=>({getAccessToken:async()=>({access_token:'mock-runtime'})})};if(name==='firebase-admin/auth')return {getAuth:()=>({verifyIdToken:async()=>({uid:'teacher-test',email_verified:verified,firebase:{sign_in_provider:provider}})})};if(name==='firebase-admin/database')return {getDatabase:()=>({ref:p=>(reads.push(p),{get:async()=>({val:()=>teacher}),transaction:async()=>({committed:quota})})})};if(name==='./studio-core.cjs')return core;if(name==='./textbook-master.cjs')return master;if(name==='./question-master.cjs')return require('../question-master.cjs');throw Error(name);}};
  if(model===null)delete ctx.process.env.STUDIO_GEMINI_MODEL;
  vm.runInNewContext(fs.readFileSync(require.resolve('../index.js'),'utf8'),ctx);
  return {calls,reads,logs,async send(action,body=input,{auth=true,origin='https://f9-fish.github.io',method='POST'}={}){const req={headers:{origin,...(auth?{authorization:'Bearer mock-token'}:{})},method,path:'/'+action,body,is:()=>true};let code=200,data;const res={set(){return this},status(c){code=c;return this},json(d){data=d;return this},end(){return this}};await handler(req,res);return {code,data};}};
@@ -149,4 +149,132 @@ test('runtime diagnostic reads only the test sheet header after teacher auth', a
   if(status===200)assert.deepEqual({...result.data},{headerVerified:true});
   assert.doesNotMatch(JSON.stringify({result,logs:h.logs}),/ephemeral|mock-runtime|原文ID/);
  }
+});
+
+test('separate save atomically stores all ten generated questions and verifies retries',async()=>{
+ const batchId='751fc4af-84a0-48b0-9981-79e998adf540';
+ const config={STUDIO_QUESTION_MASTER_SPREADSHEET_ID:'independent-sheet-id-123456789',
+  STUDIO_QUESTION_MASTER_WRITER_SERVICE_ACCOUNT:'writer@sample-project.iam.gserviceaccount.com'};
+ const ten=Object.fromEntries(Object.entries(questions()).map(([type,items])=>[type,[items[0],
+  {...items[0],question:items[0].question+' 2'}]]));
+ let cells,writeAttempts=0,tabs=0;
+ const h=harness({masterConfig:config,
+  geminiResponse:()=>({ok:true,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({questions:ten})}]}}]})}),
+  masterResponse(url,opts){
+   if(url.includes('iamcredentials'))return {ok:true,json:async()=>({accessToken:'writer-token'})};
+   if(url.endsWith(':batchUpdate')){
+    writeAttempts++;
+    const [add,update]=JSON.parse(opts.body).requests;
+    assert.equal(add.addSheet.properties.sheetId,update.updateCells.start.sheetId);
+    if(cells)return {ok:false,status:400};
+    tabs++;
+    cells=update.updateCells.rows.map(row=>row.values.map(v=>v.userEnteredValue.stringValue));
+    throw Error('response lost after commit');
+   }
+   if(url.includes('?fields='))return {ok:true,json:async()=>({sheets:[{properties:{title:'batch_'+batchId.replaceAll('-','_'),index:1}}]})};
+   if(url.includes(':batchGet'))return {ok:true,json:async()=>({valueRanges:[{values:cells}]})};
+   assert.equal(opts.method,'GET');
+   return {ok:true,json:async()=>({values:cells})};
+  }});
+ const generated=await h.send('generate',{...input,count:2});
+ assert.equal(generated.code,200);
+ assert.equal(generated.data.sharedDraft,true);
+ assert.equal(h.calls.length,1);
+ const data={...input,count:2,batchId,questions:generated.data.questions};
+ const saved=await Promise.all([h.send('question-master/save',data),h.send('question-master/save',data)]);
+ assert.ok(saved.every(r=>r.code===200&&r.data.savedCount===10));
+ assert.equal(tabs,1);
+ assert.equal(writeAttempts,2);
+ assert.ok(cells.slice(1).every(row=>row[10]==='要確認'&&row[14]==='teacher-test'));
+ assert.ok(cells.slice(1).every(row=>row[15].length===64));
+ const history=await h.send('question-master/search',{subject:'英C',type:'cloze',status:'要確認'});
+ assert.equal(history.code,200);
+ assert.equal(history.data.batches[0].items.length,2);
+ assert.equal(history.data.batches[0].batchId,batchId);
+ assert.equal((await h.send('question-master/save',{...data,source:'Changed source'})).code,409);
+ assert.equal((await h.send('publish',{...data,expectedSha:'old'})).code,400);
+ assert.ok(h.calls.every(c=>!c.url.includes('api.github.com')));
+});
+
+test('question master saves fail closed for unauthorized teachers, permission and network failure',async()=>{
+ const data={...input,batchId:'751fc4af-84a0-48b0-9981-79e998adf540',questions:questions()};
+ const config={STUDIO_QUESTION_MASTER_SPREADSHEET_ID:'independent-sheet-id-123456789',
+  STUDIO_QUESTION_MASTER_WRITER_SERVICE_ACCOUNT:'writer@sample-project.iam.gserviceaccount.com'};
+ for(const [setup,status] of [[{},503],[{teacher:false,masterConfig:config},403]]){
+  const h=harness(setup);
+  assert.equal((await h.send('question-master/save',data)).code,status);
+  assert.equal(h.calls.length,0);
+ }
+ for(const reply of [()=>({ok:false,status:403}),()=>{throw new DOMException('timeout','TimeoutError')}]){
+  const h=harness({masterConfig:config,masterResponse(url){
+   if(url.includes('iamcredentials'))return {ok:true,json:async()=>({accessToken:'writer-secret-response'})};
+   return reply();
+  }});
+  const saved=await h.send('question-master/save',data);
+  assert.equal(saved.code,502);
+  assert.doesNotMatch(JSON.stringify(saved),/writer-secret-response/);
+ }
+});
+
+test('revision races reject stale edits and an approved partial publication recovers without republishing',async()=>{
+ const config={STUDIO_QUESTION_MASTER_SPREADSHEET_ID:'independent-sheet-id-123456789',
+  STUDIO_QUESTION_MASTER_WRITER_SERVICE_ACCOUNT:'writer@sample-project.iam.gserviceaccount.com'};
+ const batchId='751fc4af-84a0-48b0-9981-79e998adf540';
+ const seed={...input,batchId,questions:questions()};
+ const oldSha='a'.repeat(40),commit='b'.repeat(40);
+ let rows,entries=[],history=[],puts=0,failFinish=true;
+ const locks=new Set();
+ const reply=(payload,status=200)=>({ok:status===200,status,json:async()=>structuredClone(payload)});
+ const setup={
+  masterConfig:config,
+  masterResponse(url,opts){
+   if(url.includes('iamcredentials'))return reply({accessToken:'writer-token'});
+   if(!url.endsWith(':batchUpdate'))return reply({values:rows});
+   const [guard,update]=JSON.parse(opts.body).requests;
+   const changed=update.updateCells.rows.map(row=>row.values.map(v=>v.userEnteredValue.stringValue));
+   if(guard.addSheet){rows=changed;return reply({});}
+   const lock=guard.createDeveloperMetadata.developerMetadata.metadataId;
+   if(locks.has(lock))return reply({},400);
+   if(changed.some(row=>row[10]==='公開済')&&failFinish){failFinish=false;return reply({},503);}
+   locks.add(lock);rows=[rows[0],...changed];return reply({});
+  },
+  githubResponse(url,opts){
+   if(opts.method==='PUT'){
+    puts++;
+    const info=JSON.parse(opts.body);
+    assert.equal(info.sha,oldSha);
+    entries=JSON.parse(Buffer.from(info.content,'base64'));
+    history=[{sha:commit,commit:{message:info.message,committer:{date:new Date().toISOString()}}}];
+    return reply({commit:{sha:commit}});
+   }
+   if(url.includes('/commits?'))return reply(history);
+   return reply({type:'file',encoding:'base64',sha:history.length?'c'.repeat(40):oldSha,
+    content:Buffer.from(JSON.stringify(entries)).toString('base64')});
+  }
+ };
+ const h=harness(setup), concurrent=harness(setup);
+ assert.equal((await h.send('question-master/save',seed)).code,200);
+ const first=rows[1][2];
+ const edit={batchId,questionId:first,version:1,operation:'edit',question:'waves',answer:'波',translation:'海の波',accepted:true};
+ const race=await Promise.all([h.send('question-master/update',edit),concurrent.send('question-master/update',{...edit,question:'sand'})]);
+ assert.deepEqual(race.map(r=>r.code).sort(),[200,409]);
+ assert.equal((await h.send('preview',{batchId,version:2})).code,400);
+ assert.equal(puts,0);
+ assert.equal((await h.send('question-master/update',{batchId,questionId:first,version:2,operation:'approve'})).code,200);
+ const preview=await h.send('preview',{batchId,version:3});
+ assert.equal(preview.code,200);
+ assert.equal(preview.data.newCount,1);
+ assert.equal((await h.send('publish',{batchId,version:3,expectedSha:preview.data.sha})).code,502);
+ assert.equal(puts,1);
+ assert.equal(rows[1][10],'承認済');
+ assert.equal(entries[0].questions.vocabulary.length,1);
+ assert.deepEqual(entries[0].questions.cloze,[]);
+ const recovery=await concurrent.send('preview',{batchId,version:4});
+ assert.equal(recovery.data.pending,true);
+ assert.equal((await concurrent.send('publish',{batchId,version:4,expectedSha:recovery.data.sha})).code,200);
+ assert.equal(puts,1);
+ assert.equal(rows[1][10],'公開済');
+ assert.equal(rows[1][17],commit);
+ assert.ok(rows.slice(2).every(row=>row[10]==='要確認'));
+ assert.equal((await h.send('question-master/update',{batchId,questionId:first,version:5,operation:'return'})).code,409);
 });

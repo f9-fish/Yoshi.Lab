@@ -9,11 +9,24 @@ with sync_playwright() as p:
  browser=p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])
  for width in [390,1366]:
   context=browser.new_context(viewport={'width':width,'height':900});page=context.new_page();calls=[];errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+  shared=False; saved=[]; retry_ids=[]
   def route(r):
    u=urlparse(r.request.url)
    if u.hostname=='studioapi-bfaa4wjjga-an.a.run.app':
     calls.append(u.path)
-    if u.path=='/generate':r.fulfill(json={'questions':questions})
+    if u.path=='/generate':r.fulfill(json={'questions':questions,**({'sharedDraft':True} if shared else {})})
+    elif u.path=='/question-master/save':
+     batch=r.request.post_data_json
+     retry_ids.append(batch['batchId'])
+     if len(retry_ids)==1:r.fulfill(status=502,json={'error':'mock timeout'})
+     else:
+      saved.append(batch)
+      r.fulfill(json={'batchId':batch['batchId'],'savedCount':5,'status':'要確認'})
+    elif u.path=='/question-master/search':
+     batch=saved[0]
+     r.fulfill(json={'batches':[{'batchId':batch['batchId'],'subject':'英C','lesson':'TEST','part':'1',
+       'createdAt':'2026-11-26T15:00:00Z','version':1,'items':[{'id':'mock-id','type':'vocabulary','status':'要確認',
+       'question':'ocean','answer':'海','translation':'海の意味','accepted':True,'version':1}]}],'nextCursor':None})
     elif u.path=='/textbook-master/check':
      assert r.request.post_data_json=={}
      assert r.request.headers.get('authorization')=='Bearer mock-token'
@@ -80,5 +93,34 @@ with sync_playwright() as p:
   assert page.evaluate('document.documentElement.scrollWidth<=innerWidth');page.locator('#start').click();page.screenshot(path=f'/tmp/studio-production-study-{width}.png',full_page=True)
   # No student-side API/record writes: only the six mocked teacher requests above.
   assert calls==['/textbook-master','/textbook-master','/generate','/preview','/preview','/publish'];assert not errors,errors
-  context.close();print('PASS',width,'teacher auth, generation, edit, draft, publish cancel/confirm (mock), logout; student five types, subjects, filters, no XP writes',flush=True)
+  context.close()
+  shared=True
+  def teacher_context():
+   ctx=browser.new_context(viewport={'width':width,'height':900})
+   tab=ctx.new_page()
+   tab.on('pageerror',lambda e:errors.append(str(e)))
+   tab.route('**/*',route)
+   tab.goto('https://local.test/teacher-studio.html')
+   tab.wait_for_function('!!window.YoshiAccount')
+   tab.evaluate('window.YoshiAccount.login()')
+   tab.locator('#editor').wait_for(state='visible')
+   return ctx,tab
+  source_context,source_page=teacher_context()
+  source_page.locator('#lesson').fill('TEST');source_page.locator('#source').fill('We protect the ocean.')
+  source_page.locator('#generate').click()
+  source_page.wait_for_function("document.getElementById('sharedStatus').textContent.includes('未保存')")
+  assert source_page.locator('#publishPanel').is_hidden()
+  source_page.locator('#retryShared').click()
+  source_page.wait_for_function("document.getElementById('sharedStatus').textContent.includes('保存しました')")
+  assert retry_ids[0]==retry_ids[1]
+  source_context.close()
+  history_context,history_page=teacher_context()
+  history_page.locator('#historyForm [name=lesson]').fill('TEST')
+  history_page.get_by_role('button',name='履歴を検索').click()
+  history_page.locator('#historyResults > details > summary').click()
+  history_page.get_by_text('単語・熟語 / 要確認 / ocean').click()
+  assert history_page.get_by_role('button',name='保存済みの内容を承認').is_visible()
+  assert not errors,errors
+  history_context.close()
+  print('PASS',width,'teacher auth, generation, edit, draft, publish cancel/confirm (mock), logout; student five types, subjects, filters, no XP writes',flush=True)
  browser.close()
