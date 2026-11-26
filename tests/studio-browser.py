@@ -13,7 +13,13 @@ with sync_playwright() as p:
    u=urlparse(r.request.url)
    if u.hostname=='studioapi-bfaa4wjjga-an.a.run.app':
     calls.append(u.path)
-    if u.path=='/generate':r.fulfill(json={'questions':questions})
+    if u.path=='/generate':
+     assert r.request.post_data_json=={'subject':'英C','lesson':'TEST','part':'1','count':2,
+      'source':'We protect the ocean.\nWe collect rubbish.'}
+     r.fulfill(json={'questions':questions})
+    elif u.path=='/textbook-master/check-candidate':
+     assert r.request.post_data_json=={'subject':'英C','lesson':'TEST','part':'1'}
+     r.fulfill(json={'headerVerified':True,'sentenceCount':2})
     elif u.path=='/textbook-master/check':
      assert r.request.post_data_json=={}
      assert r.request.headers.get('authorization')=='Bearer mock-token'
@@ -48,6 +54,11 @@ with sync_playwright() as p:
   assert page.locator('#source').input_value()==''
   calls.clear()
   page.locator('#lesson').fill('TEST');page.locator('#source').fill('Manual draft')
+  page.locator('#checkCandidate').click()
+  page.wait_for_function("document.getElementById('masterCheckStatus').textContent.includes('2文')")
+  assert calls==['/textbook-master/check-candidate']
+  assert page.locator('#source').input_value()=='Manual draft'
+  calls.clear()
   page.locator('#fetchMaster').click();page.locator('#masterPreview').wait_for(state='visible')
   assert page.locator('#source').input_value()=='Manual draft'
   assert 'We protect the ocean.' in page.locator('#masterText').inner_text()

@@ -150,3 +150,36 @@ test('runtime diagnostic reads only the test sheet header after teacher auth', a
   assert.doesNotMatch(JSON.stringify({result,logs:h.logs}),/ephemeral|mock-runtime|原文ID/);
  }
 });
+
+test('candidate checks use the server-selected sheet and return counts only', async()=>{
+ const active='active-test-sheet-123456789';
+ const candidate='candidate-sheet-123456789';
+ const masterConfig={STUDIO_MASTER_SPREADSHEET_ID:active,STUDIO_MASTER_CANDIDATE_SPREADSHEET_ID:candidate,
+  STUDIO_MASTER_READER_SERVICE_ACCOUNT:'reader@sample-project.iam.gserviceaccount.com'};
+ const input={subject:'英C',lesson:'Lesson 1',part:'1',spreadsheetId:'caller-selected-sheet'};
+ const row=['id','英C','Lesson 1','1','1','Private passage.'];
+ for(const [values,status,sheetStatus] of [
+  [[master.HEADERS,row],200,200],[[['wrong'],row],422,200],[[master.HEADERS],404,200],
+  [[master.HEADERS,[...row.slice(0,4),'0',row[5]]],422,200],
+  [[master.HEADERS,row,row],422,200],[[],502,403]
+ ]){
+  const h=harness({model:'',quota:false,masterConfig,masterResponse(url,opts){
+   if(url.includes('iamcredentials.googleapis.com'))return {ok:true,json:async()=>({accessToken:'reader-token'})};
+   assert.equal(opts.method,'GET');
+   assert.equal(decodeURIComponent(new URL(url).pathname),"/v4/spreadsheets/"+candidate+"/values/'教科書本文マスター'");
+   return new Response(JSON.stringify({values}),{status:sheetStatus});
+  }});
+  const result=await h.send('textbook-master/check-candidate',input);
+  assert.equal(result.code,status);
+  if(status===200)assert.deepEqual({...result.data},{headerVerified:true,sentenceCount:1});
+  assert.doesNotMatch(JSON.stringify([result,h.logs]),/Private passage|reader-token/);
+  assert.equal(h.calls.length,2);
+  assert.deepEqual(h.reads,['teacherUids/teacher-test']);
+ }
+ for(const [setup,status] of [[{teacher:false,masterConfig},403],[{masterConfig:{}},503],
+  [{masterConfig:{...masterConfig,STUDIO_MASTER_CANDIDATE_SPREADSHEET_ID:active}},503]]){
+  const h=harness(setup);
+  assert.equal((await h.send('textbook-master/check-candidate',input)).code,status);
+  assert.equal(h.calls.length,0);
+ }
+});

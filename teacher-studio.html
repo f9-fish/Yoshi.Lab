@@ -11,7 +11,7 @@
 <label>Lesson <input id="lesson" maxlength="80" placeholder="例：8 / 12 不定詞(1)"></label>
 <label>Part <input id="part" maxlength="30" value="1"></label>
 <label>問題数（各種類）<input id="count" type="number" min="1" max="15" value="2"></label></div>
-<div class="actions"><button type="button" id="fetchMaster">本文マスターから取得</button><button type="button" id="checkMaster">テストシートの接続を確認</button></div>
+<div class="actions"><button type="button" id="fetchMaster">本文マスターから取得</button><button type="button" id="checkMaster">テストシートの接続を確認</button><button type="button" id="checkCandidate">切り替え候補の本文形式を確認</button></div>
 <p id="masterCheckStatus" role="status"></p>
 <section id="masterPreview" class="hidden" aria-labelledby="masterHeading">
  <h3 id="masterHeading">取得した英文</h3>
@@ -89,6 +89,23 @@ $('checkMaster').addEventListener('click',async()=>{
   if(serial===authSerial)button.disabled=false;
  }
 });
+$('checkCandidate').addEventListener('click',async()=>{
+ const serial=authSerial, button=$('checkCandidate'), status=$('masterCheckStatus');
+ const selection=masterSelection();
+ if(!selection.lesson||!selection.part){status.textContent='科目・Lesson・Partを先に選んでください';return;}
+ button.disabled=true;
+ status.textContent='切り替え候補のヘッダーと本文形式を確認しています…';
+ try{
+  const data=await api('textbook-master/check-candidate',selection);
+  if(data.headerVerified!==true||!Number.isInteger(data.sentenceCount)||data.sentenceCount<1)
+   throw Error('候補シートの確認結果を取得できませんでした');
+  if(serial===authSerial)status.textContent=selection.subject+' / '+selection.lesson+' / Part '+selection.part+'：ヘッダーと本文形式を確認しました（'+data.sentenceCount+'文）';
+ }catch(error){
+  if(serial===authSerial)status.textContent=error.message;
+ }finally{
+  if(serial===authSerial)button.disabled=false;
+ }
+});
 $('applyMaster').addEventListener('click',()=>{
  if(busy||!masterCandidate||JSON.stringify(masterCandidate.selection)!==JSON.stringify(masterSelection()))return;
  $('source').value=masterCandidate.source;
@@ -104,5 +121,5 @@ $('generate').addEventListener('click',async()=>{if(busy)return;setBusy(true);tr
 $('save').addEventListener('click',()=>{try{if(!draft)throw Error('保存する問題がありません');localStorage.setItem(storageKey,JSON.stringify(draft));msg('この端末のブラウザに下書きを保存しました（共有・自動バックアップではありません）')}catch(e){msg(e.message,true)}});
 $('restore').addEventListener('click',()=>{try{const data=JSON.parse(localStorage.getItem(storageKey)||'null');if(!data)throw Error('保存済み下書きがありません');draft=normalize(data,data);clearMaster();for(const id of ['subject','lesson','part','source','count'])$(id).value=draft[id];render();msg('下書きを復元しました')}catch(e){msg(e.message,true)}});
 $('publish').addEventListener('click',async()=>{if(busy)return;try{const payload=selected();setBusy(true);$('publishStatus').textContent='サーバーで検証・公開中…';const preview=await api('preview',payload);if(!confirm('公開先：'+preview.slot+'\n採用：'+preview.newCount+'問\n'+(preview.replacing?'既存のAI教材 '+preview.previousCount+'問を置き換えます。':'新規のAI教材として追加します。')+'\n公開しますか？')){$('publishStatus').textContent='公開を取り消しました';return}payload.expectedSha=preview.sha;const result=await api('publish',payload);$('publishStatus').textContent='GitHubに保存しました。アプリへの配信は数分後になる場合があります。 '+(result.url||'')}catch(e){$('publishStatus').textContent=e.message;$('publishStatus').className='status error'}finally{setBusy(false)}});
-window.YoshiAccount.subscribe(async()=>{const serial=++authSerial;clearMaster();$('masterCheckStatus').textContent='';$('checkMaster').disabled=false;draft=null;$('review').classList.add('hidden');$('publishPanel').classList.add('hidden');$('questions').replaceChildren();$('source').value='';const a=window.YoshiAccount;if(!a)return;try{if(!a.user){$('authStatus').textContent='教員ダッシュボードでGoogleログインしてください';$('editor').classList.add('hidden');return}const allowed=await a.isTeacher();if(serial!==authSerial)return;$('authStatus').textContent=allowed?'教員権限を確認しました':'教員権限がありません';$('editor').classList.toggle('hidden',!allowed)}catch(e){$('authStatus').textContent='教員権限を確認できません: '+e.message;$('editor').classList.add('hidden')}});
+window.YoshiAccount.subscribe(async()=>{const serial=++authSerial;clearMaster();$('masterCheckStatus').textContent='';$('checkMaster').disabled=false;$('checkCandidate').disabled=false;draft=null;$('review').classList.add('hidden');$('publishPanel').classList.add('hidden');$('questions').replaceChildren();$('source').value='';const a=window.YoshiAccount;if(!a)return;try{if(!a.user){$('authStatus').textContent='教員ダッシュボードでGoogleログインしてください';$('editor').classList.add('hidden');return}const allowed=await a.isTeacher();if(serial!==authSerial)return;$('authStatus').textContent=allowed?'教員権限を確認しました':'教員権限がありません';$('editor').classList.toggle('hidden',!allowed)}catch(e){$('authStatus').textContent='教員権限を確認できません: '+e.message;$('editor').classList.add('hidden')}});
 </script></body></html>

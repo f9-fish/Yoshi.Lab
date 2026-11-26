@@ -154,7 +154,7 @@ exports.studioApi=onRequest({region:'asia-northeast1',secrets:[geminiKey,githubT
   limited(req);
   const user=await authorized(req);
   const action=String(req.path||'').replace(/^\/+|\/+$/g,'');
-  if(action==='textbook-master'||action==='textbook-master/check'){
+  if(action==='textbook-master'||action==='textbook-master/check'||action==='textbook-master/check-candidate'){
    const options={
     config:process.env,fetcher:fetch,
     getRuntimeToken:async()=> (await applicationDefault().getAccessToken()).access_token,
@@ -164,6 +164,15 @@ exports.studioApi=onRequest({region:'asia-northeast1',secrets:[geminiKey,githubT
      throw fail(503,'接続確認には指定のテストシートの設定が必要です');
     await checkTextbookMasterHeader(options);
     return json(res,200,{headerVerified:true});
+   }
+   if(action==='textbook-master/check-candidate'){
+    const candidate=process.env.STUDIO_MASTER_CANDIDATE_SPREADSHEET_ID;
+    if(!candidate||candidate===process.env.STUDIO_MASTER_SPREADSHEET_ID)
+     throw fail(503,'切り替え候補のシートが設定されていません');
+    const {sentenceCount}=await readTextbookMaster(req.body,{
+     ...options,config:{...process.env,STUDIO_MASTER_SPREADSHEET_ID:candidate},
+    });
+    return json(res,200,{headerVerified:true,sentenceCount});
    }
    return json(res,200,await readTextbookMaster(req.body,options));
   }
