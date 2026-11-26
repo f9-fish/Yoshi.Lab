@@ -1,11 +1,12 @@
 // VM + in-memory services only. No Firebase, Gemini or GitHub network requests.
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const core=require('../studio-core.cjs');
+const master=require('../textbook-master.cjs');
 const questions=()=>({vocabulary:[{question:'ocean',answer:'海',translation:'海'}],cloze:[{question:'We (protect) the ocean.',answer:'私たちは海を守る。',translation:'protectは守る'}],qa:[{question:'What do we protect?',answer:'The ocean.',translation:'何を守りますか'}],trueFalse:[{question:'We protect the ocean.',answer:'True',translation:'海を守る'}],discussion:[{question:'How can you help?',answer:'I collect rubbish.',translation:'どう協力できますか'}]});
 const input={subject:'英C',lesson:'TEST',part:'1',source:'We protect the ocean.',count:1};
-function harness({teacher=true,provider='google.com',verified=true,quota=true,sha='old',geminiFail=false,model='gemini-configured-test-model',geminiResponse,clock}={}){
+function harness({teacher=true,provider='google.com',verified=true,quota=true,sha='old',geminiFail=false,model='gemini-configured-test-model',geminiResponse,clock,masterConfig={},masterResponse}={}){
  let handler;const calls=[],reads=[],logs=[];
- const ctx={exports:{},Buffer,AbortController,setTimeout:clock?.setTimeout||setTimeout,clearTimeout:clock?.clearTimeout||clearTimeout,console:{error(){},info(line){logs.push(JSON.parse(line))}},process:{env:{STUDIO_ALLOWED_ORIGINS:'https://f9-fish.github.io',STUDIO_GEMINI_MODEL:model}},fetch:async(url,opts)=>{calls.push({url,opts});if(url.includes('generativelanguage'))return geminiResponse?geminiResponse(opts):{ok:!geminiFail,status:geminiFail?503:200,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({questions:questions()})}]}}]})};if(opts.method==='PUT')return {ok:true,json:async()=>({commit:{sha:'mock-commit'}})};return {ok:true,json:async()=>({sha,type:'file',encoding:'base64',content:Buffer.from('[]').toString('base64')})};},require(name){if(name==='firebase-functions/v2/https')return {onRequest:(config,fn)=>(handler=fn)};if(name==='firebase-functions/params')return {defineSecret:()=>({value:()=> 'mock-secret'})};if(name==='firebase-admin/app')return {getApps:()=>[{}]};if(name==='firebase-admin/auth')return {getAuth:()=>({verifyIdToken:async()=>({uid:'teacher-test',email_verified:verified,firebase:{sign_in_provider:provider}})})};if(name==='firebase-admin/database')return {getDatabase:()=>({ref:p=>(reads.push(p),{get:async()=>({val:()=>teacher}),transaction:async()=>({committed:quota})})})};if(name==='./studio-core.cjs')return core;throw Error(name);}};
+ const ctx={exports:{},Buffer,AbortController,setTimeout:clock?.setTimeout||setTimeout,clearTimeout:clock?.clearTimeout||clearTimeout,console:{error(){},info(line){logs.push(JSON.parse(line))}},process:{env:{STUDIO_ALLOWED_ORIGINS:'https://f9-fish.github.io',STUDIO_GEMINI_MODEL:model,...masterConfig}},fetch:async(url,opts)=>{calls.push({url,opts});if(url.startsWith('https://iamcredentials.googleapis.com')||url.startsWith('https://sheets.googleapis.com'))return masterResponse(url,opts);if(url.includes('generativelanguage'))return geminiResponse?geminiResponse(opts):{ok:!geminiFail,status:geminiFail?503:200,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({questions:questions()})}]}}]})};if(opts.method==='PUT')return {ok:true,json:async()=>({commit:{sha:'mock-commit'}})};return {ok:true,json:async()=>({sha,type:'file',encoding:'base64',content:Buffer.from('[]').toString('base64')})};},require(name){if(name==='firebase-functions/v2/https')return {onRequest:(config,fn)=>(handler=fn)};if(name==='firebase-functions/params')return {defineSecret:()=>({value:()=> 'mock-secret'})};if(name==='firebase-admin/app')return {getApps:()=>[{}],applicationDefault:()=>({getAccessToken:async()=>({access_token:'mock-runtime'})})};if(name==='firebase-admin/auth')return {getAuth:()=>({verifyIdToken:async()=>({uid:'teacher-test',email_verified:verified,firebase:{sign_in_provider:provider}})})};if(name==='firebase-admin/database')return {getDatabase:()=>({ref:p=>(reads.push(p),{get:async()=>({val:()=>teacher}),transaction:async()=>({committed:quota})})})};if(name==='./studio-core.cjs')return core;if(name==='./textbook-master.cjs')return master;throw Error(name);}};
  if(model===null)delete ctx.process.env.STUDIO_GEMINI_MODEL;
  vm.runInNewContext(fs.readFileSync(require.resolve('../index.js'),'utf8'),ctx);
  return {calls,reads,logs,async send(action,body=input,{auth=true,origin='https://f9-fish.github.io',method='POST'}={}){const req={headers:{origin,...(auth?{authorization:'Bearer mock-token'}:{})},method,path:'/'+action,body,is:()=>true};let code=200,data;const res={set(){return this},status(c){code=c;return this},json(d){data=d;return this},end(){return this}};await handler(req,res);return {code,data};}};
@@ -78,4 +79,36 @@ test('records only allowlisted token counts, status and timing while retaining a
  })),[{event:'studio_gemini_generation',outcome:'success',questionCount:10,finishReason:'STOP',promptTokenCount:321,
   candidatesTokenCount:987,thoughtsTokenCount:123,totalTokenCount:1431}]);
  assert.doesNotMatch(JSON.stringify(h.logs),/private-|mock-secret|mock-token|teacher-test|ocean/);
+});
+
+test('textbook master is available only to authorized teachers and uses no generation quota or publication', async () => {
+ const selection={subject:'英C',lesson:'8',part:'1'};
+ for(const [setup,options,status] of [[{}, {auth:false},401],[{teacher:false},{},403],[{provider:'password'},{},403],
+  [{},{origin:'https://unapproved.example'},403]]){
+  const h=harness(setup);
+  assert.equal((await h.send('textbook-master',selection,options)).code,status);
+  assert.equal(h.calls.length,0);
+ }
+ const disabled=harness({model:''});
+ assert.equal((await disabled.send('textbook-master',selection)).code,503);
+ assert.equal(disabled.calls.length,0);
+ const h=harness({model:'',masterConfig:{STUDIO_MASTER_SPREADSHEET_ID:'fake-sheet-id-1234567890123',
+  STUDIO_MASTER_READER_SERVICE_ACCOUNT:'reader@sample-project.iam.gserviceaccount.com'},
+ masterResponse(url,opts){
+  if(url.includes('iamcredentials.googleapis.com'))return {ok:true,json:async()=>({accessToken:'ephemeral-reader'})};
+  return new Response(JSON.stringify({values:[master.HEADERS,
+   ['b','英C','8','1','2','Second.','private translation'],
+   ['a','英C','8','Part 1','1','First.','private translation']]}));
+ }});
+ const result=await h.send('textbook-master',selection);
+ assert.equal(result.code,200);
+ assert.deepEqual(result.data,{source:'First.\nSecond.',sentenceCount:2});
+ assert.deepEqual(h.reads,['teacherUids/teacher-test']);
+ assert.equal(h.calls.length,2);
+ assert.equal(h.calls[0].opts.method,'POST');
+ assert.deepEqual(JSON.parse(h.calls[0].opts.body),{scope:['https://www.googleapis.com/auth/spreadsheets.readonly'],lifetime:'300s'});
+ assert.equal(h.calls[1].opts.method,'GET');
+ assert.match(decodeURIComponent(h.calls[1].url),/\/values\/'教科書本文マスター'/);
+ assert.equal(h.calls[1].opts.headers.Authorization,'Bearer ephemeral-reader');
+ assert.doesNotMatch(JSON.stringify(result),/private|ephemeral/);
 });
