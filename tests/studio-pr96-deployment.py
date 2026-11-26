@@ -3,6 +3,7 @@ import importlib.util
 import io
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 import zipfile
 
 path = Path(__file__).resolve().parents[1] / 'scripts/studio-pr96-deployment.py'
@@ -19,13 +20,58 @@ class DeploymentTest(unittest.TestCase):
             for name, content in original.items():
                 archive.writestr(name, content)
             archive.writestr('tests/example', b'untouched')
-        changed = d.replacement(source.getvalue(), original, b'new-index')
+        changed, baseline = d.replacement(source.getvalue(), original, b'new-index')
+        self.assertEqual(baseline, 'pr96-base')
         with zipfile.ZipFile(io.BytesIO(changed)) as archive:
             self.assertEqual(archive.read('index.js'), b'new-index')
             self.assertEqual(archive.read('studio-core.cjs'), original['studio-core.cjs'])
             self.assertEqual(archive.read('tests/example'), b'untouched')
         with self.assertRaises(d.Stop):
-            d.replacement(source.getvalue(), {**original, 'index.js': b'wrong'}, b'new-index')
+            d.replacement(source.getvalue(), {**original, 'package-lock.json': b'wrong'}, b'new-index')
+
+    def test_known_legacy_requires_exactly_the_two_confirmed_differences(self):
+        explicit = b"const model=String(process.env.STUDIO_GEMINI_MODEL||'').trim();\n"
+        fallback = b"const model=process.env.STUDIO_GEMINI_MODEL||'gemini-2.5-flash';\n"
+        check = (
+            "  if(action==='generate'&&!model)return json(res,503,"
+            "{error:'AIモデルが未設定です。管理者にSTUDIO_GEMINI_MODELの確認を依頼してください'});\n"
+        ).encode()
+        base = b'// untouched\n' + explicit + check + b'// untouched tail\n'
+        expected = b'// untouched\n' + fallback + b'// untouched tail\n'
+        other_files = {name: name.encode() for name in d.SOURCE_FILES if name != 'index.js'}
+        before = {**other_files, 'index.js': base}
+        desired = base + b'// PR 96\n'
+
+        def archive(index):
+            source = io.BytesIO()
+            with zipfile.ZipFile(source, 'w') as bundle:
+                for name, content in {**other_files, 'index.js': index}.items():
+                    bundle.writestr(name, content)
+            return source.getvalue()
+
+        data, baseline = d.replacement(archive(expected), before, desired)
+        self.assertEqual(baseline, 'known-legacy-model-fallback')
+        with zipfile.ZipFile(io.BytesIO(data)) as bundle:
+            self.assertEqual(bundle.read('index.js'), desired)
+            self.assertNotIn(b'gemini-2.5-flash', bundle.read('index.js'))
+        for index in [expected + b'// extra\n', expected.replace(fallback, explicit), expected.replace(fallback, fallback + check)]:
+            with self.subTest(index=index), self.assertRaises(d.Stop):
+                d.replacement(archive(index), before, desired)
+
+    def test_apply_refuses_to_start_without_read_only_fingerprint(self):
+        with patch('sys.argv', ['script', '--apply-approved']), patch.object(d, 'command') as command:
+            with self.assertRaisesRegex(d.Stop, '先に読み取り専用で'):
+                d.main()
+            command.assert_not_called()
+
+    def test_fingerprint_binds_configuration_archive_and_target(self):
+        state = [{'env': ['private-value'], 'revision': 'current'}]
+        actual = d.preflight_fingerprint(state, b'old-source', b'new-index')
+        self.assertRegex(actual, r'^[a-f0-9]{64}$')
+        self.assertEqual(actual, d.preflight_fingerprint([{'revision': 'current', 'env': ['private-value']}], b'old-source', b'new-index'))
+        for params in [([{'revision': 'other'}], b'old-source', b'new-index'),
+                       (state, b'other-archive', b'new-index'), (state, b'old-source', b'other-index')]:
+            self.assertNotEqual(actual, d.preflight_fingerprint(*params))
 
     def test_live_settings_and_traffic(self):
         rev = d.SERVICE + '/revisions/' + d.EXPECTED_REV

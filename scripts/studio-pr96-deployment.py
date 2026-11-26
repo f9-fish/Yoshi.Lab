@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Read-only preflight by default. An approved invocation can patch only the Gen 2 source."""
 import argparse
+import hashlib
 import io
 import json
 import re
@@ -160,6 +161,24 @@ def source_archive(client, function):
     return client.request(url, limit=MAX_ARCHIVE)
 
 
+def known_legacy_index(pr_base):
+    explicit_model = b"const model=String(process.env.STUDIO_GEMINI_MODEL||'').trim();\n"
+    fallback_model = b"const model=process.env.STUDIO_GEMINI_MODEL||'gemini-2.5-flash';\n"
+    missing_model_check = (
+        "  if(action==='generate'&&!model)return json(res,503,"
+        "{error:'AIモデルが未設定です。管理者にSTUDIO_GEMINI_MODELの確認を依頼してください'});\n"
+    ).encode()
+    if pr_base.count(explicit_model) != 1 or pr_base.count(missing_model_check) != 1:
+        raise Stop('PR #96の基準に既知の2差分を一意に適用できません')
+    return pr_base.replace(explicit_model, fallback_model, 1).replace(missing_model_check, b'', 1)
+
+
+def preflight_fingerprint(state, archive, new_index):
+    # No configuration values or archive contents are printed or persisted separately.
+    manifest = [state, hashlib.sha256(archive).hexdigest(), hashlib.sha256(new_index).hexdigest()]
+    return hashlib.sha256(json.dumps(manifest, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+
+
 def replacement(archive, before, after):
     output = io.BytesIO()
     try:
@@ -167,15 +186,22 @@ def replacement(archive, before, after):
             entries = old.infolist()
             if len({entry.filename for entry in entries}) != len(entries) or sum(i.file_size for i in entries) > MAX_ARCHIVE:
                 raise Stop('現行ソースのZIP形式を安全に検証できません')
-            if any(old.read(name) != before[name] for name in SOURCE_FILES):
-                raise Stop('現行ソースがPR #96の変更前と一致しません。更新を中止します')
+            if any(old.read(name) != before[name] for name in SOURCE_FILES if name != 'index.js'):
+                raise Stop('現行ソースの共通ファイルがPR #96の変更前と一致しません。更新を中止します')
+            live_index = old.read('index.js')
+            if live_index == before['index.js']:
+                baseline = 'pr96-base'
+            elif live_index == known_legacy_index(before['index.js']):
+                baseline = 'known-legacy-model-fallback'
+            else:
+                raise Stop('現行index.jsがPR #96の変更前または既知の旧版と一致しません。更新を中止します')
             with zipfile.ZipFile(output, 'w') as new:
                 new.comment = old.comment
                 for entry in entries:
                     new.writestr(entry, after if entry.filename == 'index.js' else old.read(entry))
     except (KeyError, zipfile.BadZipFile) as error:
         raise Stop('元のZIP内の実行ファイルを確認できません') from error
-    return output.getvalue()
+    return output.getvalue(), baseline
 
 
 def submit(client, data):
@@ -209,7 +235,13 @@ def submit(client, data):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--apply-approved', action='store_true', help='明示承認後のみ。Cloud Functionsのsourceを更新します')
+    parser.add_argument('--expected-preflight-sha256', help='読み取り専用の事前確認で得た照合値')
     args = parser.parse_args()
+    expected = args.expected_preflight_sha256
+    if args.apply_approved and not re.fullmatch(r'[a-f0-9]{64}', expected or ''):
+        raise Stop('先に読み取り専用で実行し、確認済みのpreflightSha256を指定してください')
+    if expected is not None and not args.apply_approved:
+        raise Stop('読み取り専用の場合は引数を指定しないでください')
     command('git', 'fetch', '--quiet', 'origin', '+refs/heads/main:refs/remotes/origin/main')
     command('git', 'merge-base', '--is-ancestor', PATCH, 'origin/main')
     current = {name: command('git', 'show', f'origin/main:studio-functions/{name}') for name in SOURCE_FILES}
@@ -221,11 +253,17 @@ def main():
     original = snapshot(client)
     report = matching_runtime(original, EXPECTED_REV)
     print(json.dumps({'stage': 'settings', **report}, ensure_ascii=False), flush=True)
-    plan = replacement(source_archive(client, original[0]), before, current['index.js'])
-    print(json.dumps({'stage': 'preflight', **report, 'currentSourceMatchesPrBase': True,
-                      'patch': PATCH, 'liveGeminiRequested': False}, ensure_ascii=False), flush=True)
+    archive = source_archive(client, original[0])
+    plan, baseline = replacement(archive, before, current['index.js'])
+    fingerprint = preflight_fingerprint(original, archive, current['index.js'])
+    print(json.dumps({'stage': 'preflight', **report, 'currentSourceBaseline': baseline,
+                      'currentSourceMatchesPrBase': baseline == 'pr96-base',
+                      'preflightSha256': fingerprint, 'patch': PATCH,
+                      'liveGeminiRequested': False}, ensure_ascii=False), flush=True)
     if not args.apply_approved:
         return
+    if expected != fingerprint:
+        raise Stop('確認した照合値と現在の設定・ソースが一致しません。更新を中止しました')
     if snapshot(client) != original:
         raise Stop('事前確認後に関数・IAM・リビジョンが変わりました。更新を中止しました')
     submit(client, plan)
