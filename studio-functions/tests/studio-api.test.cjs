@@ -220,7 +220,10 @@ test('revision races reject stale edits and an approved partial publication reco
  const config={STUDIO_QUESTION_MASTER_SPREADSHEET_ID:'independent-sheet-id-123456789',
   STUDIO_QUESTION_MASTER_WRITER_SERVICE_ACCOUNT:'writer@sample-project.iam.gserviceaccount.com'};
  const batchId='751fc4af-84a0-48b0-9981-79e998adf540';
- const seed={...input,batchId,questions:questions()};
+ const ten=Object.fromEntries(Object.entries(questions()).map(([type,[item]])=>[
+  type,[item,{...item,question:item.question+' 2'}]
+ ]));
+ const seed={...input,count:2,batchId,questions:ten};
  const oldSha='a'.repeat(40),commit='b'.repeat(40);
  let rows,entries=[],history=[],puts=0,failFinish=true;
  const locks=new Set();
@@ -253,7 +256,7 @@ test('revision races reject stale edits and an approved partial publication reco
   }
  };
  const h=harness(setup), concurrent=harness(setup);
- assert.equal((await h.send('question-master/save',seed)).code,200);
+ assert.equal((await h.send('question-master/save',seed)).data.savedCount,10);
  const first=rows[1][2];
  const edit={batchId,questionId:first,version:1,operation:'edit',question:'waves',answer:'波',translation:'海の波',accepted:true};
  const race=await Promise.all([h.send('question-master/update',edit),concurrent.send('question-master/update',{...edit,question:'sand'})]);
