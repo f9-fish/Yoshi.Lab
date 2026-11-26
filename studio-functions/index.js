@@ -1,13 +1,14 @@
 'use strict';
 const {onRequest}=require('firebase-functions/v2/https');
 const {defineSecret}=require('firebase-functions/params');
-const {initializeApp,getApps}=require('firebase-admin/app');
+const {initializeApp,getApps,applicationDefault}=require('firebase-admin/app');
 const {getAuth}=require('firebase-admin/auth');
 const {getDatabase}=require('firebase-admin/database');
 const {
   TYPES, checkInput, checkQuestions, normalizeContent,
   describeSlot, normalizedKey
 }=require('./studio-core.cjs');
+const {readTextbookMaster}=require('./textbook-master.cjs');
 
 if(!getApps().length)initializeApp({databaseURL:'https://yoshi-lab-db3eb-default-rtdb.firebaseio.com'});
 const geminiKey=defineSecret('STUDIO_GEMINI_API_KEY');
@@ -153,6 +154,12 @@ exports.studioApi=onRequest({region:'asia-northeast1',secrets:[geminiKey,githubT
   limited(req);
   const user=await authorized(req);
   const action=String(req.path||'').replace(/^\/+|\/+$/g,'');
+  if(action==='textbook-master'){
+   return json(res,200,await readTextbookMaster(req.body,{
+    config:process.env,fetcher:fetch,
+    getRuntimeToken:async()=> (await applicationDefault().getAccessToken()).access_token,
+   }));
+  }
   if(action!=='generate'&&action!=='preview'&&action!=='publish')return json(res,404,{error:'未対応の操作です'});
   if(req.body.source&&typeof req.body.source==='string'&&req.body.source.length>20000)throw fail(400,'本文が長すぎます');
   if(action==='generate'&&!model)return json(res,503,{error:'AIモデルが未設定です。管理者にSTUDIO_GEMINI_MODELの確認を依頼してください'});

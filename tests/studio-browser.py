@@ -14,6 +14,9 @@ with sync_playwright() as p:
    if u.hostname=='studioapi-bfaa4wjjga-an.a.run.app':
     calls.append(u.path)
     if u.path=='/generate':r.fulfill(json={'questions':questions})
+    elif u.path=='/textbook-master':
+     assert r.request.post_data_json=={'subject':'英C','lesson':'TEST','part':'1'}
+     r.fulfill(json={'source':'We protect the ocean.\nWe collect rubbish.','sentenceCount':2})
     elif u.path=='/preview':r.fulfill(json={'slot':'英C / TEST / 1','newCount':5,'previousCount':0,'replacing':False,'sha':'mock-sha'})
     elif u.path=='/publish':
      assert r.request.post_data_json['expectedSha']=='mock-sha'
@@ -34,13 +37,24 @@ with sync_playwright() as p:
   page.goto('https://local.test/teacher-studio.html');page.wait_for_function('!!window.YoshiAccount')
   assert page.locator('#editor').is_hidden()
   page.evaluate('window.YoshiAccount.login()');page.locator('#editor').wait_for(state='visible')
-  page.locator('#lesson').fill('TEST');page.locator('#source').fill('We protect the ocean.');page.locator('#count').fill('1')
+  assert page.locator('#count').input_value()=='2'
+  page.locator('#lesson').fill('TEST');page.locator('#source').fill('Manual draft')
+  page.locator('#fetchMaster').click();page.locator('#masterPreview').wait_for(state='visible')
+  assert page.locator('#source').input_value()=='Manual draft'
+  assert 'We protect the ocean.' in page.locator('#masterText').inner_text()
+  assert calls==['/textbook-master']
+  page.locator('#part').fill('2');assert page.locator('#masterPreview').is_hidden()
+  assert page.locator('#masterText').inner_text()==''
+  page.locator('#part').fill('1');page.locator('#fetchMaster').click()
+  page.locator('#masterPreview').wait_for(state='visible');page.locator('#applyMaster').click()
+  assert page.locator('#source').input_value()=='We protect the ocean.\nWe collect rubbish.'
+  assert calls==['/textbook-master','/textbook-master']
   page.evaluate("document.getElementById('generate').click();document.getElementById('generate').click()")
-  page.locator('.question').first.wait_for();assert calls==['/generate'];assert page.locator('.category').count()==5
+  page.locator('.question').first.wait_for();assert calls==['/textbook-master','/textbook-master','/generate'];assert page.locator('.category').count()==5
   page.locator('.question textarea').first.fill('Edited ocean');page.locator('#save').click();page.reload();page.wait_for_function('!!window.YoshiAccount');page.evaluate('window.YoshiAccount.login()');page.locator('#restore').click()
   page.locator('.question').first.wait_for();assert page.locator('.question textarea').first.input_value()=='Edited ocean'
   def cancel(dialog):dialog.dismiss()
-  page.on('dialog',cancel);page.locator('#publish').click();page.wait_for_function("document.getElementById('publishStatus').textContent==='公開を取り消しました'");assert calls==['/generate','/preview']
+  page.on('dialog',cancel);page.locator('#publish').click();page.wait_for_function("document.getElementById('publishStatus').textContent==='公開を取り消しました'");assert calls==['/textbook-master','/textbook-master','/generate','/preview']
   page.remove_listener('dialog',cancel);page.once('dialog',lambda d:d.accept());page.locator('#publish').click();page.wait_for_function("document.getElementById('publishStatus').textContent.includes('mock-commit')");assert calls[-2:]==['/preview','/publish']
   assert page.evaluate('document.documentElement.scrollWidth<=innerWidth');page.screenshot(path=f'/tmp/studio-production-teacher-{width}.png',full_page=True)
   page.evaluate('window.YoshiAccount.logout()');assert page.locator('#review').is_hidden();assert page.locator('#publishPanel').is_hidden()
@@ -55,7 +69,7 @@ with sync_playwright() as p:
   page.locator('#subject').select_option('論表');assert page.locator('#start').is_disabled();assert page.locator('#unit option').count()==0
   page.locator('#subject').select_option('英C');page.locator('#start').click();page.locator('#type').select_option('qa');assert page.locator('#practice').is_hidden()
   assert page.evaluate('document.documentElement.scrollWidth<=innerWidth');page.locator('#start').click();page.screenshot(path=f'/tmp/studio-production-study-{width}.png',full_page=True)
-  # No student-side API/record writes: only the four mocked teacher requests above.
-  assert calls==['/generate','/preview','/preview','/publish'];assert not errors,errors
+  # No student-side API/record writes: only the six mocked teacher requests above.
+  assert calls==['/textbook-master','/textbook-master','/generate','/preview','/preview','/publish'];assert not errors,errors
   context.close();print('PASS',width,'teacher auth, generation, edit, draft, publish cancel/confirm (mock), logout; student five types, subjects, filters, no XP writes',flush=True)
  browser.close()
