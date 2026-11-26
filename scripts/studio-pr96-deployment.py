@@ -34,7 +34,10 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 def command(*args):
-    result = subprocess.run(args, capture_output=True, timeout=35, check=False)
+    try:
+        result = subprocess.run(args, capture_output=True, timeout=35, check=False)
+    except FileNotFoundError:
+        raise Stop(f'{args[0]} がありません。Google Cloud Shellで実行してください') from None
     if result.returncode:
         raise Stop('gcloudまたはGitを実行できません。Cloud Shellのログイン・権限・取得したコミットを確認してください')
     return result.stdout
@@ -207,7 +210,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--apply-approved', action='store_true', help='明示承認後のみ。Cloud Functionsのsourceを更新します')
     args = parser.parse_args()
-    command('git', 'fetch', '--quiet', 'origin', 'main')
+    command('git', 'fetch', '--quiet', 'origin', '+refs/heads/main:refs/remotes/origin/main')
     command('git', 'merge-base', '--is-ancestor', PATCH, 'origin/main')
     current = {name: command('git', 'show', f'origin/main:studio-functions/{name}') for name in SOURCE_FILES}
     for name in SOURCE_FILES:
@@ -217,6 +220,7 @@ def main():
     client = Client()
     original = snapshot(client)
     report = matching_runtime(original, EXPECTED_REV)
+    print(json.dumps({'stage': 'settings', **report}, ensure_ascii=False), flush=True)
     plan = replacement(source_archive(client, original[0]), before, current['index.js'])
     print(json.dumps({'stage': 'preflight', **report, 'currentSourceMatchesPrBase': True,
                       'patch': PATCH, 'liveGeminiRequested': False}, ensure_ascii=False), flush=True)

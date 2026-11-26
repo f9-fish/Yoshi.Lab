@@ -12,7 +12,6 @@
   work=$(mktemp -d)
   git clone --quiet --single-branch --branch ops/studio-pr96-deploy-preflight https://github.com/f9-fish/Yoshi.Lab.git "$work/Yoshi.Lab"
   cd "$work/Yoshi.Lab"
-  git fetch --quiet origin '+refs/heads/main:refs/remotes/origin/main'
   python3 scripts/studio-pr96-deployment.py
 )
 ```
