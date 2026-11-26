@@ -14,7 +14,11 @@ audit = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(audit)
 runtime, studio = audit.runtime, audit.studio
 FILES = (*runtime.FILES, audit.NEW_FILE)
-REVIEWED = '83f1478f'
+REVIEWED = '3af12972'
+PR103 = '83f1478f'
+CONFIRMED_WRITER = 'yoshilab-question-writer@yoshi-lab-db3eb.iam.gserviceaccount.com'
+TOKEN_ROLE = 'roles/iam.serviceAccountTokenCreator'
+TOKEN_PERMISSION = 'iam.serviceAccounts.getAccessToken'
 SHEET, WRITER = audit.KEYS
 PILOT = 'STUDIO_QUESTION_MASTER_PILOT_TEACHER_UID'
 KEYS = (*audit.KEYS, PILOT)
@@ -71,20 +75,52 @@ def desired(env, sheet, writer, uid):
     return {SHEET: sheet, WRITER: writer, **({PILOT: uid} if uid else {})}
 
 
+def writer_access(client, writer):
+    account = 'projects/yoshi-lab-db3eb/serviceAccounts/' + writer
+    resource = '//iam.googleapis.com/' + account
+    iam = 'https://iam.googleapis.com/v1/'
+    member = 'serviceAccount:' + runtime.RUNTIME
+    direct_roles = None
+    try:
+        policy = client.json(iam + account + ':getIamPolicy', 'POST', {'options': {'requestedPolicyVersion': 3}})
+        direct_roles = sorted(binding['role'] for binding in policy.get('bindings', [])
+                              if not binding.get('condition') and member in binding.get('members', []))
+    except studio.Stop:
+        pass
+
+    effective = 'unverified'
+    try:
+        result = client.json('https://policytroubleshooter.googleapis.com/v3/iam:troubleshoot', 'POST',
+                             {'accessTuple': {'principal': runtime.RUNTIME, 'fullResourceName': resource,
+                                              'permission': TOKEN_PERMISSION}})
+        state = result.get('overallAccessState')
+        if state in ('CAN_ACCESS', 'CANNOT_ACCESS'):
+            effective = 'granted' if state == 'CAN_ACCESS' else 'denied'
+    except studio.Stop:
+        pass
+    return {'directTokenCreator': None if direct_roles is None else TOKEN_ROLE in direct_roles,
+            'directRoleCount': None if direct_roles is None else len(direct_roles),
+            'effectiveGetAccessToken': effective}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('phase', choices=('pilot', 'production'))
-    parser.add_argument('--sheet-id', required=True)
-    parser.add_argument('--writer', required=True)
-    parser.add_argument('--pilot-uid', required=True)
+    parser.add_argument('phase', choices=('pilot', 'production', 'connect'))
+    parser.add_argument('--sheet-id')
+    parser.add_argument('--writer')
+    parser.add_argument('--pilot-uid')
     parser.add_argument('--pilot-sheet-id')
     parser.add_argument('--pilot-writer')
     parser.add_argument('--apply-approved', metavar='PREFLIGHT_SHA256')
     args = parser.parse_args()
+    if args.phase == 'connect':
+        if any((args.writer,args.pilot_uid,args.pilot_sheet_id,args.pilot_writer)):
+            raise studio.Stop('connect は確定済みの保存先とサービスアカウントを使用します')
+        args.writer = CONFIRMED_WRITER
     writer_pattern = r'[a-z][a-z0-9-]+@yoshi-lab-db3eb\.iam\.gserviceaccount\.com'
-    if (not re.fullmatch(r'[A-Za-z0-9_-]{20,100}', args.sheet_id)
-        or not re.fullmatch(writer_pattern, args.writer)
-        or not re.fullmatch(r'[A-Za-z0-9_-]{1,128}', args.pilot_uid)):
+    if (not re.fullmatch(r'[A-Za-z0-9_-]{20,100}', args.sheet_id or '')
+        or not re.fullmatch(writer_pattern, args.writer or '')
+        or (args.phase != 'connect' and not re.fullmatch(r'[A-Za-z0-9_-]{1,128}', args.pilot_uid or ''))):
         raise studio.Stop('シートID、専用サービスアカウント、試験教員UIDを確認してください')
     if args.apply_approved is not None and not re.fullmatch(r'[a-f0-9]{64}', args.apply_approved):
         raise studio.Stop('読み取り専用の事前確認で得た照合値を指定してください')
@@ -103,22 +139,27 @@ def main():
     if latest not in (reviewed, target) or any(target[n]!=reviewed[n] for n in FILES if n!='index.js'):
         raise studio.Stop('最新mainまたは更新対象に別の関数ソース変更があります')
     client = studio.Client()
+    access = writer_access(client,args.writer) if args.phase=='connect' else None
+    if access is not None:
+        print(json.dumps({'stage':'writer-iam',**access}), flush=True)
     original = studio.snapshot(client)
     info = studio.matching_runtime(original)
     archive = studio.source_archive(client, original[0])
-    baselines = ({'known-runtime': runtime.source_at(audit.BASELINE), 'pr103': reviewed, 'target': target}
-                 if args.phase == 'pilot' else {'target': target})
+    baselines = ({'known-runtime': runtime.source_at(audit.BASELINE), 'pr103': runtime.source_at(PR103, FILES), 'target': target}
+                 if args.phase != 'production' else {'target': target})
     baseline, changes, planned = source_plan(archive, baselines, target)
     before = studio.config_projection(original)
-    current = {} if args.phase == 'pilot' else {SHEET: args.pilot_sheet_id, WRITER: args.pilot_writer, PILOT: args.pilot_uid}
+    current = {} if args.phase != 'production' else {SHEET: args.pilot_sheet_id, WRITER: args.pilot_writer, PILOT: args.pilot_uid}
     env = settings(before, current)
     additions = desired(env, args.sheet_id, args.writer, args.pilot_uid if args.phase=='pilot' else None)
-    fingerprint = studio.preflight_fingerprint([original,args.phase,additions], archive, planned)
+    fingerprint = studio.preflight_fingerprint([original,args.phase,additions,access], archive, planned)
     print(json.dumps({'phase':args.phase,'revision':info['revision'],'sourceBaseline':baseline,'sourceChanges':changes,
                       'environmentChanges':sorted(key for key in KEYS if current.get(key)!=additions.get(key)),
-                      'preflightSha256':fingerprint,'sheetsInvoked':False}), flush=True)
+                      'preflightSha256':fingerprint,'writerIam':access,'sheetsInvoked':False}), flush=True)
     if args.apply_approved is None:
         return
+    if access is not None and access['effectiveGetAccessToken'] != 'granted':
+        raise studio.Stop('短命トークンの実効権限が確認できないため適用を停止します')
     if args.apply_approved != fingerprint or studio.snapshot(client) != original:
         raise studio.Stop('照合値または稼働設定が変化しました。事前確認をやり直してください')
     studio.submit(client, planned if changes else None, environment={**env,**additions})

@@ -2,7 +2,7 @@ import importlib.util
 import io
 from pathlib import Path
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 import zipfile
 
 spec = importlib.util.spec_from_file_location('question_deploy',
@@ -57,6 +57,53 @@ class Deployment(unittest.TestCase):
             deploy.studio.GCF + deploy.studio.FUNCTION + '?updateMask=serviceConfig.environmentVariables',
             'PATCH', {'serviceConfig': {'environmentVariables': {'old': 'keep'}}}))
         client.request.assert_not_called()
+
+    def test_binding_is_scoped_and_deny_overrides_direct_grant(self):
+        client = Mock()
+        member = 'serviceAccount:' + deploy.runtime.RUNTIME
+        client.json.side_effect = [
+            {'bindings': [{'role': deploy.TOKEN_ROLE, 'members': [member]}]},
+            {'overallAccessState': 'CANNOT_ACCESS'},
+        ]
+        result = deploy.writer_access(client, deploy.CONFIRMED_WRITER)
+        self.assertEqual(result['effectiveGetAccessToken'], 'denied')
+        self.assertTrue(result['directTokenCreator'])
+        url, method, request = client.json.call_args_list[1].args
+        self.assertTrue(url.endswith('/v3/iam:troubleshoot'))
+        self.assertEqual(method, 'POST')
+        self.assertEqual(request['accessTuple'], {
+            'principal': deploy.runtime.RUNTIME,
+            'permission': 'iam.serviceAccounts.getAccessToken',
+            'fullResourceName': '//iam.googleapis.com/projects/yoshi-lab-db3eb/serviceAccounts/' + deploy.CONFIRMED_WRITER,
+        })
+
+    def test_custom_or_inherited_grant_and_unavailable_policy(self):
+        client = Mock()
+        client.json.side_effect = [
+            {'bindings': [{'role': deploy.TOKEN_ROLE, 'members': ['serviceAccount:'+deploy.runtime.RUNTIME],
+                           'condition': {'expression': 'false'}}]},
+            {'overallAccessState': 'CAN_ACCESS'},
+        ]
+        self.assertEqual(deploy.writer_access(client, deploy.CONFIRMED_WRITER),
+                         {'directTokenCreator': False, 'directRoleCount': 0, 'effectiveGetAccessToken': 'granted'})
+        client.json.side_effect = deploy.studio.Stop('unavailable')
+        self.assertIsNone(deploy.writer_access(client, deploy.CONFIRMED_WRITER)['directTokenCreator'])
+
+    def test_connect_never_applies_without_effective_access(self):
+        args = ['deploy', 'connect', '--sheet-id', 'independent-sheet-example-123', '--apply-approved', 'a'*64]
+        baseline = {name: b'source' for name in deploy.FILES}
+        with patch('sys.argv', args), patch.object(deploy.studio, 'Client'), \
+             patch.object(deploy.studio, 'command'), patch.object(deploy.runtime, 'source_at', return_value=baseline), \
+             patch.object(deploy.studio, 'snapshot', return_value=({},)), \
+             patch.object(deploy.studio, 'matching_runtime', return_value={'revision': 'mock'}), \
+             patch.object(deploy.studio, 'source_archive', return_value=b'zip'), \
+             patch.object(deploy, 'source_plan', return_value=('target', [], b'zip')), \
+             patch.object(deploy.studio, 'config_projection'), patch.object(deploy, 'settings', return_value={}), \
+             patch.object(deploy.studio, 'submit') as submit, \
+             patch.object(deploy, 'writer_access', return_value={'effectiveGetAccessToken': 'unverified'}):
+            with self.assertRaisesRegex(deploy.studio.Stop, '実効権限'):
+                deploy.main()
+            submit.assert_not_called()
 
 
 if __name__ == '__main__':
