@@ -10,7 +10,7 @@
 (
   set -eu
   work=$(mktemp -d)
-  git clone --quiet --single-branch --branch ops/studio-pr96-deploy-preflight https://github.com/f9-fish/Yoshi.Lab.git "$work/Yoshi.Lab"
+  git clone --quiet --single-branch --branch fix/studio-pr97-legacy-comment https://github.com/f9-fish/Yoshi.Lab.git "$work/Yoshi.Lab"
   cd "$work/Yoshi.Lab"
   python3 scripts/studio-pr96-deployment.py
 )
@@ -18,10 +18,11 @@
 
 関数、Cloud Runサービス、稼働リビジョン、両IAM、元のビルドZIPを既存の権限で読み取ります。実行モードの既定値は読み取り専用です。環境変数は名前、モデル、Pagesオリジン適合、対象Secret参照の有無だけを出します。IAMは公開Invokerの有無、IAM無効化・IAPフラグだけを出します。Secret Managerから値を取得する処理はありません。元ZIP、IAMメンバー、環境変数の値、OAuthトークンはファイルや出力へ書き出しません。
 
-`stage: preflight` と `preflightSha256` が出た場合に限り、次へ進めます。`currentSourceBaseline: known-legacy-model-fallback` は、本番で確認した旧版との一致です。照合は `index.js` をバイト単位で行い、許可する旧版の差分は次の2点だけです。
+`stage: preflight` と `preflightSha256` が出た場合に限り、次へ進めます。`currentSourceBaseline: known-legacy-model-fallback` は、本番で確認した旧版との一致です。照合は `index.js` をバイト単位で行い、許可する旧版の差分は次の3点だけです。
 
 1. `STUDIO_GEMINI_MODEL` が未設定の場合に `gemini-2.5-flash` にフォールバックする行。
 2. 生成時にモデル未設定なら503を返す行がないこと。
+3. `// Do not silently switch models when a future deployment loses its runtime setting.` のコメント行がないこと。
 
 元の `studio-core.cjs`、依存定義、ロックファイルは完全一致が必要です。PR #96の変更前と完全一致する場合は `pr96-base` と表示します。いずれの既知の版にも一致しない場合、現行ZIPや設定を読めない場合、稼働リビジョンが異なる場合は停止します。Firebase教員認証はソース照合の範囲に含まれます。実アカウントでの動作試験には別の承認が必要です。
 
