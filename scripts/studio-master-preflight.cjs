@@ -1,6 +1,7 @@
 'use strict';
 
 const { spawnSync } = require('node:child_process');
+const { parseArgs } = require('node:util');
 const { checkTextbookMasterHeader } = require('../studio-functions/textbook-master.cjs');
 
 const project = 'yoshi-lab-db3eb';
@@ -57,6 +58,9 @@ function productionOperations() {
     'APIの有効状態が参照できません。既存権限を確認してください');
    return services.some(service => service.config?.name === name);
   },
+  readerPolicy: (reader, target) => gcloudJson(
+   ['iam','service-accounts','get-iam-policy',reader,'--project',target],
+   '閲覧用アカウントのIAMを参照できません。付与せずに停止しました'),
   runtimeToken: runtime => gcloud(
    ['auth','print-access-token','--project',project,'--impersonate-service-account',runtime],
    '操作者が実行サービスアカウントを代理できないため、実効権限は未確認です。追加権限の自動付与は行いません',
@@ -65,16 +69,36 @@ function productionOperations() {
  };
 }
 
-async function preflight(ops, report) {
+function directTokenCreator(policy, runtime) {
+ return (policy.bindings || []).some(binding => binding.role === 'roles/iam.serviceAccountTokenCreator' &&
+  !binding.condition && binding.members?.includes('serviceAccount:'+runtime));
+}
+
+async function preflight(ops, report, candidate = {}) {
  const revisionName = selectRevision(await ops.service());
- const { runtime, readerProject, sheetConfigured, config } = inspectRevision(await ops.revision(revisionName), revisionName);
+ const revision = await ops.revision(revisionName);
+ const deployed = inspectRevision(revision, revisionName);
+ const { runtime } = deployed;
+ const reader = candidate.reader ?? deployed.config[readerSetting];
+ const sheet = candidate.sheetId ?? deployed.config[sheetSetting];
+ const readerProject = /^[a-z0-9-]+@([a-z0-9-]+)\.iam\.gserviceaccount\.com$/.exec(reader)?.[1];
+ const sheetValid = /^[A-Za-z0-9_-]{20,100}$/.test(sheet || '');
+ const config = {[readerSetting]:reader,[sheetSetting]:sheet};
  report({ stage:'configuration', revision:revisionName, runtimeServiceAccount:runtime,
-  readerConfigured:Boolean(readerProject), sheetConfigured });
+  readerConfigured:Boolean(deployed.readerProject), sheetConfigured:deployed.sheetConfigured,
+  candidateReader:Boolean(candidate.reader), candidateSheet:Boolean(candidate.sheetId) });
+ if ((candidate.reader !== undefined && !readerProject) || (candidate.sheetId !== undefined && !sheetValid)) {
+  throw Error('候補アカウントまたはシートIDの形式を確認してください');
+ }
  const iamEnabled = await ops.apiEnabled(project, credentialsApi);
  const sheetsProject = readerProject || project;
  const sheetsEnabled = await ops.apiEnabled(sheetsProject, sheetsApi);
  report({ stage:'apis', iamCredentialsEnabled:iamEnabled, sheetsApiEnabled:sheetsEnabled, sheetsApiProject:sheetsProject });
- if (!readerProject || !sheetConfigured) throw Error('閲覧用サービスアカウントまたは対象シートの設定が不足しています。認証・シート確認は未実行です');
+ if (!readerProject) throw Error('閲覧用サービスアカウントが未設定です');
+ const memberVerified = directTokenCreator(await ops.readerPolicy(reader, readerProject), runtime);
+ report({ stage:'reader-iam', directTokenCreatorBindingPresent:memberVerified });
+ if (!memberVerified) throw Error('既知の直接付与を確認できません。権限は変更せずに停止しました');
+ if (!sheetValid) throw Error('対象シートが未設定です。IAM確認まで完了し、シートは未読です');
  if (!iamEnabled || !sheetsEnabled) throw Error('必要APIの少なくとも一方が無効です。有効化せずに停止しました');
  // Obtain the runtime identity only when already permitted. No keys, role changes or writes.
  const token = await ops.runtimeToken(runtime);
@@ -84,13 +108,17 @@ async function preflight(ops, report) {
   if (error.status === 502 || error.status === 422) throw Error(error.message, {cause:error});
   throw Error('実行主体によるシートの読み取り権限を確認できません');
  }
- report({ stage:'ready', readOnlyHeaderVerified:true, dataRowsRead:false });
+ report({ stage:'ready', readOnlyHeaderVerified:true, dataRowsRead:false,
+  deployedSettingsVerified:candidate.reader === undefined && candidate.sheetId === undefined });
 }
 
 if (require.main === module) {
- preflight(productionOperations(), entry => console.log(JSON.stringify(entry))).catch(error => {
+ const { values } = parseArgs({options:{reader:{type:'string'},'sheet-id':{type:'string'}}});
+ preflight(productionOperations(), entry => console.log(JSON.stringify(entry)), {
+  reader:values.reader, sheetId:values['sheet-id'],
+ }).catch(error => {
   console.error(error.message);
   process.exitCode = 1;
  });
 }
-module.exports = { preflight, inspectRevision, selectRevision };
+module.exports = { preflight, inspectRevision, selectRevision, directTokenCreator };

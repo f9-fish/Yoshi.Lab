@@ -43,7 +43,7 @@ python3 tests/studio-browser.py
 (
   set -eu
   work=$(mktemp -d)
-  git clone --quiet --single-branch --branch ops/studio-textbook-master-preflight https://github.com/f9-fish/Yoshi.Lab.git "$work/repo"
+  git clone --quiet --single-branch --branch ops/studio-master-iam-readonly https://github.com/f9-fish/Yoshi.Lab.git "$work/repo"
   cd "$work/repo"
   node scripts/studio-master-preflight.cjs
 )
@@ -54,3 +54,39 @@ python3 tests/studio-browser.py
 3. 両設定が揃い、操作者に**既存の実行アカウント代理権限**がある場合のみ、実行主体として短命トークンを使います。同じスタジオの読み取りコードで閲覧用トークンの発行と `教科書本文マスター!1:1` の閲覧を確認します。データ行や本文は取得せず、ID・トークン・レスポンスを表示しません。操作者に代理権限がない場合は実効権限を未確認として停止します。自動で権限を付与しません。対象タブ不存在と権限不足はSheetsの状態により区別できないため、管理者が確認してください。
 
 `stage: ready` はヘッダーの読み取りと照合の成功です。実データ行、Web画面からの取得、本番のGemini呼び出しや公開はこのチェックの対象外です。
+
+## 付与済みのIAMを照合してから接続する
+
+ユーザー報告では、閲覧用アカウント `yoshilab-textbook-reader@yoshi-lab-db3eb.iam.gserviceaccount.com` に対して、`543561154900-compute@developer.gserviceaccount.com` へ `roles/iam.serviceAccountTokenCreator` が直接付与済みです。同じ付与を再実行しません。
+
+上のCloud Shellブロックの最終行を以下へ置き換えます。シートIDが未決定でも、実際の稼働リビジョンの実行アカウントをメンバーとする直接付与を読み取り照合できます。
+
+```sh
+node scripts/studio-master-preflight.cjs --reader yoshilab-textbook-reader@yoshi-lab-db3eb.iam.gserviceaccount.com
+```
+
+`stage: reader-iam` と `directTokenCreatorBindingPresent: true` が付与の照合結果です。その後「対象シートが未設定」で止まれば、IAMまで確認済みでシートは未読です。テスト用シートIDが決まった場合だけ `--sheet-id '確認済みテストシートID'` を追加すると、稼働設定を変更せず候補を使ってヘッダーだけを確認できます。操作者自身の実行アカウント代理権限が不足する場合は、直接付与の確認後に実効権限未確認として停止します。代理権限を追加せず、既存の代理権限を持つ管理者と確認します。候補を使った成功は `deployedSettingsVerified:false` です。
+
+### 承認後の環境変数追加と検証
+
+Cloud Shellの同じリポジトリで、変更前に既存設定の照合ファイルを保存します。ファイルは権限0600で、構成セクションの照合用ハッシュのみを保存します。実際のSecret値を取得しません。
+
+```sh
+python3 scripts/studio-master-settings.py --record "$HOME/studio-master-before.json"
+```
+
+実行中のソースがPR #99の本文マスターAPIを含むか管理者が先に確認します。GitHubのマージだけでは現在のCloud Run Functionsリビジョンに反映されません。未反映なら、既存の `studioApi` へのコード更新も別途承認・レビューします。
+
+承認後、既存 [Gen 2の studioApi](https://console.cloud.google.com/functions/details/asia-northeast1/studioApi?env=gen2&project=yoshi-lab-db3eb) のランタイム環境変数として、既存値をすべて残し次の2件を追加します。Gen 2関数の管理側を使用し、Cloud Runの対応サービスを直接編集しません。Cloud Functions v2 APIを使う場合、更新対象を `serviceConfig.environmentVariables` に限定し、取得した従来の変数マップに2件を足したものを送ります。変数マップを2件だけで置き換えません。コード更新も同時に承認された場合は、その更新を別にレビューします。
+
+- `STUDIO_MASTER_READER_SERVICE_ACCOUNT` = `yoshilab-textbook-reader@yoshi-lab-db3eb.iam.gserviceaccount.com`
+- `STUDIO_MASTER_SPREADSHEET_ID` = 承認済みテストシートID
+
+反映後、Cloud Shellで次を確認します。読み取り専用です。
+
+```sh
+python3 scripts/studio-master-settings.py --verify "$HOME/studio-master-before.json"   --reader yoshilab-textbook-reader@yoshi-lab-db3eb.iam.gserviceaccount.com --sheet-id '確認済みテストシートID'
+node scripts/studio-master-preflight.cjs
+```
+
+最初のコマンドで新リビジョン、既存のトラフィック方針、新しい環境変数の正確な値、その他の設定差分が空であることを確認します。実行環境、Secret参照、IAM、CORSの既存設定を照合し、差異があれば停止します。次のコマンドで候補指定を外し、反映済み設定に対して `stage: ready` と `deployedSettingsVerified:true` を確認します。最後に実教員がスタジオからテスト用本文を1回取得し、確認まで行います。生成と公開は実行しません。
