@@ -1,0 +1,13 @@
+{
+  "MG_ENABLED": "false",
+  "MG_PREFLIGHT_ENABLED": "false",
+  "MG_MODE": "TEST",
+  "MG_AUTH_VERIFIED": "false",
+  "MG_JOB_STORAGE_VERIFIED": "false",
+  "MG_TEST_APPEND_ENABLED": "false",
+  "MG_SOURCE_SPREADSHEET_ID": "1DhOMLWw9nlMvNLRuT32vCN0A69GnaREWZqLZJyFLERc",
+  "MG_TEST_SPREADSHEET_ID": "1DhOMLWw9nlMvNLRuT32vCN0A69GnaREWZqLZJyFLERc",
+  "MG_SERVER_URL": "",
+  "MG_TEST_JOB_FOLDER_ID": "",
+  "MG_GENERATION_SETTINGS": "{\"counts\":{\"vocabulary\":0,\"qa\":0,\"writing\":10,\"trueFalse\":0,\"discussion\":0},\"genre\":\"ミステリー\",\"revision\":1}"
+}
