@@ -297,3 +297,29 @@ test('pilot limits shared writes to one teacher and blocks pilot publication',as
  assert.equal((await peer.send('generate')).data.sharedDraft,undefined);
  assert.equal((await peer.send('publish',{...input,questions:questions(),expectedSha:'old'})).code,200);
 });
+
+test('connection-only rollout reads metadata and disables the shared write path',async()=>{
+ const sheet='independent-sheet-id-123456789';
+ const config={STUDIO_QUESTION_MASTER_SPREADSHEET_ID:sheet,
+  STUDIO_QUESTION_MASTER_WRITER_SERVICE_ACCOUNT:'writer@sample-project.iam.gserviceaccount.com',
+  STUDIO_QUESTION_MASTER_CONNECTION_ONLY:'true'};
+ const denied=harness({teacher:false,masterConfig:config});
+ assert.equal((await denied.send('question-master/check',{})).code,403);
+ assert.equal(denied.calls.length,0);
+ const h=harness({masterConfig:config,masterResponse(url,opts){
+  if(url.includes('iamcredentials')){
+   assert.deepEqual(JSON.parse(opts.body).scope,['https://www.googleapis.com/auth/spreadsheets.readonly']);
+   return {ok:true,json:async()=>({accessToken:'mock-writer-token'})};
+  }
+  assert.equal(opts.method,'GET');
+  assert.ok(url.endsWith(sheet+'?fields=spreadsheetId'));
+  return {ok:true,json:async()=>({spreadsheetId:sheet})};
+ }});
+ for(const action of ['save','update','search'])assert.equal((await h.send('question-master/'+action,{})).code,503);
+ assert.equal(h.calls.length,0);
+ const result=await h.send('question-master/check',{spreadsheetId:'ignored'});
+ assert.deepEqual({...result.data},{connected:true,readOnly:true});
+ assert.equal(h.calls.length,2);
+ assert.equal((await h.send('generate')).data.sharedDraft,undefined);
+ assert.equal((await h.send('publish',{...input,questions:questions(),expectedSha:'old'})).code,200);
+});

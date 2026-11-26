@@ -85,7 +85,8 @@ class Deployment(unittest.TestCase):
             {'overallAccessState': 'CAN_ACCESS'},
         ]
         self.assertEqual(deploy.writer_access(client, deploy.CONFIRMED_WRITER),
-                         {'directTokenCreator': False, 'directRoleCount': 0, 'effectiveGetAccessToken': 'granted'})
+                         {'directTokenCreator': False, 'directRoleCount': 0, 'directExactCustomRole': False,
+                          'policyState': 'CAN_ACCESS', 'effectiveGetAccessToken': 'granted'})
         client.json.side_effect = deploy.studio.Stop('unavailable')
         self.assertIsNone(deploy.writer_access(client, deploy.CONFIRMED_WRITER)['directTokenCreator'])
 
@@ -104,6 +105,45 @@ class Deployment(unittest.TestCase):
             with self.assertRaisesRegex(deploy.studio.Stop, '実効権限'):
                 deploy.main()
             submit.assert_not_called()
+
+    def test_exact_direct_role_permits_explicit_unknown_connection_only(self):
+        client = Mock()
+        client.json.side_effect = [
+            {'bindings': [{'role': deploy.CUSTOM_ROLE, 'members': ['serviceAccount:'+deploy.runtime.RUNTIME]}]},
+            {'includedPermissions': [deploy.TOKEN_PERMISSION], 'stage': 'GA'},
+            {'overallAccessState': 'UNKNOWN_INFO'},
+        ]
+        access = deploy.writer_access(client, deploy.CONFIRMED_WRITER)
+        self.assertTrue(access['directExactCustomRole'])
+        with self.assertRaises(deploy.studio.Stop):
+            deploy.allow_apply('connect', access, False, False)
+        deploy.allow_apply('connect', access, True, False)
+        with self.assertRaises(deploy.studio.Stop):
+            deploy.allow_apply('activate', access, True, False)
+        deploy.allow_apply('activate', access, True, True)
+        with self.assertRaises(deploy.studio.Stop):
+            deploy.allow_apply('connect', {**access, 'effectiveGetAccessToken': 'denied'}, True, False)
+        with self.assertRaises(deploy.studio.Stop):
+            deploy.allow_apply('connect', {**access, 'policyState': None}, True, False)
+
+    def test_rollback_validates_storage_generation_and_refuses_drift(self):
+        base = {name: b'base' for name in deploy.FILES}
+        result = io.BytesIO()
+        with zipfile.ZipFile(result,'w') as archive:
+            for name,data in base.items():
+                archive.writestr(name,data)
+        prior = result.getvalue()
+        source = {'bucket':'old','object':'function.zip','generation':'123'}
+        function = {'buildConfig':{'sourceProvenance':{'resolvedStorageSource':source}}}
+        projection = {'model':'old'}
+        additions = {deploy.READ_ONLY:'true'}
+        receipt = deploy.make_receipt(function,prior,prior,projection,additions)
+        client = Mock()
+        with patch.object(deploy.studio,'source_archive',return_value=prior) as get_archive:
+            self.assertEqual(deploy.restore_source(client,receipt,projection,additions,{'base':base}),prior)
+            get_archive.assert_called_once_with(client,function)
+            with self.assertRaises(deploy.studio.Stop):
+                deploy.restore_source(client,receipt,{'model':'changed'},additions,{'base':base})
 
 
 if __name__ == '__main__':

@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Compare deployed source/settings and prepare an explicitly approved Gen 2 update."""
 import argparse
+import hashlib
 import importlib.util
+import os
 import io
 import json
 from pathlib import Path
@@ -20,8 +22,10 @@ CONFIRMED_WRITER = 'yoshilab-question-writer@yoshi-lab-db3eb.iam.gserviceaccount
 TOKEN_ROLE = 'roles/iam.serviceAccountTokenCreator'
 TOKEN_PERMISSION = 'iam.serviceAccounts.getAccessToken'
 SHEET, WRITER = audit.KEYS
+CUSTOM_ROLE = 'projects/yoshi-lab-db3eb/roles/yoshilabQuestionAccessToken'
 PILOT = 'STUDIO_QUESTION_MASTER_PILOT_TEACHER_UID'
-KEYS = (*audit.KEYS, PILOT)
+READ_ONLY = 'STUDIO_QUESTION_MASTER_CONNECTION_ONLY'
+KEYS = (*audit.KEYS, PILOT, READ_ONLY)
 PROTECTED_SHEETS = {
     runtime.SETTINGS['STUDIO_MASTER_SPREADSHEET_ID'],
     '1QK19vwZlG5_7uURKLi33W1zutKtAin5sKo8kbULVTrU',
@@ -88,6 +92,15 @@ def writer_access(client, writer):
     except studio.Stop:
         pass
 
+    custom_verified = False
+    if CUSTOM_ROLE in (direct_roles or []):
+        try:
+            role = client.json(iam + CUSTOM_ROLE)
+            custom_verified = (role.get('includedPermissions') == [TOKEN_PERMISSION] and
+                               not role.get('deleted') and role.get('stage') != 'DISABLED')
+        except studio.Stop:
+            pass
+    state = None
     effective = 'unverified'
     try:
         result = client.json('https://policytroubleshooter.googleapis.com/v3/iam:troubleshoot', 'POST',
@@ -100,27 +113,70 @@ def writer_access(client, writer):
         pass
     return {'directTokenCreator': None if direct_roles is None else TOKEN_ROLE in direct_roles,
             'directRoleCount': None if direct_roles is None else len(direct_roles),
-            'effectiveGetAccessToken': effective}
+            'directExactCustomRole': custom_verified,
+            'policyState': state, 'effectiveGetAccessToken': effective}
+
+
+def allow_apply(phase, access, accept_unknown, confirmed):
+    if phase not in ('connect', 'activate'):
+        return
+    if phase == 'activate' and not confirmed:
+        raise studio.Stop('先に教員画面の読み取り接続確認を完了してください')
+    if access['effectiveGetAccessToken'] == 'granted':
+        return
+    if (access['effectiveGetAccessToken'] == 'unverified' and accept_unknown and
+            access.get('directExactCustomRole') and access.get('policyState') == 'UNKNOWN_INFO'):
+        return
+    raise studio.Stop('短命トークンの実効権限が確認できないため適用を停止します')
+
+
+def content_hash(archive):
+    return audit.digest({name: hashlib.sha256(data).hexdigest()
+                         for name,data in runtime.zip_contents(archive).items()})
+
+
+def make_receipt(function, archive, planned, projection, additions):
+    source = function['buildConfig']['sourceProvenance']['resolvedStorageSource']
+    return {'source': source, 'archiveHash': hashlib.sha256(archive).hexdigest(),
+            'settingsHash': audit.digest(projection), 'connectionHash': audit.digest(additions),
+            'installedHash': content_hash(planned)}
+
+
+def restore_source(client, receipt, projection, expected, baselines):
+    if (audit.digest(projection) != receipt['settingsHash'] or
+        audit.digest(expected) != receipt['connectionHash']):
+        raise studio.Stop('接続前の記録と既存設定または接続先が一致しません')
+    previous = studio.source_archive(client, {'buildConfig': {'sourceProvenance': {
+        'resolvedStorageSource': receipt['source']}}})
+    if hashlib.sha256(previous).hexdigest() != receipt['archiveHash']:
+        raise studio.Stop('接続前アーカイブの照合に失敗しました')
+    files = runtime.zip_contents(previous)
+    if not any(all(files.get(name)==baseline.get(name) for name in FILES) for baseline in baselines.values()):
+        raise studio.Stop('復旧元のソースを確認できません')
+    return previous
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('phase', choices=('pilot', 'production', 'connect'))
+    parser.add_argument('phase', choices=('pilot', 'production', 'connect', 'activate', 'rollback'))
     parser.add_argument('--sheet-id')
     parser.add_argument('--writer')
     parser.add_argument('--pilot-uid')
     parser.add_argument('--pilot-sheet-id')
     parser.add_argument('--pilot-writer')
     parser.add_argument('--apply-approved', metavar='PREFLIGHT_SHA256')
+    parser.add_argument('--receipt', type=Path, default=Path('studio-question-master-before.json'))
+    parser.add_argument('--accept-unverified-iam', action='store_true')
+    parser.add_argument('--connection-verified', action='store_true')
     args = parser.parse_args()
-    if args.phase == 'connect':
+    if args.phase in ('connect', 'activate', 'rollback'):
         if any((args.writer,args.pilot_uid,args.pilot_sheet_id,args.pilot_writer)):
-            raise studio.Stop('connect は確定済みの保存先とサービスアカウントを使用します')
+            raise studio.Stop('接続・有効化・復旧では確定済みの書き込み用アカウントを使用します')
         args.writer = CONFIRMED_WRITER
     writer_pattern = r'[a-z][a-z0-9-]+@yoshi-lab-db3eb\.iam\.gserviceaccount\.com'
     if (not re.fullmatch(r'[A-Za-z0-9_-]{20,100}', args.sheet_id or '')
         or not re.fullmatch(writer_pattern, args.writer or '')
-        or (args.phase != 'connect' and not re.fullmatch(r'[A-Za-z0-9_-]{1,128}', args.pilot_uid or ''))):
+        or (args.phase in ('pilot', 'production') and not re.fullmatch(r'[A-Za-z0-9_-]{1,128}', args.pilot_uid or ''))):
         raise studio.Stop('シートID、専用サービスアカウント、試験教員UIDを確認してください')
     if args.apply_approved is not None and not re.fullmatch(r'[a-f0-9]{64}', args.apply_approved):
         raise studio.Stop('読み取り専用の事前確認で得た照合値を指定してください')
@@ -136,32 +192,54 @@ def main():
     target = runtime.source_at('HEAD', FILES)
     reviewed = runtime.source_at(REVIEWED, FILES)
     latest = runtime.source_at('origin/main', FILES)
-    if latest not in (reviewed, target) or any(target[n]!=reviewed[n] for n in FILES if n!='index.js'):
+    if latest not in (reviewed, target) or any(target[n]!=reviewed[n] for n in FILES if n not in ('index.js', audit.NEW_FILE)):
         raise studio.Stop('最新mainまたは更新対象に別の関数ソース変更があります')
     client = studio.Client()
-    access = writer_access(client,args.writer) if args.phase=='connect' else None
+    access = writer_access(client,args.writer) if args.phase in ('connect','activate') else None
     if access is not None:
         print(json.dumps({'stage':'writer-iam',**access}), flush=True)
     original = studio.snapshot(client)
     info = studio.matching_runtime(original)
     archive = studio.source_archive(client, original[0])
-    baselines = ({'known-runtime': runtime.source_at(audit.BASELINE), 'pr103': runtime.source_at(PR103, FILES), 'target': target}
-                 if args.phase != 'production' else {'target': target})
+    known = {'known-runtime': runtime.source_at(audit.BASELINE), 'pr103': runtime.source_at(PR103, FILES),
+             'pr104': reviewed, 'target': target}
+    baselines = known if args.phase in ('pilot','connect') else {'target': target}
     baseline, changes, planned = source_plan(archive, baselines, target)
     before = studio.config_projection(original)
-    current = {} if args.phase != 'production' else {SHEET: args.pilot_sheet_id, WRITER: args.pilot_writer, PILOT: args.pilot_uid}
+    current = {}
+    if args.phase == 'production':
+        current = {SHEET: args.pilot_sheet_id, WRITER: args.pilot_writer, PILOT: args.pilot_uid}
+    if args.phase in ('activate','rollback'):
+        current = {SHEET: args.sheet_id, WRITER: args.writer}
+        if args.phase == 'activate' or original[0].get('serviceConfig', {}).get('environmentVariables', {}).get(READ_ONLY) == 'true':
+            current[READ_ONLY] = 'true'
     env = settings(before, current)
     additions = desired(env, args.sheet_id, args.writer, args.pilot_uid if args.phase=='pilot' else None)
+    if args.phase == 'connect':
+        additions[READ_ONLY] = 'true'
+    if args.phase == 'rollback':
+        receipt = json.loads(args.receipt.read_text())
+        if content_hash(archive) != receipt['installedHash']:
+            raise studio.Stop('接続時に反映したソースと現在のソースが一致しません')
+        planned = restore_source(client, receipt, before, {**additions,READ_ONLY:'true'}, known)
+        old_files, restored_files = runtime.zip_contents(archive), runtime.zip_contents(planned)
+        changes = sorted(name for name in old_files.keys()|restored_files.keys()
+                         if old_files.get(name)!=restored_files.get(name))
+        additions = {}
     fingerprint = studio.preflight_fingerprint([original,args.phase,additions,access], archive, planned)
     print(json.dumps({'phase':args.phase,'revision':info['revision'],'sourceBaseline':baseline,'sourceChanges':changes,
                       'environmentChanges':sorted(key for key in KEYS if current.get(key)!=additions.get(key)),
                       'preflightSha256':fingerprint,'writerIam':access,'sheetsInvoked':False}), flush=True)
     if args.apply_approved is None:
         return
-    if access is not None and access['effectiveGetAccessToken'] != 'granted':
-        raise studio.Stop('短命トークンの実効権限が確認できないため適用を停止します')
+    allow_apply(args.phase,access,args.accept_unverified_iam,args.connection_verified)
     if args.apply_approved != fingerprint or studio.snapshot(client) != original:
         raise studio.Stop('照合値または稼働設定が変化しました。事前確認をやり直してください')
+    if args.phase == 'connect':
+        receipt = make_receipt(original[0],archive,planned,before,additions)
+        fd = os.open(args.receipt, os.O_CREAT|os.O_EXCL|os.O_WRONLY, 0o600)
+        with os.fdopen(fd,'w') as file:
+            json.dump(receipt,file)
     studio.submit(client, planned if changes else None, environment={**env,**additions})
     deployed = studio.snapshot(client)
     after_info = studio.matching_runtime(deployed)

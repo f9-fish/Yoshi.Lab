@@ -10,7 +10,7 @@ const {
 }=require('./studio-core.cjs');
 const {checkTextbookMasterHeader,readTextbookMaster}=require('./textbook-master.cjs');
 
-const {saveBatch,searchBatches,sharedDraftsEnabled,updateQuestion,managedPublication}=require('./question-master.cjs');
+const {checkQuestionMaster,saveBatch,searchBatches,sharedDraftsEnabled,updateQuestion,managedPublication}=require('./question-master.cjs');
 
 if(!getApps().length)initializeApp({databaseURL:'https://yoshi-lab-db3eb-default-rtdb.firebaseio.com'});
 const geminiKey=defineSecret('STUDIO_GEMINI_API_KEY');
@@ -196,7 +196,8 @@ exports.studioApi=onRequest({region:'asia-northeast1',secrets:[geminiKey,githubT
   const user=await authorized(req);
   const action=String(req.path||'').replace(/^\/+|\/+$/g,'');
   const pilotUid=process.env.STUDIO_QUESTION_MASTER_PILOT_TEACHER_UID;
-  const shared=sharedDraftsEnabled(process.env)&&(!pilotUid||pilotUid===user.uid);
+  const readOnly=process.env.STUDIO_QUESTION_MASTER_CONNECTION_ONLY==='true';
+  const shared=!readOnly&&sharedDraftsEnabled(process.env)&&(!pilotUid||pilotUid===user.uid);
   if(action==='textbook-master'||action==='textbook-master/check'){
    const options={
     config:process.env,fetcher:fetch,
@@ -210,12 +211,14 @@ exports.studioApi=onRequest({region:'asia-northeast1',secrets:[geminiKey,githubT
    }
    return json(res,200,await readTextbookMaster(req.body,options));
   }
-  if(action==='question-master/save'||action==='question-master/search'||action==='question-master/update'){
+  if(action==='question-master/save'||action==='question-master/search'||action==='question-master/update'||action==='question-master/check'){
    if(pilotUid&&pilotUid!==user.uid)throw fail(403,'試験運用の共有履歴は指定教員のみ利用できます');
    const options={
     config:process.env,fetcher:fetch,
     getRuntimeToken:async()=> (await applicationDefault().getAccessToken()).access_token,
    };
+   if(action==='question-master/check')return json(res,200,await checkQuestionMaster(options));
+   if(readOnly)throw fail(503,'問題マスターは接続確認中です');
    if(action==='question-master/update')return json(res,200,await updateQuestion(req.body,options));
    const result=action==='question-master/save'?await saveBatch(req.body,user.uid,options):await searchBatches(req.body,options);
    return json(res,200,result);
