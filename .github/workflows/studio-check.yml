@@ -7,6 +7,9 @@ on:
       - 'studio-study.html'
       - 'studio-content.json'
       - 'studio-config.js'
+      - 'scripts/studio-master-runtime-check.py'
+      - 'scripts/studio-pr96-deployment.py'
+      - 'tests/studio-master-runtime-check.py'
       - '.github/workflows/studio-check.yml'
   push:
     paths:
@@ -23,6 +26,7 @@ jobs:
         with:
           node-version: '22'
       - run: node --test studio-functions/tests/*.test.cjs
+      - run: python3 tests/studio-master-runtime-check.py
       - run: node --check studio-functions/index.js
       - run: node --check studio-functions/studio-core.cjs
       - run: node --check studio-config.js

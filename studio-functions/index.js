@@ -8,7 +8,7 @@ const {
   TYPES, checkInput, checkQuestions, normalizeContent,
   describeSlot, normalizedKey
 }=require('./studio-core.cjs');
-const {readTextbookMaster}=require('./textbook-master.cjs');
+const {checkTextbookMasterHeader,readTextbookMaster}=require('./textbook-master.cjs');
 
 if(!getApps().length)initializeApp({databaseURL:'https://yoshi-lab-db3eb-default-rtdb.firebaseio.com'});
 const geminiKey=defineSecret('STUDIO_GEMINI_API_KEY');
@@ -154,11 +154,18 @@ exports.studioApi=onRequest({region:'asia-northeast1',secrets:[geminiKey,githubT
   limited(req);
   const user=await authorized(req);
   const action=String(req.path||'').replace(/^\/+|\/+$/g,'');
-  if(action==='textbook-master'){
-   return json(res,200,await readTextbookMaster(req.body,{
+  if(action==='textbook-master'||action==='textbook-master/check'){
+   const options={
     config:process.env,fetcher:fetch,
     getRuntimeToken:async()=> (await applicationDefault().getAccessToken()).access_token,
-   }));
+   };
+   if(action==='textbook-master/check'){
+    if(process.env.STUDIO_MASTER_SPREADSHEET_ID!=='1ClfR5S6qYTCbKOjjs4Aq3KFQjnOH2QIhysMpppv5_1Q')
+     throw fail(503,'接続確認には指定のテストシートの設定が必要です');
+    await checkTextbookMasterHeader(options);
+    return json(res,200,{headerVerified:true});
+   }
+   return json(res,200,await readTextbookMaster(req.body,options));
   }
   if(action!=='generate'&&action!=='preview'&&action!=='publish')return json(res,404,{error:'未対応の操作です'});
   if(req.body.source&&typeof req.body.source==='string'&&req.body.source.length>20000)throw fail(400,'本文が長すぎます');

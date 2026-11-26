@@ -14,6 +14,10 @@ with sync_playwright() as p:
    if u.hostname=='studioapi-bfaa4wjjga-an.a.run.app':
     calls.append(u.path)
     if u.path=='/generate':r.fulfill(json={'questions':questions})
+    elif u.path=='/textbook-master/check':
+     assert r.request.post_data_json=={}
+     assert r.request.headers.get('authorization')=='Bearer mock-token'
+     r.fulfill(json={'headerVerified':True})
     elif u.path=='/textbook-master':
      assert r.request.post_data_json=={'subject':'英C','lesson':'TEST','part':'1'}
      r.fulfill(json={'source':'We protect the ocean.\nWe collect rubbish.','sentenceCount':2})
@@ -38,6 +42,11 @@ with sync_playwright() as p:
   assert page.locator('#editor').is_hidden()
   page.evaluate('window.YoshiAccount.login()');page.locator('#editor').wait_for(state='visible')
   assert page.locator('#count').input_value()=='2'
+  page.locator('#checkMaster').click()
+  page.wait_for_function("document.getElementById('masterCheckStatus').textContent.includes('10列')")
+  assert calls==['/textbook-master/check']
+  assert page.locator('#source').input_value()==''
+  calls.clear()
   page.locator('#lesson').fill('TEST');page.locator('#source').fill('Manual draft')
   page.locator('#fetchMaster').click();page.locator('#masterPreview').wait_for(state='visible')
   assert page.locator('#source').input_value()=='Manual draft'

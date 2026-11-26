@@ -112,3 +112,41 @@ test('textbook master is available only to authorized teachers and uses no gener
  assert.equal(h.calls[1].opts.headers.Authorization,'Bearer ephemeral-reader');
  assert.doesNotMatch(JSON.stringify(result),/private|ephemeral/);
 });
+
+test('runtime diagnostic reads only the test sheet header after teacher auth', async () => {
+ const masterConfig={
+  STUDIO_MASTER_SPREADSHEET_ID:'1ClfR5S6qYTCbKOjjs4Aq3KFQjnOH2QIhysMpppv5_1Q',
+  STUDIO_MASTER_READER_SERVICE_ACCOUNT:'reader@sample-project.iam.gserviceaccount.com'
+ };
+ for(const [setup,options,status] of [
+  [{},{auth:false},401],[{teacher:false},{},403],[{provider:'anonymous'},{},403],
+  [{},{origin:'https://not-allowed.example'},403],
+  [{masterConfig:{...masterConfig,STUDIO_MASTER_SPREADSHEET_ID:'different-sheet-id-123456789'}},{},503],
+ ]){
+  const h=harness({masterConfig,...setup});
+  assert.equal((await h.send('textbook-master/check',{},options)).code,status);
+  assert.equal(h.calls.length,0);
+ }
+ for(const [upstream,headers,status] of [
+  ['ok',master.HEADERS,200],['ok',['wrong'],422],['denied',master.HEADERS,502],
+  ['token-denied',master.HEADERS,502]
+ ]){
+  const h=harness({model:'',quota:false,masterConfig,masterResponse(url,opts){
+   if(url.includes('iamcredentials.googleapis.com')){
+    assert.equal(opts.headers.Authorization,'Bearer mock-runtime');
+    assert.deepEqual(JSON.parse(opts.body),{scope:['https://www.googleapis.com/auth/spreadsheets.readonly'],lifetime:'300s'});
+    return {ok:upstream!=='token-denied',json:async()=>({accessToken:'ephemeral-reader'})};
+   }
+   assert.equal(opts.method,'GET');
+   assert.equal(opts.headers.Authorization,'Bearer ephemeral-reader');
+   assert.equal(decodeURIComponent(new URL(url).pathname),"/v4/spreadsheets/"+masterConfig.STUDIO_MASTER_SPREADSHEET_ID+"/values/'教科書本文マスター'!1:1");
+   return new Response(JSON.stringify({values:[headers]}),{status:upstream==='denied'?403:200});
+  }});
+  const result=await h.send('textbook-master/check',{spreadsheetId:'caller-supplied'});
+  assert.equal(result.code,status);
+  assert.deepEqual(h.reads,['teacherUids/teacher-test']);
+  assert.equal(h.calls.length,upstream==='token-denied'?1:2);
+  if(status===200)assert.deepEqual({...result.data},{headerVerified:true});
+  assert.doesNotMatch(JSON.stringify({result,logs:h.logs}),/ephemeral|mock-runtime|原文ID/);
+ }
+});

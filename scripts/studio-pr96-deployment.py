@@ -207,7 +207,7 @@ def replacement(archive, before, after):
     return output.getvalue(), baseline
 
 
-def submit(client, data):
+def submit(client, data, *, environment=None):
     if len(data) > MAX_ARCHIVE:
         raise Stop('アップロード用ZIPが上限を超えました')
     upload = client.json(GCF + PARENT + '/functions:generateUploadUrl', 'POST', {})
@@ -220,8 +220,12 @@ def submit(client, data):
     if 'x-goog-content-length-range' in signed_headers.get('x-goog-signedheaders', [''])[0].split(';'):
         headers['x-goog-content-length-range'] = '0,104857600'
     client.request(url, 'PUT', data, signed=True, extra_headers=headers)
-    result = client.json(GCF + FUNCTION + '?updateMask=buildConfig.source', 'PATCH',
-                         {'buildConfig': {'source': {'storageSource': source}}})
+    mask = 'buildConfig.source'
+    payload = {'buildConfig': {'source': {'storageSource': source}}}
+    if environment is not None:
+        mask += ',serviceConfig.environmentVariables'
+        payload['serviceConfig'] = {'environmentVariables': environment}
+    result = client.json(GCF + FUNCTION + '?updateMask=' + mask, 'PATCH', payload)
     name = result.get('name', '')
     if not re.fullmatch(re.escape(PARENT) + r'/operations/[A-Za-z0-9_.-]+', name):
         raise Stop('更新の操作IDを確認できません。Consoleで状態を確認してください')
