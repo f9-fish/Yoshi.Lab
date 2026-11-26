@@ -208,6 +208,11 @@ def replacement(archive, before, after):
 
 
 def submit(client, data, *, environment=None):
+    if data is None:
+        if environment is None:
+            raise Stop('更新対象がありません')
+        return update_function(client, 'serviceConfig.environmentVariables',
+                               {'serviceConfig': {'environmentVariables': environment}})
     if len(data) > MAX_ARCHIVE:
         raise Stop('アップロード用ZIPが上限を超えました')
     upload = client.json(GCF + PARENT + '/functions:generateUploadUrl', 'POST', {})
@@ -225,6 +230,10 @@ def submit(client, data, *, environment=None):
     if environment is not None:
         mask += ',serviceConfig.environmentVariables'
         payload['serviceConfig'] = {'environmentVariables': environment}
+    update_function(client, mask, payload)
+
+
+def update_function(client, mask, payload):
     result = client.json(GCF + FUNCTION + '?updateMask=' + mask, 'PATCH', payload)
     name = result.get('name', '')
     if not re.fullmatch(re.escape(PARENT) + r'/operations/[A-Za-z0-9_.-]+', name):
