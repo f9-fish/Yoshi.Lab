@@ -98,24 +98,52 @@ const prompt=(input)=>[
  'Subject: '+input.subject+'; Lesson '+input.lesson+'; Part '+input.part,
  'PASSAGE BEGIN\n'+input.source+'\nPASSAGE END'
 ].join('\n');
+const generationTimeoutMs=55000;
+const maxOutputTokens=8192;
+const usageFields=['promptTokenCount','candidatesTokenCount','thoughtsTokenCount','totalTokenCount'];
+const finishReasons=new Set(['STOP','MAX_TOKENS','SAFETY','RECITATION','BLOCKLIST','PROHIBITED_CONTENT','SPII','OTHER']);
 async function generate(input){
  const url='https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent';
- const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),55000);
+ const lowThinking=model==='gemini-3.8-flash'&&input.count<=2;
+ const generationConfig={temperature:0.35,responseMimeType:'application/json',maxOutputTokens,
+  ...(lowThinking?{thinkingConfig:{thinkingLevel:'LOW',includeThoughts:false}}:{})};
+ const started=Date.now(),elapsed=()=>Math.max(0,Date.now()-started);
+ const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),generationTimeoutMs);
+ const timing={event:'studio_gemini_generation',stage:'headers',outcome:'error',
+  profile:lowThinking?'low':'default',requestedPerType:input.count,timeoutMs:generationTimeoutMs,maxOutputTokens};
  try{
   const r=await fetch(url,{method:'POST',signal:controller.signal,
    headers:{'Content-Type':'application/json','x-goog-api-key':geminiKey.value()},
-   body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt(input)}]}],
-    generationConfig:{temperature:0.35,responseMimeType:'application/json',maxOutputTokens:8192}})});
-  if(!r.ok)throw fail(502,'AI生成サービスが応答しませんでした（HTTP '+r.status+'）');
+   body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt(input)}]}],generationConfig})});
+  timing.headersMs=elapsed();
+  if(Number.isInteger(r.status))timing.upstreamStatus=r.status;
+  if(!r.ok){timing.outcome='upstream_http_error';throw fail(502,'AI生成サービスが応答しませんでした（HTTP '+r.status+'）')}
+  timing.stage='body';
   const payload=await r.json();
-  const text=payload.candidates?.[0]?.content?.parts?.map(x=>x.text||'').join('');
+  timing.bodyReadyMs=elapsed();
+  const candidate=payload.candidates?.[0];
+  if(finishReasons.has(candidate?.finishReason))timing.finishReason=candidate.finishReason;
+  for(const field of usageFields){
+   const value=payload.usageMetadata?.[field];
+   if(Number.isSafeInteger(value)&&value>=0)timing[field]=value;
+  }
+  timing.stage='validate';
+  const text=candidate?.content?.parts?.filter(part=>part.thought!==true).map(part=>part.text||'').join('');
   if(!text)throw fail(502,'AIから有効な回答が返りませんでした');
   let data;
   try{data=JSON.parse(text)}catch{throw fail(502,'AIの回答がJSON形式ではありません。再生成してください')}
   const questions=checkQuestions(data.questions,{allowEmpty:false,requireAllTypes:true});
+  timing.outcome='success';
+  timing.questionCount=Object.values(questions).reduce((sum,items)=>sum+items.length,0);
   return {questions};
- }catch(error){if(error.name==='AbortError')throw fail(504,'AIの応答がタイムアウトしました');throw error}
- finally{clearTimeout(timeout)}
+ }catch(error){
+  if(error.name==='AbortError'){timing.outcome='deadline';throw fail(504,'AIの応答がタイムアウトしました')}
+  throw error;
+ }finally{
+  clearTimeout(timeout);
+  // Only fixed labels, timings and counts. Never include response or request content.
+  console.info(JSON.stringify({...timing,elapsedMs:elapsed()}));
+ }
 }
 exports.studioApi=onRequest({region:'asia-northeast1',secrets:[geminiKey,githubToken],memory:'512MiB',timeoutSeconds:90,invoker:'public'},async(req,res)=>{
  if(!responseCors(req,res))return json(res,403,{error:'許可されていない送信元です'});
