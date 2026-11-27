@@ -16,20 +16,26 @@ function prepareBatch(body,uid,now) {
  const {batchId} = body;
  if(typeof batchId!=='string'||!UUID.test(batchId))throw fail(400,'保存バッチIDが不正です');
  const input=checkInput(body);
+ if(body.source.length>20000)throw fail(400,'本文を2万文字以内で入力してください');
  const questions=checkQuestions(body.questions);
- const sourceHash=hash(input.source);
+ const sourceHash=hash(body.source);
  const {subject,lesson,part}=input;
  const fingerprint=hash(JSON.stringify({uid,subject,lesson,part,sourceHash,questions}));
  const rows=TYPES.flatMap(type=>questions[type].map((q,index)=>[
   '1',batchId,batchId+':'+type+':'+(index+1),subject,lesson,part,type,q.question,q.answer,q.translation,
   '要確認','true',now,now,uid,sourceHash,'','','1',fingerprint
  ]));
- return {batchId,title:sheetTitle(batchId),fingerprint,rows};
+ const sourceRow=['1',batchId,batchId+':source',subject,lesson,part,'source',body.source,'','',
+  '', '',now,now,uid,sourceHash,'','','1',fingerprint];
+ return {batchId,title:sheetTitle(batchId),fingerprint,rows,sourceRow};
 }
 
 function validSavedBatch(values,batch) {
- if(!Array.isArray(values)||JSON.stringify(values[0])!==JSON.stringify(HEADER)||values.length!==batch.rows.length+1)return false;
- return values.slice(1).every((row,i)=>Array.isArray(row)&&row.length===HEADER.length&&row.every((cell,j)=>{
+ if(!Array.isArray(values)||JSON.stringify(values[0])!==JSON.stringify(HEADER)||!([batch.rows.length+1,batch.rows.length+2].includes(values.length)))return false;
+ const source=values[batch.rows.length+1];
+ if(source&&(!Array.isArray(source)||source.length!==HEADER.length||
+  source.some((cell,i)=>i===12||i===13?cell!==values[1][12]:cell!==batch.sourceRow[i])))return false;
+ return values.slice(1,batch.rows.length+1).every((row,i)=>Array.isArray(row)&&row.length===HEADER.length&&row.every((cell,j)=>{
   if(Number(row[18])>1&&[7,8,9,10,11,13,16,17,18].includes(j))return typeof cell==='string';
   if(j===12||j===13)return typeof cell==='string'&&Number.isFinite(Date.parse(cell))&&cell===values[1][12];
   return cell===batch.rows[i][j];
@@ -89,14 +95,14 @@ async function saveBatch(body,uid,options) {
  const batch=prepareBatch(body,uid,new Date().toISOString());
  try{
   const request=await authenticatedSheets(options);
-  const path='/values/'+encodeURIComponent("'"+batch.title+"'!A1:T"+(batch.rows.length+2));
+  const path='/values/'+encodeURIComponent("'"+batch.title+"'!A:T");
   const sheetId=numericId(batch.batchId);
-  const rows=rowData([HEADER,...batch.rows]);
+  const rows=rowData([HEADER,...batch.rows,batch.sourceRow]);
   // The unique tab and its complete contents are created atomically in one request.
   let write;
   try{
    write=await request(':batchUpdate',{requests:[
-    {addSheet:{properties:{sheetId,title:batch.title,gridProperties:{rowCount:batch.rows.length+2,columnCount:HEADER.length}}}},
+    {addSheet:{properties:{sheetId,title:batch.title,gridProperties:{rowCount:batch.rows.length+3,columnCount:HEADER.length}}}},
     {updateCells:{start:{sheetId,rowIndex:0,columnIndex:0},rows,fields:'userEnteredValue'}}
    ]});
   }catch{/* A lost response may follow a successful commit. Verify by reading. */}
@@ -139,7 +145,7 @@ async function searchBatches(body,options) {
   const batches=[];
   for(const [i,range] of valueRanges.entries()){
    const rows=range.values;
-   if(!Array.isArray(rows)||rows.length<2||rows.length>101||JSON.stringify(rows[0])!==JSON.stringify(HEADER)||
+   if(!Array.isArray(rows)||rows.length<2||rows.length>102||JSON.stringify(rows[0])!==JSON.stringify(HEADER)||
       rows.slice(1).some(row=>row.length!==HEADER.length||row[0]!=='1'||!UUID.test(row[1])||
        'batch_'+row[1].replaceAll('-','_')!==candidates[i]))
     throw fail(502,'履歴の保存形式を確認できません');
@@ -147,11 +153,12 @@ async function searchBatches(body,options) {
    const createdAt=rows[1][12];
    if((subject&&subject!==savedSubject)||(lesson&&lesson!==savedLesson)||(part&&part!==savedPart)||
       (date&&date!==new Date(Date.parse(createdAt)+9*3600000).toISOString().slice(0,10)))continue;
-   const items=rows.slice(1).filter(row=>(!type||row[6]===type)&&(!status||row[10]===status)).map(row=>({
+   const source=rows.at(-1)[6]==='source'?rows.at(-1)[7]:null;
+   const items=rows.slice(1).filter(row=>row[6]!=='source').filter(row=>(!type||row[6]===type)&&(!status||row[10]===status)).map(row=>({
     id:row[2],type:row[6],question:row[7],answer:row[8],translation:row[9],status:row[10],accepted:row[11]==='true',
     updatedAt:row[13],pending:row[16].startsWith('pending:'),destination:row[16].startsWith('pending:')?'':row[16],commit:row[17],version:Number(row[18]),
    }));
-   if(items.length)batches.push({batchId,subject:savedSubject,lesson:savedLesson,part:savedPart,createdAt,items,version:Number(rows[1][18]),pending:rows.slice(1).some(row=>row[16].startsWith('pending:'))});
+   if(items.length)batches.push({batchId,subject:savedSubject,lesson:savedLesson,part:savedPart,createdAt,items,source,version:Number(rows[1][18]),pending:rows.slice(1).some(row=>row[16].startsWith('pending:'))});
   }
   return {batches,nextCursor:titles.length>previous+1+candidates.length?candidates.at(-1):null};
  }catch(error){
@@ -202,10 +209,11 @@ async function readRows(request,batchId) {
   const response=await request(path);
   if(!response.ok)throw fail(response.status===400?404:502,'変更対象のバッチを取得できません');
   const {values}=await response.json();
-  if(!Array.isArray(values)||values.length<2||values.length>101||JSON.stringify(values[0])!==JSON.stringify(HEADER)||
-   values.slice(1).some(row=>row.length!==HEADER.length||row[0]!=='1'||row[1]!==batchId||!TYPES.includes(row[6])))
+  if(!Array.isArray(values)||values.length<2||values.length>102||JSON.stringify(values[0])!==JSON.stringify(HEADER)||
+   values.slice(1).some((row,i)=>row.length!==HEADER.length||row[0]!=='1'||row[1]!==batchId||
+    !(TYPES.includes(row[6])||(i===values.length-2&&row[6]==='source'))))
    throw fail(502,'バッチの保存形式を確認できません');
-  return values.slice(1);
+  return values.slice(1).filter(row=>row[6]!=='source');
 }
 
 async function writeRows(request,batchId,version,rows) {
@@ -227,7 +235,7 @@ function approvedQuestions(rows) {
   .map(r=>({question:r[7],answer:r[8],translation:r[9]}))])),{allowEmpty:true});
 }
 
-async function managedPublication(body,options,preview) {
+async function managedPublication(body,options,preview,selectQuestions) {
  const {batchId,version,expectedSha}=body;
  if(typeof batchId!=='string'||!UUID.test(batchId)||!Number.isSafeInteger(version)||version<1||
   (!preview&&expectedSha!==null&&!(typeof expectedSha==='string'&&/^[a-f0-9]{40}$/.test(expectedSha))))
@@ -239,9 +247,14 @@ async function managedPublication(body,options,preview) {
   if(rows.some(row=>row[18]!==String(current))||current!==version)
    throw fail(409,'バッチが変わりました。履歴を再検索してください');
   const pending=rows.filter(row=>row[16].startsWith('pending:'));
-  const approved=pending.length?pending:rows.filter(row=>row[10]==='承認済'&&row[11]==='true');
+  let approved=pending.length?pending:rows.filter(row=>row[10]==='承認済'&&row[11]==='true');
   if(!approved.length)throw fail(400,'公開候補は承認済みかつ採用した問題に限ります');
   const [,id,,subject,lesson,part]=rows[0];
+  if(!pending.length&&selectQuestions){
+   const selected=selectQuestions(approvedQuestions(approved));
+   approved=approved.filter(row=>(selected[row[6]]||[]).some(item=>item.question===row[7]));
+   if(!approved.length)throw fail(409,'すべて公開済みの問題と重複しています');
+  }
   const questions=approvedQuestions(approved);
   const plan={batchId:id,subject,lesson,part,questions,version:current};
   if(pending.length){

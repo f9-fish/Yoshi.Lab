@@ -16,6 +16,7 @@
    const hasUnit=q.unitId!==undefined;
    const lesson=hasUnit?lessonKey(text(q.subject),q.unitId,q.unitName):String(q.lesson??'').trim();
    const row={id:text(q.id),subject:text(q.subject),lesson,number:Number(q.number),japanese:text(q.japanese),requiredExpressions:list(q.requiredExpressions),modelAnswer:text(q.modelAnswer),acceptedAnswers:list(q.acceptedAnswers),hints:list(q.hints),explanation:text(q.explanation),status:'公開'};
+   if(q.studioQa==='closed'||q.studioQa==='open')row.studioQa=q.studioQa;
    if(hasUnit){row.unitId=String(q.unitId??'').trim();row.unitName=text(q.unitName);if(!row.unitId||!row.unitName)throw Error('単元ID・単元名を確認してください。');}
    if(Array.isArray(q.hints)&&q.hints.some(h=>!text(h)))row.hintNumbers=q.hints.map((h,i)=>text(h)?i+1:null).filter(Boolean);
    if(!row.id||!subjects.includes(row.subject)||!row.lesson||!row.japanese||!row.modelAnswer||!row.explanation||!Number.isInteger(row.number)||row.number<1||seen.has(row.id))throw Error('公開問題の必須項目・問題番号・ID重複を確認してください。');
@@ -32,6 +33,7 @@
   if(!normalized)throw Error('英文を入力してください。');
   const expressions=q.requiredExpressions.map(expression=>({expression,used:hasExpression(answer,expression)}));
   const registered=[q.modelAnswer,...q.acceptedAnswers].some(a=>normalize(a)===normalized);
+  if(q.studioQa==='open')return {status:'self-check',registered:false,expressions:[]};
   return {status:registered&&expressions.every(e=>e.used)?'correct':'review',registered,expressions};
  }
  function lessonLabel(id){return /^lesson\b/i.test(id)?id:'Lesson '+id;}

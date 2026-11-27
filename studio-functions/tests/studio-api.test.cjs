@@ -185,12 +185,13 @@ test('separate save atomically stores all ten generated questions and verifies r
  assert.ok(saved.every(r=>r.code===200&&r.data.savedCount===10));
  assert.equal(tabs,1);
  assert.equal(writeAttempts,2);
- assert.ok(cells.slice(1).every(row=>row[10]==='要確認'&&row[14]==='teacher-test'));
- assert.ok(cells.slice(1).every(row=>row[15].length===64));
+ assert.ok(cells.slice(1,-1).every(row=>row[10]==='要確認'&&row[14]==='teacher-test'));
+ assert.ok(cells.slice(1,-1).every(row=>row[15].length===64));
  const history=await h.send('question-master/search',{subject:'英C',type:'cloze',status:'要確認'});
  assert.equal(history.code,200);
  assert.equal(history.data.batches[0].items.length,2);
  assert.equal(history.data.batches[0].batchId,batchId);
+ assert.equal(history.data.batches[0].source,input.source);
  assert.equal((await h.send('question-master/save',{...data,source:'Changed source'})).code,409);
  assert.equal((await h.send('publish',{...data,expectedSha:'old'})).code,400);
  assert.ok(h.calls.every(c=>!c.url.includes('api.github.com')));
@@ -241,7 +242,7 @@ for(const replacing of [false,true])test('managed publication preserves other gr
    const lock=guard.createDeveloperMetadata.developerMetadata.metadataId;
    if(locks.has(lock))return reply({},400);
    if(changed.some(row=>row[10]==='公開済')&&failFinish){failFinish=false;return reply({},503);}
-   locks.add(lock);rows=[rows[0],...changed];return reply({});
+   locks.add(lock);rows=[rows[0],...changed,rows.at(-1)];return reply({});
   },
   githubResponse(url,opts){
    if(opts.method==='PUT'){
@@ -272,9 +273,9 @@ for(const replacing of [false,true])test('managed publication preserves other gr
  assert.equal(preview.data.slot,'英C / Lesson 8 / Part 1');
  assert.equal(preview.code,200);
  assert.equal(preview.data.newCount,1);
- assert.equal(preview.data.replacing,replacing);
+ assert.equal(preview.data.replacing,false);
+ assert.equal(preview.data.appending,true);
  assert.equal((await h.send('publish',{batchId,version:3,expectedSha:'d'.repeat(40),allowReplace:replacing})).code,409);
- if(replacing)assert.equal((await h.send('publish',{batchId,version:3,expectedSha:preview.data.sha})).code,409);
  assert.equal(puts,0);
  assert.equal(rows[1][16],'');
  assert.equal((await h.send('publish',{batchId,version:3,expectedSha:preview.data.sha,allowReplace:replacing})).code,502);
@@ -282,8 +283,8 @@ for(const replacing of [false,true])test('managed publication preserves other gr
  assert.equal(rows[1][10],'承認済');
  const published=entries.filter(entry=>entry.subject===input.subject&&entry.id===seed.lesson&&entry.name===input.part);
  assert.equal(published.length,1);
- assert.equal(published[0].questions.vocabulary.length,1);
- assert.deepEqual(published[0].questions.cloze,[]);
+ assert.equal(published[0].questions.vocabulary.length,replacing?2:1);
+ assert.deepEqual(published[0].questions.cloze,replacing?existingSlot.questions.cloze:[]);
  assert.deepEqual(entries.find(entry=>entry.subject==='論表'),unrelated);
  const recovery=await concurrent.send('preview',{batchId,version:4});
  assert.equal(recovery.data.pending,true);
@@ -291,7 +292,7 @@ for(const replacing of [false,true])test('managed publication preserves other gr
  assert.equal(puts,1);
  assert.equal(rows[1][10],'公開済');
  assert.equal(rows[1][17],commit);
- assert.ok(rows.slice(2).every(row=>row[10]==='要確認'));
+ assert.ok(rows.slice(2,-1).every(row=>row[10]==='要確認'));
  assert.equal((await h.send('question-master/update',{batchId,questionId:first,version:5,operation:'return'})).code,409);
 });
 
@@ -335,4 +336,24 @@ test('connection-only rollout reads metadata and disables the shared write path'
  assert.equal(h.calls.length,2);
  assert.equal((await h.send('generate')).data.sharedDraft,undefined);
  assert.equal((await h.send('publish',{...input,questions:questions(),expectedSha:'old'})).code,200);
+});
+
+test('practice format generates ten questions with separate words and idioms and keeps LOW',async()=>{
+ const legacy=questions();
+ delete legacy.trueFalse;
+ legacy.idiom=[{question:'due to',answer:'〜が理由で',translation:'原因を示す'}];
+ const ten=Object.fromEntries(Object.entries(legacy).map(([kind,[item]])=>[
+  kind,[item,{...item,question:item.question+' 2'}]
+ ]));
+ const h=harness({model:'gemini-3.8-flash',geminiResponse(opts){
+  const request=JSON.parse(opts.body);
+  assert.equal(request.generationConfig.thinkingConfig.thinkingLevel,'LOW');
+  assert.match(request.contents[0].parts[0].text,/vocabulary, idiom, cloze, qa, discussion/);
+  return {ok:true,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({questions:ten})}]}}]})};
+ }});
+ const result=await h.send('generate',{...input,count:2,practiceFormat:2});
+ assert.equal(result.code,200);
+ assert.equal(result.data.questions.idiom.length,2);
+ assert.deepEqual(result.data.questions.trueFalse,[]);
+ assert.equal(Object.values(result.data.questions).flat().length,10);
 });

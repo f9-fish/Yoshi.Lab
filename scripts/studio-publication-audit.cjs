@@ -17,7 +17,7 @@ function inspect(bytes,slot) {
  const groups=normalizeContent(JSON.parse(bytes.toString('utf8')));
  const existing=groups.find(group=>normalizedKey(group)===normalizedKey(slot));
  return {groups:groups.length,collision:Boolean(existing),
-  existingQuestionCount:existing?TYPES.reduce((total,type)=>total+existing.questions[type].length,0):0};
+  existingQuestionCount:existing?TYPES.reduce((total,type)=>total+(existing.questions[type]?.length||0),0):0};
 }
 
 function makeBackup(output,bytes,manifest) {

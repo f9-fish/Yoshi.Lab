@@ -1252,6 +1252,8 @@ body:has(#subjects:not(.hidden)) #subjects .growth-subject-cta{grid-column:3;gri
 <button class="mode-choice" id="pickTyping"><span class="mode-card-icon" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M28 5H9v38h29V22M28 5v12h10L28 5Z"/><path d="M15 15h6M15 23h9M15 30h9M15 36h6m12-13v14m-4-14h8m-8 14h8"/></svg></span><span class="mode-card-name">本文穴埋め<span class="mode-typing-line">（タイピング）</span></span><span class="mode-card-desc">Type the missing words</span><span class="mode-card-xp">1問クリア +10 XP</span></button>
 <button class="mode-choice" id="pickVocab"><span class="mode-card-icon" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="38" height="38" rx="5"/><circle cx="13" cy="15" r="2"/><circle cx="13" cy="25" r="2"/><path d="M21 15h14M21 25h14m-24 9 3 3 5-6m4 3h12"/></svg></span><span class="mode-card-name">単語チェック<span class="mode-typing-line">（4択）</span></span><span class="mode-card-desc">Choose the correct word</span><span class="mode-card-xp">1問クリア +1 XP</span></button>
 <button class="mode-choice" id="pickVocabTyping"><span class="mode-card-icon" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="10" width="42" height="29" rx="5"/><path d="M10 17h2m6 0h2m6 0h2m6 0h3M10 24h2m6 0h2m6 0h2m6 0h3M12 32h24"/></svg></span><span class="mode-card-name">単語チェック<span class="mode-typing-line">（タイピング）</span></span><span class="mode-card-desc">Type the correct word</span><span class="mode-card-xp">1問クリア +7 XP</span></button>
+<button class="mode-choice hidden" type="button" id="pickStudioVocab">公開済みの追加単語・熟語（XPなし）</button>
+<button class="mode-choice hidden" type="button" id="pickStudioGrammar">公開済みの追加文法（XPなし）</button>
 </div><aside class="repeat-xp-notice" aria-label="XP獲得ルール"><div class="practice-attempt-count" aria-live="polite"><span>今回の挑戦</span><b>確認中…</b></div><strong>⚡ XP獲得ルール</strong><p>同じ問題セットの<strong style="display:inline;color:inherit;font-size:inherit">1〜4回目</strong>はこれまでどおりXP獲得。</p><p class="repeat-xp-emphasis">5回目以降は、全問題を最後まで解答するとXP獲得！</p><small>途中終了でも学習記録は残りますが、XPは加算されません。※デイリーチャレンジは対象外</small></aside><p class="xp-mode-foot">✨ 難しいモードほどXPアップ！ 正解数×各モードの倍率で獲得。</p><p class="notice" id="modeNotice"></p></section>
 <section class="panel hidden" id="vocabPractice"><button class="outline back" id="vocabBack">← 学習モードに戻る</button><h2 id="vocabHeading">英単語チャレンジ</h2><aside class="repeat-xp-notice" aria-label="XP獲得ルール"><div class="practice-attempt-count" aria-live="polite"><span>今回の挑戦</span><b>確認中…</b></div><strong>⚡ XP獲得ルール</strong><p>同じ問題セットの<strong style="display:inline;color:inherit;font-size:inherit">1〜4回目</strong>はこれまでどおりXP獲得。</p><p class="repeat-xp-emphasis">5回目以降は、全問題を最後まで解答するとXP獲得！</p><small>途中終了でも学習記録は残りますが、XPは加算されません。※デイリーチャレンジは対象外</small></aside><div class="controls"><select id="vocabType" class="hidden" aria-label="問題形式"><option value="choice">意味を選ぶ（4択）</option><option value="typing">英単語を入力する</option></select><button class="primary" id="vocabStart">▶ ゲームスタート！</button></div><div id="vocabGame" class="hidden"><div style="margin-top:15px;text-align:right"><span class="streak-chip" id="vocabStreakChip">🔥 0 STREAK</span></div><div class="statrow" style="margin-top:18px"><div class="stat"><strong id="vocabProgress">0 / 0</strong><span>進行状況</span></div><div class="stat"><strong id="vocabScore">0</strong><span>正解数</span></div><div class="stat"><strong id="vocabStreak">0</strong><span>連続正解</span></div><div class="stat"><strong id="vocabPoints">0</strong><span>ポイント</span></div></div><div class="card" style="margin-top:16px;min-height:180px"><div class="hint" id="vocabPrompt">英単語の意味は？</div><div class="question-hint-row"><div class="vocab-word-wrap"><button type="button" id="vocabReadingToggle" class="vocab-reading-toggle hidden">🔊 読み方表示</button><div id="vocabReadingText" class="vocab-reading-text hidden" aria-live="polite"></div><div class="vocab-word" id="vocabWord"></div></div><div class="hint-button-stack"><button type="button" class="question-hint-button" id="vocabInitialHint">💡 ヒント</button><small class="hint-button-caption" id="vocabHintCaption">選択肢を2つにする</small></div></div><div id="vocabInitialText" class="question-hint-output" aria-live="polite"></div></div><div class="space"></div><div id="vocabOptions" class="vocab-options"></div><div id="vocabInputArea" class="hidden"><input id="vocabInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="英単語を入力" style="width:100%"><button id="vocabSubmit" class="primary" style="width:100%;margin-top:10px">回答する</button></div><div class="vocab-feedback" id="vocabFeedback" aria-live="polite"></div><div id="vocabPronunciation" class="hidden" style="margin:12px 0;padding:12px;background:#253E6D;border:1px solid #45659B;border-radius:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><strong id="vocabPronunciationWord" style="font-size:21px;color:#FFE066;overflow-wrap:anywhere;flex:1"></strong><button type="button" id="vocabSpeak" class="primary" aria-label="英単語の発音を聞き直す">🔊 もう一度聞く</button><button type="button" id="vocabSpeechSpeed" aria-label="発音速度を切り替える">通常速度</button></div><p class="muted" id="vocabHint"></p><button class="primary hidden" id="vocabNext" style="width:100%">次の問題へ →</button></div></section>
 <section class="panel hidden" id="lessonNav"><button class="outline back" id="toUnits">← Part選択に戻る</button><h2 id="selectedLesson"></h2></section>
@@ -1263,7 +1265,7 @@ body:has(#subjects:not(.hidden)) #subjects .growth-subject-cta{grid-column:3;gri
 <section class="panel"><h2>🏆 スコアボード</h2><div class="grid2"><div class="stat"><strong id="scoreA">0 / 0</strong><span>生徒A（正解 / 回答）</span></div><div class="stat"><strong id="scoreB">0 / 0</strong><span>生徒B（正解 / 回答）</span></div></div><div class="space"></div><button class="outline" id="export">結果をCSV保存</button></section>
 <section class="panel hidden"><details id="editor"><summary>✏️ 先生用：熟語リストを編集する</summary><div><p class="muted">1行に「英語 | 日本語」を入力。タブ区切りもOK。保存した内容はこの端末のブラウザに記憶されます。生徒の端末へ共有する場合は、下の「共有用HTMLを保存」を使ってください。</p><textarea id="terms" spellcheck="false"></textarea><div class="space"></div><div class="controls"><button class="primary" id="save">この端末に保存</button><button id="restore">初期リストに戻す</button><button id="share">共有用HTMLを保存</button></div><p id="editMessage" class="notice"></p></div></details></section></div><div class="footer">Yoshi<span class="brand-accent">.Lab</span></div></div>
 <div id="streakCelebration" class="streak-celebration" hidden aria-live="polite"><div class="streak-celebration-card"><div class="streak-fire" id="streakFire">🔥</div><div class="streak-count"><b id="streakNumber">5</b> <span>STREAK!</span></div><div class="streak-praise" id="streakPraise">AWESOME!</div></div></div>
-<script src="./favorites-core.js"></script><script src="./favorites-ui.js?v=4"></script><script src="./answer-variants.js?v=1"></script><script src="./weekly-daily.js?v=1"></script><script type="module" src="./account.js?v=season-rollover-1" id="homeAccountModule"></script>
+<script src="./studio-practice.js"></script><script src="./favorites-core.js"></script><script src="./favorites-ui.js?v=4"></script><script src="./answer-variants.js?v=1"></script><script src="./weekly-daily.js?v=1"></script><script type="module" src="./account.js?v=season-rollover-1" id="homeAccountModule"></script>
 <script>
 const $=id=>document.getElementById(id);
 let accountAttached=false;
@@ -1318,8 +1320,8 @@ function showXPCelebration(earned,level,leveledUp){
  overlay.classList.add('open');
 }
 document.addEventListener('click',e=>{if(e.target?.id==='xpCelebrationClose'||e.target?.id==='xpCelebrationOverlay')document.getElementById('xpCelebrationOverlay').classList.remove('open')});
-async function saveSoloRecord(mode,right,total,best,durationSeconds,completedSet=false){
- if(!total)return;
+async function saveSoloRecord(mode,right,total,best,durationSeconds,completedSet=false,eligible=true){
+ if(!total||!eligible)return;
  // Firebase may still be restoring the previous Google session when a game ends.
  if(!window.YoshiAccount?.user){
   await new Promise(resolve=>{
@@ -1607,7 +1609,7 @@ function next(){
  deadline=remaining===Infinity?0:Date.now()+remaining*1000;
  current=deck.pop();last=current;seen++;flipped=false;
  const cloze=$('mode').value==='cloze';
- window.YoshiFavorites?.show($('question'),window.YoshiFavoriteQuestions.text(subject,cloze?(selectedStudyMode==='textTyping'?'textTyping':'cloze'):'translation',...terms[current]));
+ window.YoshiFavorites?.show($('question'),studioPractice?null:window.YoshiFavoriteQuestions.text(subject,cloze?(selectedStudyMode==='textTyping'?'textTyping':'cloze'):'translation',...terms[current]));
  dir=cloze?'en':$('direction').value==='mix'?(Math.random()<.5?'en':'ja'):$('direction').value;
  $('question').classList.toggle('cloze',cloze);
  if(cloze){
@@ -1647,13 +1649,13 @@ function updateClock(){
 function finish(){
  window.YoshiFavorites?.show($('question'),null);
  stopClozeSpeech();show('clozeSpeechControls',false);show('soloTypingArea',false);
- if(!soloSaved&&stats.A.total+stats.B.total){soloSaved=true;saveSoloRecord('text',stats.A.right+stats.B.right,stats.A.total+stats.B.total,soloBestStreak,activeTimer.stop(),availableIndices.length>0&&soloAnsweredIndices.size>=availableIndices.length)}
+ if(!soloSaved&&stats.A.total+stats.B.total){soloSaved=true;saveSoloRecord('text',stats.A.right+stats.B.right,stats.A.total+stats.B.total,soloBestStreak,activeTimer.stop(),availableIndices.length>0&&soloAnsweredIndices.size>=availableIndices.length,!studioPractice)}
  clearInterval(tick);tick=null;running=false;paused=false;document.body.classList.remove('yoshi-game-started');lockSettings(false);
  ['reveal','correct','wrong','skip','switch','pause','finishSession'].forEach(x=>$(x).disabled=true);
  $('cardLabel').textContent='終了';$('question').textContent='おつかれさま！';show('answer',false);
  $('cardHint').textContent='スコアを確認しよう';
 }
-function reset(){window.YoshiFavorites?.show($('question'),null);$('soloInitialText').textContent='';$('soloInitialHint').disabled=true;stopClozeSpeech();show('clozeSpeechControls',false);if(running&&!soloSaved&&stats.A.total+stats.B.total){soloSaved=true;saveSoloRecord('text',stats.A.right+stats.B.right,stats.A.total+stats.B.total,soloBestStreak,activeTimer.stop(),availableIndices.length>0&&soloAnsweredIndices.size>=availableIndices.length)}else activeTimer.cancel();soloStreak={A:0,B:0};soloAnsweredIndices.clear();soloNextPending=false;clearStreakCelebration();clearInterval(tick);tick=null;running=false;paused=false;lockSettings(false);['reveal','correct','wrong','skip','switch','pause','finishSession'].forEach(x=>$(x).disabled=true);stats={A:{right:0,total:0},B:{right:0,total:0}};history=[];deck=[];round=0;seen=0;availableIndices=terms.map((_,i)=>i).filter(i=>$('mode').value!=='cloze'||hasBlank(terms[i][0]));active='A';remaining=selectedSeconds();$('question').textContent='Ready?';$('cardLabel').textContent='STARTを押して開始';show('answer',false);$('message').textContent='全問出題したら、選択した出題順序で次の周回に入ります。';display()}
+function reset(){window.YoshiFavorites?.show($('question'),null);$('soloInitialText').textContent='';$('soloInitialHint').disabled=true;stopClozeSpeech();show('clozeSpeechControls',false);if(running&&!soloSaved&&stats.A.total+stats.B.total){soloSaved=true;saveSoloRecord('text',stats.A.right+stats.B.right,stats.A.total+stats.B.total,soloBestStreak,activeTimer.stop(),availableIndices.length>0&&soloAnsweredIndices.size>=availableIndices.length,!studioPractice)}else activeTimer.cancel();soloStreak={A:0,B:0};soloAnsweredIndices.clear();soloNextPending=false;clearStreakCelebration();clearInterval(tick);tick=null;running=false;paused=false;lockSettings(false);['reveal','correct','wrong','skip','switch','pause','finishSession'].forEach(x=>$(x).disabled=true);stats={A:{right:0,total:0},B:{right:0,total:0}};history=[];deck=[];round=0;seen=0;availableIndices=terms.map((_,i)=>i).filter(i=>$('mode').value!=='cloze'||hasBlank(terms[i][0]));active='A';remaining=selectedSeconds();$('question').textContent='Ready?';$('cardLabel').textContent='STARTを押して開始';show('answer',false);$('message').textContent='全問出題したら、選択した出題順序で次の周回に入ります。';display()}
 function mark(ok){if(!running||!flipped||soloNextPending)return;soloAnsweredIndices.add(current);soloNextPending=true;stats[active].total++;if(ok){stats[active].right++;soloStreak[active]++;soloBestStreak=Math.max(soloBestStreak,soloStreak[active])}else soloStreak[active]=0;history.push({role:active,english:terms[current][0],japanese:terms[current][1],correct:ok?'正解':'不正解'});display();if(ok&&streakLabel(soloStreak[active]))showStreakCelebration(soloStreak[active]);stopClozeSpeech();const advance=()=>{soloNextPending=false;if(running)next()};if($('mode').value==='cloze'){playSoloJudgment(ok,advance)}else{playSoloJudgment(ok,()=>{if(!running)return;if('speechSynthesis' in window)speakClozeSentence(advance);else advance();setTimeout(()=>{if(soloNextPending)advance()},15000)})}}
 $('finishSession').onclick=finish;
 $('mode').onchange=()=>{if(!running){reset();updateMode()}};$('start').onclick=start;$('reset').onclick=reset;$('pause').onclick=()=>{if(!running)return;if(!paused){updateClock();paused=true;$('pause').textContent='▶ 再開';$('reveal').disabled=true;$('correct').disabled=true;$('wrong').disabled=true;$('skip').disabled=true}else{paused=false;deadline=Date.now()+remaining*1000;$('pause').textContent='一時停止';$('reveal').disabled=flipped;$('correct').disabled=!flipped;$('wrong').disabled=!flipped;$('skip').disabled=false}};
@@ -1733,6 +1735,13 @@ function lessonLabel(id){const v=String(id??'').trim();return /^lesson\b/i.test(
 function partLabel(name){const v=String(name??'').trim();return /^part\b/i.test(v)?v:'Part '+v}
 let selectedLessonId='';
 let selectedStudyMode='';
+let studioPractice=false,studioGroups=[];
+const practiceGroups=mode=>studioPractice?studioGroups.filter(group=>mode.startsWith('vocab')?group.words.length:group.cards.length):
+ (mode.startsWith('vocab')?vocabularyGroups:groups);
+function showStudioModes(){
+ show('pickStudioVocab',studioGroups.some(group=>group.subject===subject&&group.words.length));
+ show('pickStudioGrammar',studioGroups.some(group=>group.subject===subject&&group.cards.length));
+}
 // 本文と英単語で「2」「Part 2」などの表記が違っても同じPartとして扱う。
 function normalizedPart(value){
  return String(value??'').trim().replace(/^part\s*/i,'').trim();
@@ -1742,7 +1751,7 @@ function naturalCompare(a,b){
 }
 function chooseSubject(s){
  document.body.classList.remove('yoshi-game-started');
- subject=s;unit=null;selectedLessonId='';selectedStudyMode='';
+ subject=s;unit=null;selectedLessonId='';selectedStudyMode='';studioPractice=false;showStudioModes();
  show('modePicker',true);show('vocabPractice',false);show('subjects',false);show('units',false);show('parts',false);show('lessonNav',false);show('practice',false);
  $('modeHeading').textContent=s+'｜学習内容を選ぼう';
  const vocabLabel=s==='論表'?'単語・熟語チェック':'単語チェック';
@@ -1757,14 +1766,14 @@ function chooseSubject(s){
 
 
 }
-function chooseStudyMode(mode){
- selectedStudyMode=mode;
+function chooseStudyMode(mode,useStudio=studioPractice){
+ studioPractice=useStudio;selectedStudyMode=mode;
  show('modePicker',false);show('units',true);show('parts',false);
  const s=subject;
  $('pageTitle').textContent=s+'｜Lessonを選ぼう';$('pageSub').textContent='学習したいLessonを選んでね';
  $('unitTitle').textContent=s+' のLesson';
  const list=$('unitList');list.replaceChildren();
- const filtered=(mode.startsWith('vocab')?vocabularyGroups:groups).filter(g=>g.subject===s);
+ const filtered=practiceGroups(mode).filter(g=>g.subject===s);
  const ids=[...new Set(filtered.map(g=>String(g.id??'').trim()))].sort(naturalCompare);
  if(!ids.length){list.textContent='この科目の公開問題はまだありません。';return}
  ids.forEach(id=>{
@@ -1777,12 +1786,12 @@ function chooseStudyMode(mode){
 }
 function chooseLesson(id){
  selectedLessonId=id;
- if(subject==='論表'){chooseMode('1');return;}show('modePicker',false);show('vocabPractice',false);show('units',false);show('parts',true);show('lessonNav',false);show('practice',false);
+ if(subject==='論表'&&!studioPractice){chooseMode('1');return;}show('modePicker',false);show('vocabPractice',false);show('units',false);show('parts',true);show('lessonNav',false);show('practice',false);
  $('pageTitle').textContent=lessonLabel(id)+'｜Partを選ぼう';
  $('pageSub').textContent='学習したいPartを選んでね';
  $('partTitle').textContent=lessonLabel(id)+' のPart';
  const list=$('partList');list.replaceChildren();
- const matches=(selectedStudyMode.startsWith('text')?groups:vocabularyGroups).filter(g=>g.subject===subject&&String(g.id??'').trim()===id);
+ const matches=practiceGroups(selectedStudyMode).filter(g=>g.subject===subject&&String(g.id??'').trim()===id);
  const unique=[...new Set(matches.map(g=>normalizedPart(g.name)))].sort(naturalCompare);
  if(unique.length>1){
   const all=document.createElement('button');all.className='unit';
@@ -1798,6 +1807,7 @@ function chooseLesson(id){
 }
 let attemptCounterRequest=0;
 async function refreshPracticeAttemptCount(){
+ if(studioPractice)return;
  const request=++attemptCounterRequest;
  const boxes=[...document.querySelectorAll('#vocabPractice .practice-attempt-count b,#soloSessionSettings .practice-attempt-count b,#textTypingXpNotice .practice-attempt-count b')];
  const a=window.YoshiAccount;
@@ -1825,8 +1835,13 @@ document.addEventListener('yoshi-auth-ready',()=>{
 });
 function chooseMode(name){
  const allParts=name==='__ALL_PARTS__';
- const match=g=>g.subject===subject&&String(g.id??'').trim()===selectedLessonId&&(subject==='論表'||allParts||normalizedPart(g.name)===normalizedPart(name));
- if(subject==='論表'){
+ const match=g=>g.subject===subject&&String(g.id??'').trim()===selectedLessonId&&((subject==='論表'&&!studioPractice)||allParts||normalizedPart(g.name)===normalizedPart(name));
+ if(studioPractice){
+  const selected=practiceGroups(selectedStudyMode).filter(match);
+  const meta={subject,id:selectedLessonId,name:allParts?'全部':name};
+  unit={...meta,cards:selected.flatMap(group=>group.cards)};
+  selectedVocabulary={...meta,words:selected.flatMap(group=>group.words)};
+ }else if(subject==='論表'){
   const text=groups.filter(match).flatMap(g=>g.cards||[]);
   const words=vocabularyGroups.filter(match).flatMap(g=>g.words||[]);
   unit=text.length?{subject,id:selectedLessonId,name:'1',cards:text}:null;
@@ -1844,7 +1859,8 @@ function chooseMode(name){
  }else{
   if(!selectedVocabulary?.words?.length){alert('この単元には単語問題がありません');chooseStudyMode('vocab');return;}
   show('vocabPractice',true);show('practice',false);show('lessonNav',false);
-  $('pageTitle').textContent='英単語チャレンジ 🔤';$('pageSub').textContent='ゲームスタートを押してね！';$('vocabType').value=selectedStudyMode==='vocabTyping'?'typing':'choice';$('vocabHintCaption').textContent=$('vocabType').value==='choice'?'選択肢を2つにする':'英単語の頭文字を見る';
+  $('pageTitle').textContent='英単語チャレンジ 🔤';$('pageSub').textContent=studioPractice?'公開済みの追加問題（XPなし）':'ゲームスタートを押してね！';
+  $('vocabPractice').querySelector('.repeat-xp-notice')?.classList.toggle('hidden',studioPractice);$('vocabType').value=selectedStudyMode==='vocabTyping'?'typing':'choice';$('vocabHintCaption').textContent=$('vocabType').value==='choice'?'選択肢を2つにする':'英単語の頭文字を見る';
   $('vocabHeading').textContent=subject+' / '+lessonLabel(selectedLessonId)+(subject==='論表'?'':' / '+partLabel(selectedVocabulary.name));
   show('vocabGame',false);
   void refreshPracticeAttemptCount();
@@ -1852,8 +1868,10 @@ function chooseMode(name){
 
 }
 $('modeBack').onclick=()=>$('toSubjects').click();
-$('pickText').onclick=()=>chooseStudyMode('text');$('pickTyping').onclick=()=>chooseStudyMode('textTyping');
-$('pickVocab').onclick=()=>chooseStudyMode('vocab');$('pickVocabTyping').onclick=()=>chooseStudyMode('vocabTyping');
+$('pickText').onclick=()=>chooseStudyMode('text',false);$('pickTyping').onclick=()=>chooseStudyMode('textTyping',false);
+$('pickVocab').onclick=()=>chooseStudyMode('vocab',false);$('pickVocabTyping').onclick=()=>chooseStudyMode('vocabTyping',false);
+$('pickStudioVocab').onclick=()=>chooseStudyMode('vocabTyping',true);
+$('pickStudioGrammar').onclick=()=>chooseStudyMode('textTyping',true);
 $('vocabBack').onclick=()=>{if(vocabSessionRunning)finishVocabularySession();chooseStudyMode(selectedStudyMode)};
 let vocabSpeechRate=1;
 const vocabSpeechAvailable=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
@@ -1903,7 +1921,7 @@ function finishVocabularySession(){
  vocabSessionRunning=false;document.body.classList.remove('yoshi-game-started');
  const elapsed=activeTimer.stop();
  const answered=vocabIndex+(vocabAnswered?1:0);
- if(answered>0)saveSoloRecord('vocab',vocabCorrect,answered,vocabBestStreak,elapsed,answered===vocabDeck.length);
+ if(answered>0)saveSoloRecord('vocab',vocabCorrect,answered,vocabBestStreak,elapsed,answered===vocabDeck.length,!studioPractice);
  $('vocabStart').textContent='▶ ゲームスタート！';
  $('vocabStart').classList.remove('green');
  $('vocabType').disabled=false;
@@ -1942,7 +1960,7 @@ function vocabQuestion(){
   finishVocabularySession();return;
  }
  const w=vocabDeck[vocabIndex],typing=$('vocabType').value==='typing';
- window.YoshiFavorites?.show($('vocabWord'),window.YoshiFavoriteQuestions.word(subject,typing?'vocabTyping':'vocab',w.word,w.meaning));
+ window.YoshiFavorites?.show($('vocabWord'),studioPractice?null:window.YoshiFavoriteQuestions.word(subject,typing?'vocabTyping':'vocab',w.word,w.meaning));
  $('vocabProgress').textContent=(vocabIndex+1)+' / '+vocabDeck.length;
  $('vocabScore').textContent=vocabCorrect;$('vocabStreak').textContent=vocabStreak;$('vocabPoints').textContent=vocabPoints;$('vocabStreakChip').textContent='🔥 '+vocabStreak+' STREAK';
  $('vocabPrompt').textContent=typing?'日本語に合う英単語を入力':'英単語の意味を選ぼう';
@@ -2020,9 +2038,9 @@ function chooseUnit(g){
  show('modePicker',false);show('vocabPractice',false);show('units',false);show('parts',false);show('lessonNav',true);show('practice',true);
  $('selectedLesson').textContent=subject+' / '+lessonLabel(g.id)+(subject==='論表'?'':' / '+partLabel(g.name));
  $('pageTitle').textContent=lessonLabel(g.id)+' — '+partLabel(g.name)+' ⚡';
- $('pageSub').textContent=selectedStudyMode==='textTyping'?'穴埋めの英語を入力して自動採点！':'本文を口頭で答えて正誤を記録！';
+ $('pageSub').textContent=studioPractice?'公開済みの追加文法問題（XPなし）':selectedStudyMode==='textTyping'?'穴埋めの英語を入力して自動採点！':'本文を口頭で答えて正誤を記録！';
  const typingOnly=selectedStudyMode==='textTyping';
- show('soloSessionSettings',!typingOnly);show('typingSessionControls',typingOnly);show('textTypingXpNotice',typingOnly);
+ show('soloSessionSettings',!typingOnly);show('typingSessionControls',typingOnly);show('textTypingXpNotice',typingOnly&&!studioPractice);
  // 本文穴埋めでは残り時間を表示せず、制限時間も無制限にする。
  const isTextCloze=typingOnly||$('mode').value==='cloze';
  show('textClozeTimerStat',!isTextCloze);
@@ -2034,7 +2052,7 @@ function chooseUnit(g){
 }
 function leaveUnit(){
  if(running&&!confirm('進行中の記録はリセットされます。戻りますか？'))return;
- reset();subject==='論表'?chooseStudyMode('text'):chooseLesson(selectedLessonId);
+ reset();subject==='論表'&&!studioPractice?chooseStudyMode('text'):chooseLesson(selectedLessonId);
 }
 $('toUnits').onclick=leaveUnit;
 $('toLessons').onclick=()=>chooseStudyMode(selectedStudyMode);
@@ -2082,12 +2100,13 @@ async function fetchRonpyo(){
   $('loadStatus').textContent='問題データ読み込み完了';
  }catch(e){console.warn('論表データ:',e);$('loadStatus').textContent+=' / 論表: '+e.message;}
 }
-const yoshiDataReady=Promise.allSettled([fetchLessons(),fetchVocabulary()]).then(fetchRonpyo);
+const studioReady=(window.YoshiStudioPractice?.load()??Promise.resolve([])).then(data=>{studioGroups=data;showStudioModes();});
+const yoshiDataReady=Promise.all([Promise.allSettled([fetchLessons(),fetchVocabulary()]).then(fetchRonpyo),studioReady]);
 // v28: browser Back/Forward only. No reload restoration or interception of app buttons.
 (function setupBrowserBack(){
  const panels=['subjects','modePicker','units','parts','practice','vocabPractice'];
  const current=()=>panels.find(id=>!$(id).classList.contains('hidden'))||'subjects';
- const route=()=>({page:current(),subject:subject||'',mode:selectedStudyMode||'',lesson:selectedLessonId||'',part:unit?.name||selectedVocabulary?.name||''});
+ const route=()=>({page:current(),subject:subject||'',studioPractice,mode:selectedStudyMode||'',lesson:selectedLessonId||'',part:unit?.name||selectedVocabulary?.name||''});
  const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
  let restoring=false;
  // Preserve the route already stored in this browser history entry on reload.
@@ -2095,7 +2114,7 @@ const yoshiDataReady=Promise.allSettled([fetchLessons(),fetchVocabulary()]).then
  // Always use window.history: this app already has a separate `history` array for answers.
  window.history.replaceState({...window.history.state,yoshiScreen:reloadRoute||route()},'');
  const navigators=['modeBack','toSubjects','toLessons','toUnits','vocabBack'];
- const isNavClick=el=>Boolean(el.closest('[data-subject],#pickText,#pickTyping,#pickVocab,#pickVocabTyping,#unitList button,#partList button,'+navigators.map(id=>'#'+id).join(',')+ ',#backToLessons'));
+ const isNavClick=el=>Boolean(el.closest('[data-subject],#pickText,#pickTyping,#pickVocab,#pickVocabTyping,#pickStudioVocab,#pickStudioGrammar,#unitList button,#partList button,'+navigators.map(id=>'#'+id).join(',')+ ',#backToLessons'));
  document.addEventListener('click',event=>{
   if(restoring||!event.target.closest||!isNavClick(event.target))return;
   // Run after the existing button onclick; do not replace or block it.
@@ -2116,7 +2135,7 @@ const yoshiDataReady=Promise.allSettled([fetchLessons(),fetchVocabulary()]).then
  });
  function home(){
   document.body.classList.remove('yoshi-game-started');
-  subject='';selectedStudyMode='';selectedLessonId='';unit=null;selectedVocabulary=null;
+  subject='';studioPractice=false;selectedStudyMode='';selectedLessonId='';unit=null;selectedVocabulary=null;
   ['modePicker','vocabPractice','units','parts','lessonNav','practice'].forEach(id=>show(id,false));
   show('subjects',true);
   $('pageTitle').textContent='科目を選ぼう ⚡';
@@ -2127,7 +2146,7 @@ const yoshiDataReady=Promise.allSettled([fetchLessons(),fetchVocabulary()]).then
   chooseSubject(r.subject);
   if(r.page==='modePicker')return;
   if(!r.mode)return;
-  chooseStudyMode(r.mode);
+  chooseStudyMode(r.mode,r.studioPractice===true);
   if(r.page==='units')return;
   if(!r.lesson)return;
   chooseLesson(r.lesson);
