@@ -9,6 +9,8 @@ on:
       - 'studio-config.js'
       - 'scripts/studio-publication-audit.cjs'
       - 'tests/studio-publication-audit.test.cjs'
+      - 'scripts/studio-publication-runtime-preflight.py'
+      - 'tests/studio-publication-runtime-preflight.py'
       - 'scripts/studio-master-runtime-check.py'
       - 'scripts/studio-pr96-deployment.py'
       - 'scripts/studio-question-master-deployment.py'
@@ -31,6 +33,7 @@ jobs:
           node-version: '22'
       - run: node --test studio-functions/tests/*.test.cjs tests/studio-publication-audit.test.cjs
       - run: python3 tests/studio-master-runtime-check.py
+      - run: python3 tests/studio-publication-runtime-preflight.py
       - run: python3 tests/studio-question-master-deployment.py
       - run: node --check studio-functions/index.js
       - run: node --check studio-functions/studio-core.cjs
