@@ -223,10 +223,10 @@ for(const replacing of [false,true])test('managed publication preserves other gr
  const ten=Object.fromEntries(Object.entries(questions()).map(([type,[item]])=>[
   type,[item,{...item,question:item.question+' 2'}]
  ]));
- const seed={...input,count:2,batchId,questions:ten};
+ const seed={...input,lesson:'8',count:2,batchId,questions:ten};
  const oldSha='a'.repeat(40),commit='b'.repeat(40);
- const unrelated={subject:'論表',id:input.lesson,name:input.part,questions:questions()};
- const existingSlot={subject:input.subject,id:input.lesson,name:input.part,questions:questions()};
+ const unrelated={subject:'論表',id:seed.lesson,name:input.part,questions:questions()};
+ const existingSlot={subject:input.subject,id:seed.lesson,name:input.part,questions:questions()};
  let rows,entries=replacing?[existingSlot,unrelated]:[unrelated],history=[],puts=0,failFinish=true;
  const locks=new Set();
  const reply=(payload,status=200)=>({ok:status===200,status,json:async()=>structuredClone(payload)});
@@ -266,7 +266,10 @@ for(const replacing of [false,true])test('managed publication preserves other gr
  assert.equal((await h.send('preview',{batchId,version:2})).code,400);
  assert.equal(puts,0);
  assert.equal((await h.send('question-master/update',{batchId,questionId:first,version:2,operation:'approve'})).code,200);
+ const beforePreview=h.calls.length;
  const preview=await h.send('preview',{batchId,version:3});
+ assert.ok(h.calls.slice(beforePreview).every(({url,opts})=>opts.method==='GET'||url.includes('iamcredentials')));
+ assert.equal(preview.data.slot,'英C / Lesson 8 / Part 1');
  assert.equal(preview.code,200);
  assert.equal(preview.data.newCount,1);
  assert.equal(preview.data.replacing,replacing);
@@ -277,7 +280,7 @@ for(const replacing of [false,true])test('managed publication preserves other gr
  assert.equal((await h.send('publish',{batchId,version:3,expectedSha:preview.data.sha,allowReplace:replacing})).code,502);
  assert.equal(puts,1);
  assert.equal(rows[1][10],'承認済');
- const published=entries.filter(entry=>entry.subject===input.subject&&entry.id===input.lesson&&entry.name===input.part);
+ const published=entries.filter(entry=>entry.subject===input.subject&&entry.id===seed.lesson&&entry.name===input.part);
  assert.equal(published.length,1);
  assert.equal(published[0].questions.vocabulary.length,1);
  assert.deepEqual(published[0].questions.cloze,[]);
