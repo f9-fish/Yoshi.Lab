@@ -113,7 +113,7 @@ async function loadHistory(next) {
       const description=preview.pending?'保留中の公開を再確認します。':
        (preview.replacing?'既存のAI教材を置き換えます。':'新規のAI教材を公開します。');
       if(!confirm(preview.slot+' / 承認・採用済み '+preview.newCount+'問。'+description))return;
-      const result=await api('publish',{...payload,expectedSha:preview.sha});
+      const result=await api('publish',{...payload,expectedSha:preview.sha,allowReplace:preview.replacing&&!preview.pending});
       if(serial===authSerial){await loadHistory(false);status.textContent='GitHubに公開しました。コミット '+result.commit;}
      }catch(error){
       if(serial===authSerial){await loadHistory(false);status.textContent=error.message;}

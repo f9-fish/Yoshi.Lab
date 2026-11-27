@@ -93,6 +93,8 @@ async function publishManaged(body,options){
  const existing=await currentContent();
  if(!draft.operation&&existing.sha!==body.expectedSha)
   throw fail(409,'公開データが変更されています。確認からやり直してください');
+ if(!draft.operation&&existing.content.some(entry=>normalizedKey(entry)===normalizedKey(draft))&&body.allowReplace!==true)
+  throw fail(409,'既存教材の置き換えには明示的な確認が必要です');
  const plan=await managedPublication(body,options,false);
  const message='content: publish approved Studio batch '+plan.operation;
  const history=await gh('GET',undefined,'/commits?sha='+BRANCH+'&path='+FILE+'&per_page=100');

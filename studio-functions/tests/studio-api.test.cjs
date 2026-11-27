@@ -216,7 +216,7 @@ test('question master saves fail closed for unauthorized teachers, permission an
  }
 });
 
-test('revision races reject stale edits and an approved partial publication recovers without republishing',async()=>{
+for(const replacing of [false,true])test('managed publication preserves other groups and recovers once (replacement='+replacing+')',async()=>{
  const config={STUDIO_QUESTION_MASTER_SPREADSHEET_ID:'independent-sheet-id-123456789',
   STUDIO_QUESTION_MASTER_WRITER_SERVICE_ACCOUNT:'writer@sample-project.iam.gserviceaccount.com'};
  const batchId='751fc4af-84a0-48b0-9981-79e998adf540';
@@ -225,7 +225,9 @@ test('revision races reject stale edits and an approved partial publication reco
  ]));
  const seed={...input,count:2,batchId,questions:ten};
  const oldSha='a'.repeat(40),commit='b'.repeat(40);
- let rows,entries=[],history=[],puts=0,failFinish=true;
+ const unrelated={subject:'論表',id:input.lesson,name:input.part,questions:questions()};
+ const existingSlot={subject:input.subject,id:input.lesson,name:input.part,questions:questions()};
+ let rows,entries=replacing?[existingSlot,unrelated]:[unrelated],history=[],puts=0,failFinish=true;
  const locks=new Set();
  const reply=(payload,status=200)=>({ok:status===200,status,json:async()=>structuredClone(payload)});
  const setup={
@@ -267,11 +269,19 @@ test('revision races reject stale edits and an approved partial publication reco
  const preview=await h.send('preview',{batchId,version:3});
  assert.equal(preview.code,200);
  assert.equal(preview.data.newCount,1);
- assert.equal((await h.send('publish',{batchId,version:3,expectedSha:preview.data.sha})).code,502);
+ assert.equal(preview.data.replacing,replacing);
+ assert.equal((await h.send('publish',{batchId,version:3,expectedSha:'d'.repeat(40),allowReplace:replacing})).code,409);
+ if(replacing)assert.equal((await h.send('publish',{batchId,version:3,expectedSha:preview.data.sha})).code,409);
+ assert.equal(puts,0);
+ assert.equal(rows[1][16],'');
+ assert.equal((await h.send('publish',{batchId,version:3,expectedSha:preview.data.sha,allowReplace:replacing})).code,502);
  assert.equal(puts,1);
  assert.equal(rows[1][10],'承認済');
- assert.equal(entries[0].questions.vocabulary.length,1);
- assert.deepEqual(entries[0].questions.cloze,[]);
+ const published=entries.filter(entry=>entry.subject===input.subject&&entry.id===input.lesson&&entry.name===input.part);
+ assert.equal(published.length,1);
+ assert.equal(published[0].questions.vocabulary.length,1);
+ assert.deepEqual(published[0].questions.cloze,[]);
+ assert.deepEqual(entries.find(entry=>entry.subject==='論表'),unrelated);
  const recovery=await concurrent.send('preview',{batchId,version:4});
  assert.equal(recovery.data.pending,true);
  assert.equal((await concurrent.send('publish',{batchId,version:4,expectedSha:recovery.data.sha})).code,200);
