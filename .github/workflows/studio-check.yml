@@ -6,6 +6,11 @@ on:
       - 'teacher-studio.html'
       - 'studio-study.html'
       - 'studio-content.json'
+      - 'studio-practice.js'
+      - 'tests/studio-practice-integration.test.cjs'
+      - 'index.html'
+      - 'writing*.js'
+      - 'writing.html'
       - 'studio-config.js'
       - 'scripts/studio-publication-audit.cjs'
       - 'tests/studio-publication-audit.test.cjs'
@@ -21,6 +26,11 @@ on:
     paths:
       - 'studio-functions/**'
       - 'studio-content.json'
+      - 'studio-practice.js'
+      - 'tests/studio-practice-integration.test.cjs'
+      - 'index.html'
+      - 'writing*.js'
+      - 'writing.html'
 permissions:
   contents: read
 jobs:
@@ -31,7 +41,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test studio-functions/tests/*.test.cjs tests/studio-publication-audit.test.cjs
+      - run: node --test studio-functions/tests/*.test.cjs tests/studio-publication-audit.test.cjs tests/studio-practice-integration.test.cjs
       - run: python3 tests/studio-master-runtime-check.py
       - run: python3 tests/studio-publication-runtime-preflight.py
       - run: python3 tests/studio-question-master-deployment.py

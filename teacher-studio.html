@@ -43,7 +43,7 @@
 import './account.js';
 import {getAuth} from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js';
 const $=id=>document.getElementById(id);
-const types=[['vocabulary','単語・熟語'],['cloze','文法・穴埋め'],['qa','本文Q&A'],['trueFalse','True / False'],['discussion','Discussion']];
+const types=[['vocabulary','単語'],['idiom','熟語'],['cloze','文法・穴埋め'],['qa','本文Q&A（クローズド）'],['trueFalse','True / False'],['discussion','本文Q&A（オープン）']];
 for(const [type,title] of types)$('historyType').add(new Option(title,type));
 let historyCursor='',historyRequest=0;
 async function loadHistory(next) {
@@ -60,6 +60,11 @@ async function loadHistory(next) {
    const details=document.createElement('details'),summary=document.createElement('summary');
    summary.textContent=[batch.subject,batch.lesson,batch.part,batch.createdAt].join(' / ');
    details.append(summary);
+   if(typeof batch.source==='string'){
+    const passage=document.createElement('details'),heading=document.createElement('summary'),text=document.createElement('p');
+    heading.textContent='生成元本文';text.textContent=batch.source;text.style.whiteSpace='pre-wrap';
+    passage.append(heading,text);details.append(passage);
+   }
    for(const item of batch.items){
     const problem=document.createElement('details'),label=document.createElement('summary'),text=document.createElement('p');
     label.textContent=(types.find(([type])=>type===item.type)?.[1]||item.type)+' / '+item.status+' / '+item.question;
@@ -110,8 +115,9 @@ async function loadHistory(next) {
       const payload={batchId:batch.batchId,version:batch.version};
       const preview=await api('preview',payload);
       if(serial!==authSerial)return;
+      if(!preview.newCount){status.textContent='追加できる新しい問題がありません';return;}
       const description=preview.pending?'保留中の公開を再確認します。':
-       (preview.replacing?'既存のAI教材を置き換えます。':'新規のAI教材を公開します。');
+       (preview.appending?'既存教材を保持して新しい問題を追加します。':preview.replacing?'既存のAI教材を置き換えます。':'新規のAI教材を公開します。');
       if(!confirm(preview.slot+' / 承認・採用済み '+preview.newCount+'問。'+description))return;
       const result=await api('publish',{...payload,expectedSha:preview.sha,allowReplace:preview.replacing&&!preview.pending});
       if(serial===authSerial){await loadHistory(false);status.textContent='GitHubに公開しました。コミット '+result.commit;}
@@ -250,18 +256,18 @@ $('applyMaster').addEventListener('click',()=>{
  msg('英文を入力欄に反映しました。確認後に生成を実行してください');
 });
 function field(container,label,value,update){const l=document.createElement('label');l.textContent=label;const textarea=document.createElement('textarea');textarea.value=clean(value);textarea.addEventListener('input',()=>update(textarea.value));l.append(textarea);container.append(l)}
-function render(){if(!draft)return;$('review').classList.remove('hidden');$('publishPanel').classList.remove('hidden');$('questions').replaceChildren();for(const [type,title] of types){const section=document.createElement('section');section.className='category';const h=document.createElement('h3');h.textContent=title+' ('+(draft.questions[type]||[]).length+'問)';section.append(h);for(const [index,item] of (draft.questions[type]||[]).entries()){const card=document.createElement('div');card.className='question';const top=document.createElement('div');top.className='question-head';const l=document.createElement('label'),checked=document.createElement('input');checked.type='checkbox';checked.checked=item.accepted!==false;checked.addEventListener('change',()=>item.accepted=checked.checked);l.append(checked,document.createTextNode('採用する'));const num=document.createElement('strong');num.textContent='問'+(index+1);top.append(num,l);card.append(top);field(card,'問題文',item.question,v=>item.question=v);field(card,'正解・模範解答',item.answer,v=>item.answer=v);field(card,'日本語訳・補足',item.translation,v=>item.translation=v);section.append(card)}$('questions').append(section)}}
-function normalize(data,input){if(!data||typeof data!=='object'||!data.questions||typeof data.questions!=='object')throw Error('AIが想定外の形式を返しました');const questions={};for(const [type] of types){if(!Array.isArray(data.questions[type]))throw Error('問題種別 '+type+' の形式が不正です');questions[type]=data.questions[type].map(item=>({question:clean(item.question),answer:clean(item.answer),translation:clean(item.translation),accepted:item.accepted!==false}))}return {...input,questions}}
+function render(){if(!draft)return;$('review').classList.remove('hidden');$('publishPanel').classList.remove('hidden');$('questions').replaceChildren();for(const [type,title] of types){if(!draft.questions[type]?.length)continue;const section=document.createElement('section');section.className='category';const h=document.createElement('h3');h.textContent=title+' ('+(draft.questions[type]||[]).length+'問)';section.append(h);for(const [index,item] of (draft.questions[type]||[]).entries()){const card=document.createElement('div');card.className='question';const top=document.createElement('div');top.className='question-head';const l=document.createElement('label'),checked=document.createElement('input');checked.type='checkbox';checked.checked=item.accepted!==false;checked.addEventListener('change',()=>item.accepted=checked.checked);l.append(checked,document.createTextNode('採用する'));const num=document.createElement('strong');num.textContent='問'+(index+1);top.append(num,l);card.append(top);field(card,'問題文',item.question,v=>item.question=v);field(card,'正解・模範解答',item.answer,v=>item.answer=v);field(card,'日本語訳・補足',item.translation,v=>item.translation=v);section.append(card)}$('questions').append(section)}}
+function normalize(data,input){if(!data||typeof data!=='object'||!data.questions||typeof data.questions!=='object')throw Error('AIが想定外の形式を返しました');const questions={};for(const [type] of types){if(type==='idiom'&&data.questions[type]===undefined){questions[type]=[];continue;}if(!Array.isArray(data.questions[type]))throw Error('問題種別 '+type+' の形式が不正です');questions[type]=data.questions[type].map(item=>({question:clean(item.question),answer:clean(item.answer),translation:clean(item.translation),accepted:item.accepted!==false}))}return {...input,questions}}
 function selected(){if(!draft)throw Error('先に教材を生成してください');const input=validInput();if(input.subject!==draft.subject||input.lesson!==draft.lesson||input.part!==draft.part||input.source!==draft.source)throw Error('本文や教材番号を変更した場合はAI生成をやり直してください');const picked={};let total=0;for(const [type] of types){picked[type]=draft.questions[type].filter(item=>item.accepted).map(({question,answer,translation})=>({question:clean(question),answer:clean(answer),translation:clean(translation)}));for(const q of picked[type]){if(!q.question||!q.answer||!q.translation)throw Error('採用した問題に未入力項目があります：'+type);if(q.question.length>3000||q.answer.length>3000||q.translation.length>3000)throw Error('問題の文字数が長すぎます')}total+=picked[type].length}if(!total)throw Error('採用する問題がありません');return {...input,questions:picked}}
-$('generate').addEventListener('click',async()=>{if(busy||pendingShared)return;setBusy(true);try{const serial=authSerial;const input=validInput();msg('AI教材を生成しています…');const data=await api('generate',input);if(serial!==authSerial)return;draft=normalize(data,input);render();
+$('generate').addEventListener('click',async()=>{if(busy||pendingShared)return;setBusy(true);try{const serial=authSerial;const input=validInput(),sourceSnapshot=$('source').value;msg('AI教材を生成しています…');const data=await api('generate',{...input,practiceFormat:2});if(serial!==authSerial)return;draft=normalize(data,input);render();
 if(data.sharedDraft===true){
- pendingShared={...input,questions:data.questions,batchId:crypto.randomUUID()};
+ pendingShared={...input,source:sourceSnapshot,questions:data.questions,batchId:crypto.randomUUID()};
  $('publishPanel').classList.add('hidden');
  void saveShared();
 }
 msg('生成完了。内容を確認して採用する問題を選んでください')}catch(e){msg(e.message,true)}finally{setBusy(false)}});
 $('save').addEventListener('click',()=>{try{if(!draft)throw Error('保存する問題がありません');localStorage.setItem(storageKey,JSON.stringify(draft));msg('この端末のブラウザに下書きを保存しました（共有・自動バックアップではありません）')}catch(e){msg(e.message,true)}});
 $('restore').addEventListener('click',()=>{try{const data=JSON.parse(localStorage.getItem(storageKey)||'null');if(!data)throw Error('保存済み下書きがありません');draft=normalize(data,data);clearMaster();for(const id of ['subject','lesson','part','source','count'])$(id).value=draft[id];render();msg('下書きを復元しました')}catch(e){msg(e.message,true)}});
-$('publish').addEventListener('click',async()=>{if(busy)return;try{const payload=selected();setBusy(true);$('publishStatus').textContent='サーバーで検証・公開中…';const preview=await api('preview',payload);if(!confirm('公開先：'+preview.slot+'\n採用：'+preview.newCount+'問\n'+(preview.replacing?'既存のAI教材 '+preview.previousCount+'問を置き換えます。':'新規のAI教材として追加します。')+'\n公開しますか？')){$('publishStatus').textContent='公開を取り消しました';return}payload.expectedSha=preview.sha;const result=await api('publish',payload);$('publishStatus').textContent='GitHubに保存しました。アプリへの配信は数分後になる場合があります。 '+(result.url||'')}catch(e){$('publishStatus').textContent=e.message;$('publishStatus').className='status error'}finally{setBusy(false)}});
+$('publish').addEventListener('click',async()=>{if(busy)return;try{const payload=selected();setBusy(true);$('publishStatus').textContent='サーバーで検証・公開中…';const preview=await api('preview',payload);if(!confirm('公開先：'+preview.slot+'\n採用：'+preview.newCount+'問\n'+(preview.appending?'既存教材を保持して新しい問題を追加します。':preview.replacing?'既存のAI教材 '+preview.previousCount+'問を置き換えます。':'新規のAI教材として追加します。')+'\n公開しますか？')){$('publishStatus').textContent='公開を取り消しました';return}payload.expectedSha=preview.sha;const result=await api('publish',payload);$('publishStatus').textContent='GitHubに保存しました。アプリへの配信は数分後になる場合があります。 '+(result.url||'')}catch(e){$('publishStatus').textContent=e.message;$('publishStatus').className='status error'}finally{setBusy(false)}});
 window.YoshiAccount.subscribe(async()=>{const serial=++authSerial;$('questionMasterConnection').textContent='';$('checkQuestionMaster').disabled=false;$('history').classList.add('hidden');$('historyResults').replaceChildren();$('historyStatus').textContent='';$('historyNext').classList.add('hidden');pendingShared=null;sharedSaving=false;$('sharedStatus').textContent='';$('retryShared').classList.add('hidden');clearMaster();$('masterCheckStatus').textContent='';$('checkMaster').disabled=false;draft=null;$('review').classList.add('hidden');$('publishPanel').classList.add('hidden');$('questions').replaceChildren();$('source').value='';const a=window.YoshiAccount;if(!a)return;try{if(!a.user){$('authStatus').textContent='教員ダッシュボードでGoogleログインしてください';$('editor').classList.add('hidden');return}const allowed=await a.isTeacher();if(serial!==authSerial)return;$('authStatus').textContent=allowed?'教員権限を確認しました':'教員権限がありません';$('editor').classList.toggle('hidden',!allowed);$('history').classList.toggle('hidden',!allowed)}catch(e){$('authStatus').textContent='教員権限を確認できません: '+e.message;$('editor').classList.add('hidden')}});
 </script></body></html>

@@ -11,7 +11,8 @@
   document.querySelectorAll('[data-writing-subject]').forEach(b=>b.disabled=true);
   $('dataStatus').textContent='問題データを読み込み中…';
   try{
-   rows=W.questions(await json('./writing_questions.json'));
+   const [writing,studio]=await Promise.all([json('./writing_questions.json'),(window.YoshiStudioPractice?.load()??Promise.resolve([]))]);
+   rows=W.questions([...writing,...studio.flatMap(group=>group.qa)]);
    const sources=await Promise.allSettled(['lessons.json','vocabulary.json','ronpyo_text.json','ronpyo_vocab.json'].map(p=>json('./'+p)));
    groups=sources.flatMap(s=>s.status==='fulfilled'&&Array.isArray(s.value)?s.value:[]);
    const missing=sources.some(s=>s.status==='rejected'||!Array.isArray(s.value));
@@ -31,9 +32,9 @@
  function start(id){lesson=id;set=rows.filter(q=>q.subject===subject&&q.lesson===lesson);if(!set.length)return;index=0;records=[];screen('quizScreen');renderQuestion();}
  function renderQuestion(){
   answered=false;hints=new Set();hintCount=0;const q=set[index];
-  window.YoshiFavorites?.show($('prompt'),window.YoshiFavoriteQuestions.ref('writing','writing',q.id));
+  window.YoshiFavorites?.show($('prompt'),q.studioQa?null:window.YoshiFavoriteQuestions.ref('writing','writing',q.id));
   $('quizLesson').textContent=subject+' / '+W.lessonLabel(lesson)+(q.unitName&&subject==='英C'?' / '+q.unitName:'');$('questionCount').textContent=(index+1)+' / '+set.length+'問';$('quizProgress').max=set.length;$('quizProgress').value=index;
-  $('prompt').textContent=q.japanese;$('required').textContent=q.requiredExpressions.length?'指定語・指定表現（すべて使用）：'+q.requiredExpressions.join(' ／ '):'指定語なし';
+  $('prompt').textContent=q.japanese;$('required').textContent=q.studioQa==='open'?'意見を英文で答えて、解答例と比較しよう。':q.studioQa==='closed'?'本文に基づいて英文で答えよう。':q.requiredExpressions.length?'指定語・指定表現（すべて使用）：'+q.requiredExpressions.join(' ／ '):'指定語なし';
   $('hintContent').hidden=true;$('hintToggle').setAttribute('aria-expanded','false');$('hintToggle').disabled=!q.hints.length;$('hintToggle').textContent=q.hints.length?'💡 ヒント':'ヒント未登録';$('hintList').replaceChildren();$('moreHint').hidden=false;
   $('answer').value='';$('answer').readOnly=false;$('submitAnswer').disabled=true;$('submitAnswer').hidden=false;$('feedback').hidden=true;$('prompt').focus();
  }
@@ -54,12 +55,12 @@
   const row=W.record(q,answer,result,hints,window.YoshiAccount?.user?.uid||null);records.push(row);
   $('answer').readOnly=true;$('submitAnswer').disabled=true;$('submitAnswer').hidden=true;$('quizProgress').value=index+1;
   $('hintToggle').disabled=!hintCount;$('moreHint').hidden=true;
-  $('judgment').textContent=result.status==='correct'?'正解！':'要確認';
-  $('judgmentNote').textContent=result.status==='correct'?'登録された解答と一致し、指定表現の条件を満たしています。':'登録された解答との一致、または指定表現の使用を確認できませんでした。正しい英文の可能性もあります。模範解答・解説と比較し、必要に応じて先生に確認しましょう。';
+  $('judgment').textContent=result.status==='self-check'?'解答例で自己確認':result.status==='correct'?'正解！':'要確認';
+  $('judgmentNote').textContent=result.status==='self-check'?'唯一の正解はありません。解答例と比べて、意見と理由が伝わるか確認しましょう。':result.status==='correct'?'登録された解答と一致し、指定表現の条件を満たしています。':'登録された解答との一致、または指定表現の使用を確認できませんでした。正しい英文の可能性もあります。模範解答・解説と比較し、必要に応じて先生に確認しましょう。';
   details($('answerDetails'),q,row);$('next').textContent=index+1===set.length?'結果を見る →':'次の問題へ →';$('feedback').hidden=false;$('judgment').focus();
  };
  $('next').onclick=()=>{if(!answered)return;if(index+1<set.length){index++;renderQuestion();}else finish();};
- function finish(){screen('resultScreen');$('resultSummary').textContent=set.length+'問中 正解 '+records.filter(r=>r.status==='correct').length+'問・要確認 '+records.filter(r=>r.status==='review').length+'問';$('review').replaceChildren();records.forEach((row,i)=>{const article=document.createElement('article');article.className='review-item';const h=document.createElement('h3');h.textContent=(i+1)+'. '+set[i].japanese+' / '+(row.status==='correct'?'正解':'要確認');const body=document.createElement('div');details(body,set[i],row);article.append(h,body);$('review').append(article);});$('resultScreen').querySelector('h2').focus();}
+ function finish(){screen('resultScreen');$('resultSummary').textContent=set.length+'問中 正解 '+records.filter(r=>r.status==='correct').length+'問・要確認 '+records.filter(r=>r.status==='review').length+'問'+(records.some(r=>r.status==='self-check')?'・自己確認 '+records.filter(r=>r.status==='self-check').length+'問':'');$('review').replaceChildren();records.forEach((row,i)=>{const article=document.createElement('article');article.className='review-item';const h=document.createElement('h3');h.textContent=(i+1)+'. '+set[i].japanese+' / '+(row.status==='self-check'?'自己確認':row.status==='correct'?'正解':'要確認');const body=document.createElement('div');details(body,set[i],row);article.append(h,body);$('review').append(article);});$('resultScreen').querySelector('h2').focus();}
  function leave(action){if((records.length||$('answer').value.trim())&& !confirm('画面を戻ると今回の解答記録が消えます。戻りますか？'))return;records=[];action();}
  document.querySelectorAll('[data-writing-subject]').forEach(b=>b.onclick=()=>chooseSubject(b.dataset.writingSubject));
  $('backSubjects').onclick=()=>leave(()=>{screen('subjectScreen');$('subjectScreen').querySelector('h2').focus();});

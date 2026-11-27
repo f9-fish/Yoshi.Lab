@@ -123,7 +123,7 @@ with sync_playwright() as p:
   history_page.locator('#historyForm [name=lesson]').fill('TEST')
   history_page.get_by_role('button',name='履歴を検索').click()
   history_page.locator('#historyResults > details > summary').click()
-  history_page.get_by_text('単語・熟語 / 要確認 / ocean').click()
+  history_page.get_by_text('単語 / 要確認 / ocean').click()
   assert history_page.get_by_role('button',name='保存済みの内容を承認').is_visible()
   assert not errors,errors
   history_context.close()
