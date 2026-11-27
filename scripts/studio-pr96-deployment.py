@@ -29,6 +29,33 @@ class Stop(Exception):
     pass
 
 
+class ApiFailure(Stop):
+    SAFE_STATUSES = {'INVALID_ARGUMENT', 'UNAUTHENTICATED', 'PERMISSION_DENIED', 'NOT_FOUND',
+                     'RESOURCE_EXHAUSTED', 'FAILED_PRECONDITION', 'INTERNAL', 'UNAVAILABLE', 'DEADLINE_EXCEEDED'}
+    SAFE_REASONS = {'SERVICE_DISABLED', 'USER_PROJECT_DENIED', 'CONSUMER_INVALID', 'BILLING_DISABLED',
+                    'ACCESS_TOKEN_SCOPE_INSUFFICIENT', 'IAM_PERMISSION_DENIED', 'ACCESS_DENIED',
+                    'RATE_LIMIT_EXCEEDED', 'QUOTA_EXCEEDED', 'API_KEY_SERVICE_BLOCKED',
+                    'SECURITY_POLICY_VIOLATED', 'VPC_SERVICE_CONTROLS', 'SERVICE_NOT_VISIBLE'}
+
+    def __init__(self, method, error):
+        super().__init__(f'{method} が拒否または失敗しました（HTTP {error.code}）。再実行前に状態を確認してください')
+        self.diagnostic = {'outcome': 'http_error', 'httpStatus': error.code}
+        try:
+            raw = error.read(32_769)
+            if len(raw) > 32_768:
+                return
+            payload = json.loads(raw)['error']
+            if payload.get('status') in self.SAFE_STATUSES:
+                self.diagnostic['status'] = payload['status']
+            reasons = {item.get('reason') for item in payload.get('details', [])
+                       if isinstance(item,dict) and item.get('@type') == 'type.googleapis.com/google.rpc.ErrorInfo'
+                       and isinstance(item.get('reason'),str) and item['reason'] in self.SAFE_REASONS}
+            if reasons:
+                self.diagnostic['reasons'] = sorted(reasons)
+        except (ValueError, TypeError, KeyError, AttributeError, OSError):
+            pass
+
+
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, *args, **kwargs):
         return None
@@ -51,7 +78,7 @@ class Client:
             raise Stop('Cloud ShellでGoogleアカウントにログインしてください')
         self.opener = urllib.request.build_opener(NoRedirect)
 
-    def request(self, url, method='GET', body=None, *, signed=False, limit=2_000_000, extra_headers=None):
+    def request(self, url, method='GET', body=None, *, signed=False, limit=2_000_000, extra_headers=None, collect_api_error=False):
         headers = dict(extra_headers or {})
         if not signed:
             headers['Authorization'] = 'Bearer ' + self.token
@@ -63,6 +90,8 @@ class Client:
             with self.opener.open(request, timeout=45) as response:
                 data = response.read(limit + 1)
         except urllib.error.HTTPError as error:
+            if collect_api_error:
+                raise ApiFailure(method, error) from None
             raise Stop(f'{method} が拒否または失敗しました（HTTP {error.code}）。再実行前に状態を確認してください') from None
         except (OSError, TimeoutError):
             raise Stop(f'{method} の接続を確認できません。再実行前に状態を確認してください') from None
@@ -70,8 +99,8 @@ class Client:
             raise Stop('応答サイズが上限を超えました')
         return data
 
-    def json(self, url, method='GET', body=None):
-        return json.loads(self.request(url, method, body))
+    def json(self, url, method='GET', body=None, **options):
+        return json.loads(self.request(url, method, body, **options))
 
 
 def snapshot(client):
