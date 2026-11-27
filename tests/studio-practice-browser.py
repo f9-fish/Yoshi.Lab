@@ -1,4 +1,5 @@
 """Exercise additive AI material in the existing interfaces without external requests."""
+import json
 import mimetypes
 from pathlib import Path
 from urllib.parse import urlparse, unquote
@@ -35,9 +36,44 @@ def route(request):
         return
     request.fulfill(body=path.read_bytes(),content_type=mimetypes.guess_type(str(path))[0] or 'application/octet-stream')
 
+def verify_current_public_data(browser,width):
+    public = json.loads((root/'studio-content.json').read_text())
+    slot = next(entry for entry in public if (entry['subject'],str(entry['id']),str(entry['name']))==('英C','8','1'))
+    published_word = next(item for item in slot['questions']['vocabulary'] if item['question']=='due to')
+    vocabulary = json.loads((root/'vocabulary.json').read_text())
+    original = next(entry for entry in vocabulary if (entry['subject'],str(entry['id']),str(entry['name']))==('英C','8','1'))
+
+    def real_content(request):
+        if urlparse(request.request.url).path == '/studio-content.json':
+            request.fulfill(json=public)
+        else:
+            route(request)
+
+    for mode in ('pickStudioVocab','pickVocabTyping'):
+        page = browser.new_page(viewport={'width':width,'height':900})
+        page.route('**/*',real_content)
+        page.goto('https://local.test/index.html?view=subjects')
+        page.evaluate("document.getElementById('welcomeCover')?.remove()")
+        page.locator('#subjects [data-subject="英C"]').click()
+        page.locator('#'+mode).click()
+        page.locator('#unitList button').get_by_text('Lesson 8',exact=True).click()
+        page.locator('#partList button').get_by_text('Part 1',exact=True).click()
+        if mode=='pickVocabTyping':
+            assert page.evaluate('selectedVocabulary.words')==original['words']
+        else:
+            page.locator('#vocabStart').click()
+            assert page.locator('#vocabWord').inner_text()==published_word['answer']
+            page.locator('#vocabInput').fill('due to')
+            page.locator('#vocabSubmit').click()
+            page.locator('#vocabStart').click()
+            assert page.locator('#vocabFeedback').inner_text()=='1 / 1 問正解！'
+            assert page.evaluate('window.savedPractice.length')==0
+        page.close()
+
 with sync_playwright() as playwright:
     browser = playwright.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox'])
     for width in (390,1366):
+        verify_current_public_data(browser,width)
         page=browser.new_page(viewport={'width':width,'height':900})
         page.route('**/*',route)
         page.goto('https://local.test/index.html?view=subjects')

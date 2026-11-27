@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Read-only PR #108 runtime check, with separately approved source-only update and rollback."""
+"""Read-only Studio runtime check, with separately approved source-only update and rollback."""
 import argparse
+from dataclasses import dataclass
 import hashlib
 import importlib.util
 import json
@@ -14,15 +15,36 @@ spec = importlib.util.spec_from_file_location('question_deploy',Path(__file__).w
 question = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(question)
 studio, runtime = question.studio, question.runtime
-BEFORE = 'fe321dcb39f71364b5489123c9763826f11c2717'
-AFTER = 'e121093c8b02186905d287a3ea141f4821a0e517'
-FILE = 'index.js'
+@dataclass(frozen=True)
+class Release:
+    number: int
+    before: str
+    after: str
+    files: frozenset
+    pages: tuple = ()
+
+    @property
+    def baseline(self):
+        return f'pre-pr{self.number}'
+
+    @property
+    def target(self):
+        return f'pr{self.number}'
 
 
-def plan_update(archive, previous, reviewed):
-    if {name for name in reviewed if reviewed[name] != previous[name]} != {FILE}:
-        raise studio.Stop('PR #108 の実行ソース差分が index.js だけではありません')
-    return question.source_plan(archive, {'pre-pr108':previous,'pr108':reviewed},reviewed)
+PR108 = Release(108, 'fe321dcb39f71364b5489123c9763826f11c2717',
+                'e121093c8b02186905d287a3ea141f4821a0e517', frozenset({'index.js'}))
+PR110 = Release(110, '99bd5e2c20d4d5ca421d9b70f7e7f8b16185c740',
+                'b11be829b561ded3ec5f283320dbd91a8bedf99a',
+                frozenset({'index.js','question-master.cjs','studio-core.cjs'}),
+                ('index.html','studio-practice.js','teacher-studio.html','writing-training.js','writing.html','writing.js'))
+
+
+def plan_update(archive, previous, reviewed, release=PR108):
+    if {name for name in reviewed if reviewed[name] != previous[name]} != release.files:
+        raise studio.Stop(f'PR #{release.number} の実行ソース差分が想定と一致しません')
+    return question.source_plan(archive,{release.baseline:previous,release.target:reviewed},reviewed,
+                                allowed_changes=release.files)
 
 
 def connection_status(state):
@@ -43,16 +65,16 @@ def connection_status(state):
                                                 fn_environment.get(question.READ_ONLY) != 'true')}
 
 
-def restore_plan(client, receipt, archive, projection, previous, reviewed):
+def restore_plan(client, receipt, archive, projection, previous, reviewed, release=PR108):
     if (question.content_hash(archive) != receipt['installedHash'] or
         question.audit.digest(projection) != receipt['configurationHash']):
         raise studio.Stop('適用後にソースまたは設定が変更されています。自動復旧を停止します')
     backup = studio.source_archive(client,{'buildConfig':{'sourceProvenance':{'resolvedStorageSource':receipt['source']}}})
     if hashlib.sha256(backup).hexdigest() != receipt['archiveSha256']:
         raise studio.Stop('元ソースの世代または内容を検証できません')
-    baseline, _, _ = plan_update(backup,previous,reviewed)
-    if baseline != 'pre-pr108':
-        raise studio.Stop('復旧ソースが PR #108 適用前の版と一致しません')
+    baseline, _, _ = plan_update(backup,previous,reviewed,release)
+    if baseline != release.baseline:
+        raise studio.Stop(f'復旧ソースが PR #{release.number} 適用前の版と一致しません')
     return backup
 
 
@@ -60,30 +82,37 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('phase',choices=('check','rollback'),nargs='?',default='check')
     parser.add_argument('--apply-approved',metavar='PREFLIGHT_SHA256')
-    parser.add_argument('--receipt',type=Path,default=Path('studio-pr108-before.json'))
+    parser.add_argument('--pr',type=int,choices=(108,110),default=108)
+    parser.add_argument('--receipt',type=Path)
     args = parser.parse_args()
+    release = PR110 if args.pr==110 else PR108
+    receipt_path = args.receipt or Path(f'studio-pr{release.number}-before.json')
     if args.apply_approved is not None and not re.fullmatch(r'[a-f0-9]{64}',args.apply_approved):
         raise studio.Stop('読み取り専用の事前確認で得た照合値を指定してください')
     studio.command('git','fetch','--quiet','origin','+refs/heads/main:refs/remotes/origin/main')
-    previous = runtime.source_at(BEFORE,question.FILES)
-    reviewed = runtime.source_at(AFTER,question.FILES)
+    previous = runtime.source_at(release.before,question.FILES)
+    reviewed = runtime.source_at(release.after,question.FILES)
     if runtime.source_at('origin/main',question.FILES) != reviewed:
-        raise studio.Stop('最新mainの実行ファイルにPR #108以外の差分があります')
+        raise studio.Stop(f'最新mainの実行ファイルに PR #{release.number} 以外の差分があります')
     client = studio.Client()
     original = studio.snapshot(client)
     info = studio.matching_runtime(original)
     connections = connection_status(original)
     archive = studio.source_archive(client,original[0])
     before = studio.config_projection(original)
-    baseline, changes, planned = plan_update(archive,previous,reviewed)
+    baseline, changes, planned = plan_update(archive,previous,reviewed,release)
     if args.phase == 'rollback':
-        if baseline != 'pr108':
-            raise studio.Stop('PR #108 の稼働版を確認できません')
-        planned = restore_plan(client,json.loads(args.receipt.read_text()),archive,before,previous,reviewed)
-        changes = [FILE]
-    fingerprint = studio.preflight_fingerprint([original,args.phase],archive,planned)
+        if baseline != release.target:
+            raise studio.Stop(f'PR #{release.number} の稼働版を確認できません')
+        planned = restore_plan(client,json.loads(receipt_path.read_text()),archive,before,previous,reviewed,release)
+        changes = sorted(release.files)
+    main_commit = studio.command('git','rev-parse','origin/main').decode().strip()
+    published_sha = studio.command('git','rev-parse',main_commit+':studio-content.json').decode().strip()
+    fingerprint = studio.preflight_fingerprint([original,args.phase,release.number,published_sha],archive,planned)
     print(json.dumps({'revision':info['revision'],'phase':args.phase,'runtimeSource':baseline,
-        'pr108Deployed':baseline=='pr108','sourceChanges':changes,'preflightSha256':fingerprint,
+        f'pr{release.number}Deployed':baseline==release.target,'sourceChanges':changes,'preflightSha256':fingerprint,
+        'mainCommit':main_commit,'publishedFileSha':published_sha,
+        'pagesFiles':release.pages,
         **connections}),flush=True)
     if args.apply_approved is None or not changes:
         return
@@ -93,7 +122,7 @@ def main():
         source = original[0]['buildConfig']['sourceProvenance']['resolvedStorageSource']
         receipt = {'source':source,'installedHash':question.content_hash(planned),
                    'archiveSha256':hashlib.sha256(archive).hexdigest(),'configurationHash':question.audit.digest(before)}
-        fd = os.open(args.receipt,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600)
+        fd = os.open(receipt_path,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600)
         with os.fdopen(fd,'w') as file:
             json.dump(receipt,file)
     studio.submit(client,planned)
@@ -105,6 +134,10 @@ def main():
     print(json.dumps({'revision':ready['revision'],'sourceMatches':verified,'unexpectedSettingsDiff':differences}))
     if ready['revision']==info['revision'] or not verified or differences:
         raise studio.Stop('新リビジョンまたは設定の照合に失敗しました。再実行前にConsoleで確認してください')
+    studio.command('git','fetch','--quiet','origin','+refs/heads/main:refs/remotes/origin/main')
+    current_published_sha = studio.command('git','rev-parse','origin/main:studio-content.json').decode().strip()
+    print(json.dumps({'publishedFileShaBefore':published_sha,'publishedFileShaAfter':current_published_sha,
+                      'publishedFileUnchanged':published_sha==current_published_sha}))
 
 
 if __name__ == '__main__':

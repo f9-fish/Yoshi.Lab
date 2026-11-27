@@ -32,14 +32,14 @@ PROTECTED_SHEETS = {
 }
 
 
-def source_plan(archive, baselines, target):
+def source_plan(archive, baselines, target, *, allowed_changes=None):
     live = runtime.zip_contents(archive)
     baseline = next((label for label, files in baselines.items()
                      if all(live.get(name) == files.get(name) for name in FILES)), None)
     if not baseline:
         raise studio.Stop('稼働ソースが既知の版と一致しません。変更を停止します')
     changes = [name for name in FILES if live.get(name) != target[name]]
-    if set(changes) - {'index.js', audit.NEW_FILE}:
+    if set(changes) - (allowed_changes if allowed_changes is not None else {'index.js', audit.NEW_FILE}):
         raise studio.Stop('依存関係または既存モジュールが一致しません')
     if not changes:
         return baseline, changes, archive

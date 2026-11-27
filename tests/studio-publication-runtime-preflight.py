@@ -55,6 +55,19 @@ class PublicationPreflight(unittest.TestCase):
             with self.assertRaises(preflight.studio.Stop):
                 preflight.restore_plan(client,receipt,planned,configuration,self.before,self.after)
 
+    def test_pr110_only_three_known_runtime_files_are_updated(self):
+        release = preflight.PR110
+        previous = preflight.runtime.source_at(release.before,preflight.question.FILES)
+        target = preflight.runtime.source_at(release.after,preflight.question.FILES)
+        archive = zip_bytes({**previous,'untouched':b'extra'})
+        baseline, changes, planned = preflight.plan_update(archive,previous,target,release)
+        self.assertEqual(baseline,'pre-pr110')
+        self.assertEqual(set(changes),{'index.js','question-master.cjs','studio-core.cjs'})
+        self.assertEqual(preflight.runtime.zip_contents(planned),{**target,'untouched':b'extra'})
+        self.assertEqual(preflight.plan_update(planned,previous,target,release)[:2],('pr110',[]))
+        with self.assertRaises(preflight.studio.Stop):
+            preflight.plan_update(archive,previous,{**target,'package-lock.json':b'changed'},release)
+
     def test_source_only_update_has_no_environment_update_mask(self):
         client=Mock()
         client.json.side_effect=[
