@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "subject": "英C",
+    "id": "8",
+    "name": "1",
+    "questions": {
+      "vocabulary": [
+        {
+          "question": "due to",
+          "answer": "〜が原因で、〜のために",
+          "translation": "理由や原因を表す表現です"
+        }
+      ],
+      "cloze": [],
+      "qa": [],
+      "trueFalse": [],
+      "discussion": []
+    },
+    "publishedAt": "2026-11-27T01:16:23.095Z",
+    "studioPublication": "617efe94-bbe9-440c-8db9-2b5f019bc285:4"
+  }
+]
