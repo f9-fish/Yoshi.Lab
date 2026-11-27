@@ -102,19 +102,29 @@ def writer_access(client, writer):
             pass
     state = None
     effective = 'unverified'
+    diagnostic = {'outcome': 'response_state_missing_or_invalid'}
     try:
         result = client.json('https://policytroubleshooter.googleapis.com/v3/iam:troubleshoot', 'POST',
                              {'accessTuple': {'principal': runtime.RUNTIME, 'fullResourceName': resource,
-                                              'permission': TOKEN_PERMISSION}})
-        state = result.get('overallAccessState')
-        if state in ('CAN_ACCESS', 'CANNOT_ACCESS'):
-            effective = 'granted' if state == 'CAN_ACCESS' else 'denied'
+                                              'permission': TOKEN_PERMISSION}},
+                             extra_headers={'x-goog-user-project': 'yoshi-lab-db3eb'},
+                             collect_api_error=True)
+        raw_state = result.get('overallAccessState') if isinstance(result,dict) else None
+        if raw_state in ('CAN_ACCESS','CANNOT_ACCESS','UNKNOWN_INFO','UNKNOWN_CONDITIONAL'):
+            state = raw_state
+            diagnostic = {'outcome': 'evaluated'}
+            if state in ('CAN_ACCESS', 'CANNOT_ACCESS'):
+                effective = 'granted' if state == 'CAN_ACCESS' else 'denied'
+    except studio.ApiFailure as error:
+        diagnostic = error.diagnostic
     except studio.Stop:
-        pass
+        diagnostic = {'outcome': 'request_failed'}
+    except ValueError:
+        diagnostic = {'outcome': 'invalid_json'}
     return {'directTokenCreator': None if direct_roles is None else TOKEN_ROLE in direct_roles,
             'directRoleCount': None if direct_roles is None else len(direct_roles),
             'directExactCustomRole': custom_verified,
-            'policyState': state, 'effectiveGetAccessToken': effective}
+            'policyState': state, 'effectiveGetAccessToken': effective, 'policyDiagnostic': diagnostic}
 
 
 def allow_apply(phase, access, accept_unknown, confirmed):
@@ -158,7 +168,7 @@ def restore_source(client, receipt, projection, expected, baselines):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('phase', choices=('pilot', 'production', 'connect', 'activate', 'rollback'))
+    parser.add_argument('phase', choices=('pilot', 'production', 'connect', 'activate', 'rollback', 'diagnose-iam'))
     parser.add_argument('--sheet-id')
     parser.add_argument('--writer')
     parser.add_argument('--pilot-uid')
@@ -169,6 +179,13 @@ def main():
     parser.add_argument('--accept-unverified-iam', action='store_true')
     parser.add_argument('--connection-verified', action='store_true')
     args = parser.parse_args()
+    if args.phase == 'diagnose-iam':
+        if any((args.sheet_id,args.writer,args.pilot_uid,args.pilot_sheet_id,args.pilot_writer,
+                args.apply_approved,args.accept_unverified_iam,args.connection_verified)):
+            parser.error('diagnose-iam は追加引数を使いません')
+        access = writer_access(studio.Client(), CONFIRMED_WRITER)
+        print(json.dumps({'stage':'writer-iam', **access}))
+        return
     if args.phase in ('connect', 'activate', 'rollback'):
         if any((args.writer,args.pilot_uid,args.pilot_sheet_id,args.pilot_writer)):
             raise studio.Stop('接続・有効化・復旧では確定済みの書き込み用アカウントを使用します')

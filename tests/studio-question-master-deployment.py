@@ -1,5 +1,7 @@
 import importlib.util
 import io
+import json
+import urllib.error
 from pathlib import Path
 import unittest
 from unittest.mock import Mock, patch
@@ -71,6 +73,8 @@ class Deployment(unittest.TestCase):
         url, method, request = client.json.call_args_list[1].args
         self.assertTrue(url.endswith('/v3/iam:troubleshoot'))
         self.assertEqual(method, 'POST')
+        self.assertEqual(client.json.call_args_list[1].kwargs, {
+            'extra_headers': {'x-goog-user-project': 'yoshi-lab-db3eb'}, 'collect_api_error': True})
         self.assertEqual(request['accessTuple'], {
             'principal': deploy.runtime.RUNTIME,
             'permission': 'iam.serviceAccounts.getAccessToken',
@@ -86,7 +90,8 @@ class Deployment(unittest.TestCase):
         ]
         self.assertEqual(deploy.writer_access(client, deploy.CONFIRMED_WRITER),
                          {'directTokenCreator': False, 'directRoleCount': 0, 'directExactCustomRole': False,
-                          'policyState': 'CAN_ACCESS', 'effectiveGetAccessToken': 'granted'})
+                          'policyState': 'CAN_ACCESS', 'effectiveGetAccessToken': 'granted',
+                          'policyDiagnostic': {'outcome': 'evaluated'}})
         client.json.side_effect = deploy.studio.Stop('unavailable')
         self.assertIsNone(deploy.writer_access(client, deploy.CONFIRMED_WRITER)['directTokenCreator'])
 
@@ -144,6 +149,50 @@ class Deployment(unittest.TestCase):
             get_archive.assert_called_once_with(client,function)
             with self.assertRaises(deploy.studio.Stop):
                 deploy.restore_source(client,receipt,{'model':'changed'},additions,{'base':base})
+
+    def test_rest_http_failure_reports_only_safe_fields(self):
+        client = deploy.studio.Client.__new__(deploy.studio.Client)
+        client.token = 'mock-token'
+        client.opener = Mock()
+        data = {'error': {'status': 'PERMISSION_DENIED', 'message': 'private diagnostic message',
+                          'details': [{'@type':'type.googleapis.com/google.rpc.ErrorInfo',
+                                       'reason':'USER_PROJECT_DENIED','metadata':{'secret':'hidden'}},
+                                      {'@type':'type.googleapis.com/google.rpc.ErrorInfo',
+                                       'reason':'PRIVATE_UNKNOWN_FIELD'}]}}
+        response = urllib.error.HTTPError('https://policytroubleshooter.googleapis.com', 403,
+                                          'Forbidden', {}, io.BytesIO(json.dumps(data).encode()))
+        policy = Mock()
+        policy.read.return_value = b'{}'
+        policy.__enter__ = lambda self: self
+        policy.__exit__ = lambda *args: None
+        client.opener.open.side_effect = [policy, response]
+        access = deploy.writer_access(client, deploy.CONFIRMED_WRITER)
+        self.assertIsNone(access['policyState'])
+        self.assertEqual(access['policyDiagnostic'], {'outcome':'http_error','httpStatus':403,
+                         'status':'PERMISSION_DENIED','reasons':['USER_PROJECT_DENIED']})
+        self.assertNotIn('private diagnostic', json.dumps(access))
+        request = client.opener.open.call_args.args[0]
+        self.assertEqual(request.get_header('X-goog-user-project'), 'yoshi-lab-db3eb')
+
+    def test_missing_response_state_is_distinct_from_unknown_iam(self):
+        for response, outcome in [({}, 'response_state_missing_or_invalid'),
+                                  (ValueError('parse failure'), 'invalid_json'),
+                                  (deploy.studio.Stop('timeout'), 'request_failed')]:
+            client = Mock()
+            client.json.side_effect = [{}, response]
+            result = deploy.writer_access(client, deploy.CONFIRMED_WRITER)
+            self.assertIsNone(result['policyState'])
+            self.assertEqual(result['policyDiagnostic'], {'outcome': outcome})
+            with self.assertRaises(deploy.studio.Stop):
+                deploy.allow_apply('connect', result, True, False)
+
+    def test_diagnostic_command_does_not_probe_runtime_or_deploy(self):
+        with patch('sys.argv', ['deploy','diagnose-iam']), patch.object(deploy.studio,'Client'), \
+             patch.object(deploy,'writer_access', return_value={'policyState':'UNKNOWN_INFO'}), \
+             patch.object(deploy.studio,'snapshot') as snapshot, patch.object(deploy.studio,'submit') as submit:
+            deploy.main()
+            snapshot.assert_not_called()
+            submit.assert_not_called()
 
 
 if __name__ == '__main__':

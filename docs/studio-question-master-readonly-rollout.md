@@ -55,3 +55,19 @@ python3 scripts/studio-question-master-deployment.py rollback --sheet-id "$quest
 ```
 
 確認された照合値を、復旧が明示承認された後に `--apply-approved 'rollbackの照合値'` として渡します。既存 Gen 2 関数で元の世代のソースを復元し、今回追加した設定を除去します。接続後の予期しないソース変更や既存設定の差分があれば停止します。元の世代を取得できない場合も自動復旧を停止します。Cloud Runへの直接のトラフィック変更や、Sheetsに保存済みのデータの削除は行いません。
+
+## IAM 診断だけを再実行
+
+`policyState: null` は有効な評価結果を取得できなかった状態です。正常応答の `UNKNOWN_INFO` とは区別されます。Cloud Shell で IAM 診断だけを行い、`policyDiagnostic` を確認します。
+
+```bash
+work=$(mktemp -d) && git clone -q -b ops/studio-question-master-iam-diagnostics https://github.com/f9-fish/Yoshi.Lab.git "$work/repo" && cd "$work/repo" && python3 scripts/studio-question-master-deployment.py diagnose-iam
+```
+
+Policy Troubleshooter v3 の呼び出しは、利用プロジェクトを `x-goog-user-project: yoshi-lab-db3eb` で明示します。実行SAの代理認証は使用しません。診断には、既存の利用者権限で利用プロジェクトを指定できることと、必要なポリシーを参照できることが必要です。
+
+- `http_error` はHTTP番号と、判別できたGoogleのステータス・理由を表示します。 `USER_PROJECT_DENIED` なら利用プロジェクトの使用権限を、 `SERVICE_DISABLED` ならそのプロジェクトのAPI有効状態を確認します。コードは有効化や権限付与を行いません。
+- `request_failed` は通信やレスポンス取得の失敗です。 `invalid_json` と `response_state_missing_or_invalid` はレスポンス形式の問題です。
+- `evaluated` では `policyState` を確認します。 `UNKNOWN_INFO` は診断APIが応答したものの、ポリシー情報が不足している状態です。
+
+アクセストークン、APIエラーの自由記述、エラー詳細のメタデータ、ポリシー本文は出力しません。診断後、同じチェックアウトで `connect --sheet-id ...` を適用フラグなしで実行すると、稼働ソースを含む事前確認を再実行できます。
